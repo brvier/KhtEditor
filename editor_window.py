@@ -13,14 +13,14 @@ class Window(QtGui.QMainWindow):
         super(Window, self).__init__(parent)
         self.resize(800, 480)
         #self.setupHelpMenu()
-        #self.setupFileMenu()
+        self.setupFileMenu()
         self.setupEditor()
         self.main = main
         self.main.window_list.append(self)
 
         self.setCentralWidget(self.editor)
 
-        self.setWindowTitle(self.tr("Syntax Highlighter"))
+#        self.setWindowTitle(self.tr("KhtEditor"))
 
     def about(self):
         QtGui.QMessageBox.about(self, self.tr("About Syntax Highlighter"),
@@ -29,23 +29,39 @@ class Window(QtGui.QMainWindow):
                         "the QSyntaxHighlighter class and describing "
                         "highlighting rules using regular expressions.</p>"))
 
-    def newFile(self):
-        self.editor.clear()
+    def fileSave(self):
+        try:
+            self.editor.save()
+        except (IOError, OSError), e:
+            QtGui.QMessageBox.warning(self, "KhtEditor -- Save Error",
+                    "Failed to save %s: %s" % (self.fileName, e))
 
-    def openFile(self, fileName):
-          inFile = QtCore.QFile(fileName)
-          if inFile.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text):
-              self.editor.setPlainText(QtCore.QString(inFile.readAll()))
-
-    def openFileDialog(self, path=QtCore.QString()):
-        fileName = QtCore.QString(path)
-
-        if fileName.isNull():
-            fileName = QtGui.QFileDialog.getOpenFileName(self,
-                    self.tr("Open File"), "", "C++ Files (*.cpp *.h *.py)")
-
+    def saveAsFile(self):
+        fileName = QtGui.QFileDialog.getSaveFileName(self,
+                        "KhtEditor -- Save File As",
+                        self.editor.fileName, "")
         if not fileName.isEmpty():
-            self.openFileDialog(fileName)
+            self.editor.fileName = fileName
+            self.fileSave()
+
+    def newFile(self):
+        w = Window(None,self.main)
+        w.show()
+
+    def openFile(self, path=QtCore.QString()):
+        filename = QtGui.QFileDialog.getOpenFileName(self,
+                            "KhtEditor -- Open File")
+        if not filename.isEmpty():
+            self.loadFile(filename)
+
+
+    def loadFile(self, fileName):
+        self.editor.fileName = fileName
+        try:
+            self.editor.load()
+        except (IOError, OSError), e:
+            QtGui.QMessageBox.warning(self, "KhtEditor -- Load Error",
+                    "Failed to load %s: %s" % (filename, e))
 
     def setupEditor(self):
         font = QtGui.QFont()
@@ -53,8 +69,7 @@ class Window(QtGui.QMainWindow):
         font.setFixedPitch(True)
         font.setPointSize(12)
 
-        self.editor = editor.Kht_Editor()
-        #self.editor = QtGui.QTextEdit()
+        self.editor = editor.Kht_Editor(self)
         self.editor.setFont(font)
         self.setupToolBar()
         from syntax.python_highlighter import Highlighter
@@ -75,19 +90,19 @@ class Window(QtGui.QMainWindow):
         fileMenu = QtGui.QMenu(self.tr("&File"), self)
         self.menuBar().addMenu(fileMenu)
 
-        fileMenu.addAction(self.tr("&New..."), self.newFile,
-                QtGui.QKeySequence(self.tr("Ctrl+N", "File|New")))
-        fileMenu.addAction(self.tr("&Open..."), self.openFile,
-                QtGui.QKeySequence(self.tr("Ctrl+O", "File|Open")))
-        fileMenu.addAction(self.tr("E&xit"), QtGui.qApp.quit,
-                QtGui.QKeySequence(self.tr("Ctrl+Q", "File|Exit")))
+        fileMenu.addAction(self.tr("New..."), self.newFile,
+                QtGui.QKeySequence(self.tr("Ctrl+N", "New")))
+        fileMenu.addAction(self.tr("Open..."), self.openFile,
+                QtGui.QKeySequence(self.tr("Ctrl+O", "Open")))
+        fileMenu.addAction(self.tr("Save As"), self.saveAsFile,
+                QtGui.QKeySequence(self.tr("Ctrl+Maj+S", "Save As")))
 
     def setupHelpMenu(self):
         helpMenu = QtGui.QMenu(self.tr("&Help"), self)
         self.menuBar().addMenu(helpMenu)
 
         helpMenu.addAction(self.tr("&About"), self.about)
-        helpMenu.addAction(self.tr("About &Qt"), QtGui.qApp.aboutQt)
+#        helpMenu.addAction(self.tr("About &Qt"), QtGui.qApp.aboutQt)
 
     def do_indent(self):
         print "do_indent"

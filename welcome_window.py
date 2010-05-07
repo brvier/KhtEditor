@@ -42,13 +42,8 @@ class WelcomeWindow(QtGui.QMainWindow):
             editor_win.show()
             editor_win.openFile(fileName)
 
-#            inFile = QtCore.QFile(fileName)
-#            if inFile.open(QtCore.QFile.ReadOnly | QtCore.QFile.Text):
-#                self.editor.setPlainText(QtCore.QString(inFile.readAll()))
-
     def setupMain(self):
         self.layout = QtGui.QVBoxLayout()
-
 
     def setupMenu(self):
         fileMenu = QtGui.QMenu(self.tr("&Menu"), self)
@@ -59,4 +54,3 @@ class WelcomeWindow(QtGui.QMainWindow):
         fileMenu.addAction(self.tr("&Open..."), self.openFile,
                 QtGui.QKeySequence(self.tr("Ctrl+O", "Open")))
         fileMenu.addAction(self.tr("&About"), self.about)
-        fileMenu.addAction(self.tr("About &Qt"), QtGui.qApp.aboutQt)
