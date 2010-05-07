@@ -19,6 +19,8 @@ class Kht_Editor(QtGui.QTextEdit):
         self.parent = parent
 #        print type(parent)
         self.parent.setWindowTitle(self.fileName)
+        self.setProperty("FingerScrollable", True)
+        self.setProperty("NoWrap", 1)
 
     def keyPressEvent(self, e):
         for plugin in get_plugins_by_capability('beforeKeyPressEvent'):
