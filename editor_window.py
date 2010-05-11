@@ -53,6 +53,7 @@ class Window(QtGui.QMainWindow):
                             "KhtEditor -- Open File")
         if not filename.isEmpty():
             self.loadFile(filename)
+        return filename
 
 
     def loadFile(self, fileName):

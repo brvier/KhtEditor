@@ -31,16 +31,19 @@ class WelcomeWindow(QtGui.QMainWindow):
         w.show()
 
     def openFile(self, path=QtCore.QString()):
-        fileName = QtCore.QString(path)
-
-        if fileName.isNull():
-            fileName = QtGui.QFileDialog.getOpenFileName(self,
-                    self.tr("Open File"), "", "C++ Files (*.cpp *.h *.py)")
-
-        if not fileName.isEmpty():
+#        fileName = QtCore.QString(path)
+#
+#        if fileName.isNull():
+#            fileName = QtGui.QFileDialog.getOpenFileName(self,
+#                    self.tr("Open File"), "", "C++ Files (*.cpp *.h *.py)")
+#
+#        if not fileName.isEmpty():
             editor_win=editor_window.Window(None,self.main)
-            editor_win.show()
-            editor_win.openFile(fileName)
+            filename = editor_win.openFile(path)
+            if not filename.isEmpty():
+              editor_win.show()
+            else:
+              editor_win.destroy()
 
     def setupMain(self):
         self.layout = QtGui.QVBoxLayout()
