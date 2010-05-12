@@ -7,6 +7,7 @@ import re
 from PyQt4 import QtCore, QtGui
 from plugins import init_plugin_system, get_plugins_by_capability
 import editor
+import editor_frame
 
 class Window(QtGui.QMainWindow):
     def __init__(self, parent=None,main=None):
@@ -18,7 +19,7 @@ class Window(QtGui.QMainWindow):
         self.main = main
         self.main.window_list.append(self)
 
-        self.setCentralWidget(self.editor)
+        self.setCentralWidget(self.editor_frame)
 
 #        self.setWindowTitle(self.tr("KhtEditor"))
 
@@ -72,6 +73,7 @@ class Window(QtGui.QMainWindow):
 
         self.editor = editor.Kht_Editor(self)
         self.editor.setFont(font)
+        self.editor_frame = editor_frame.Frame(self.editor)
         self.setupToolBar()
         from syntax.python_highlighter import Highlighter
         self.highlighter = Highlighter(self.editor.document())

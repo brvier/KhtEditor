@@ -20,8 +20,8 @@ class Kht_Editor(QtGui.QTextEdit):
 #        print type(parent)
         self.parent.setWindowTitle(self.fileName)
         self.setProperty("FingerScrollable", True)
-        self.setProperty("NoWrap", 1)
-
+#        self.setProperty("NoWrap", 1)
+        self.setLineWrapMode(QtGui.QTextEdit.NoWrap)
     def keyPressEvent(self, e):
         for plugin in get_plugins_by_capability('beforeKeyPressEvent'):
             plg = plugin()
@@ -32,6 +32,7 @@ class Kht_Editor(QtGui.QTextEdit):
             plg.do_afterKeyPressEvent(self,e)
 
     def closeEvent(self, event):
+        print 'closeEvent called'
         if self.document().isModified() and \
            QtGui.QMessageBox.question(self,
                    "Text Editor - Unsaved Changes",
