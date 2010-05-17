@@ -31,7 +31,7 @@ class Kht_Editor(QtGui.QTextEdit):
             plg = plugin()
             plg.do_afterKeyPressEvent(self,e)
 
-    def closeEvent(self, event):
+    def closeEvent(self):
         print 'closeEvent called'
         if self.document().isModified() and \
            QtGui.QMessageBox.question(self,

@@ -18,7 +18,7 @@ class Window(QtGui.QMainWindow):
         self.setupEditor()
         self.main = main
         self.main.window_list.append(self)
-
+        
         self.setCentralWidget(self.editor_frame)
 
 #        self.setWindowTitle(self.tr("KhtEditor"))
@@ -88,8 +88,12 @@ class Window(QtGui.QMainWindow):
         self.tb_unindent.setShortcut('Ctrl+I')
         self.connect(self.toolbar, QtCore.SIGNAL('triggered()'), self.do_unindent)
         self.toolbar.addAction(self.tb_unindent)
+        self.tb_execute = QtGui.QAction(QtGui.QIcon.fromTheme('execute'), 'Execute', self)
+        self.tb_execute.setShortcut('Ctrl+E')
+        self.connect(self.toolbar, QtCore.SIGNAL('triggered()'), self.do_execute)
+        self.toolbar.addAction(self.tb_execute)
 
-    def setupFileMenu(self):
+    def setupFileMenu(self): 
         fileMenu = QtGui.QMenu(self.tr("&File"), self)
         self.menuBar().addMenu(fileMenu)
 
@@ -111,4 +115,9 @@ class Window(QtGui.QMainWindow):
         print "do_indent"
     def do_unindent(self):
         print "do_unindent"
-
+    def do_execute(self):
+        print "execute"
+    def closeEvent(self,widget,*args):
+        print 'call editor close event'
+        self.editor.closeEvent()
+        
