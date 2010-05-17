@@ -10,7 +10,7 @@ class Frame(QFrame):
             # This is used to update the width of the control.
             # It is the highest line that is currently visibile.
             self.highest_line = 0
-            self.font = QFont('Monospace',9)
+            self.font = QFont('Monospace',10)
         def setTextEdit(self, edit):
             self.edit = edit
 
@@ -58,7 +58,8 @@ class Frame(QFrame):
 
                 # Draw the line number right justified at the y position of the
                 # line. 3 is a magic padding number. drawText(x, y, text).
-                painter.drawText(self.width() - font_metrics.width(str(line_count)) - 3, round(position.y()) - contents_y + font_metrics.ascent(), str(line_count))
+                # 12 is a magic number for y under maemo
+                painter.drawText(self.width() - font_metrics.width(str(line_count)) - 3, round(position.y()) - contents_y + font_metrics.ascent() - 12, str(line_count))
 
                 # Remove the bold style if it was set previously.
                 if bold:
