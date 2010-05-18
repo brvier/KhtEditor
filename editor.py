@@ -4,22 +4,25 @@
 
 import sys
 import re
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 from plugins import init_plugin_system, get_plugins_by_capability
 
 class Kht_Editor(QtGui.QTextEdit):
     def __init__(self, parent=None, fileName=QtCore.QString('')):
-        QtGui.QTextEdit.__init__(self)
+        QtGui.QTextEdit.__init__(self,parent)
         init_plugin_system({'plugin_path': './plugins', 'plugins': ['autoindent']})
 #        self.setAttribute(Qt.WA_DeleteOnClose)
         self.fileName = fileName
         if self.fileName.isEmpty():
             self.fileName = QtCore.QString("Unnamed.txt")
         self.document().setModified(False)
-        self.parent = parent
+#        self.parent = parent
 #        print type(parent)
-        self.parent.setWindowTitle(self.fileName)
+        parent.setWindowTitle(self.fileName)
+        print self.dynamicPropertyNames()
+        self.kineticScroller = True
         self.setProperty("FingerScrollable", True)
+        self.setProperty("kineticScroller", True)  
 #        self.setProperty("NoWrap", 1)
         self.setLineWrapMode(QtGui.QTextEdit.NoWrap)
     def keyPressEvent(self, e):

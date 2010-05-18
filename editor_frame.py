@@ -1,6 +1,6 @@
-from PyQt4.QtGui import QFrame, QWidget, QTextEdit, QHBoxLayout, QPainter, QFont
+from PySide.QtGui import QScrollArea, QFrame, QWidget, QTextEdit, QHBoxLayout, QPainter, QFont
 
-class Frame(QFrame):
+class Frame(QScrollArea):
 
     class NumberBar(QWidget):
 
@@ -75,33 +75,38 @@ class Frame(QFrame):
             QWidget.paintEvent(self, event)
 
     def __init__(self, editor, *args):
-        QFrame.__init__(self, *args)
+        QScrollArea.__init__(self, *args)
 
-        self.setFrameStyle(QFrame.StyledPanel | QFrame.Sunken)
+#        self.setFrameStyle(QScrollArea.StyledPanel | QScrollArea.Sunken)
 
         self.edit = editor
-        self.edit.setFrameStyle(QFrame.NoFrame)
+#        self.edit.setFrameStyle(QFrame.NoFrame)
+        self.setProperty("fingerScrollable", True)     
 #        self.edit.setAcceptRichText(False)
 
         self.number_bar = self.NumberBar()
         self.number_bar.setTextEdit(self.edit)
 
+#        abs_scrolling = QAbstractScrollArea(self)
+#        abs_scrolling.setProperty("FingerScrollable", True)     
+
         hbox = QHBoxLayout(self)
+#        hbox.setProperty("FingerScrollable", True)   
         hbox.setSpacing(0)
         hbox.setMargin(0)
         hbox.addWidget(self.number_bar)
         hbox.addWidget(self.edit)
-
+        self.setWidgetResizable(True)
         self.edit.installEventFilter(self)
         self.edit.viewport().installEventFilter(self)
-
+ 
     def eventFilter(self, object, event):
         # Update the line numbers for all events on the text edit and the viewport.
         # This is easier than connecting all necessary singals.
         if object in (self.edit, self.edit.viewport()):
             self.number_bar.update()
             return False
-        return QFrame.eventFilter(object, event)
+        return QScrollArea.eventFilter(object, event)
 
     def getTextEdit(self):
         return self.edit

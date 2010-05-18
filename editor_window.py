@@ -4,7 +4,7 @@
 
 import sys
 import re
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 from plugins import init_plugin_system, get_plugins_by_capability
 import editor
 import editor_frame
@@ -18,9 +18,9 @@ class Window(QtGui.QMainWindow):
         self.setupEditor()
         self.main = main
         self.main.window_list.append(self)
-        
+        self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
         self.setCentralWidget(self.editor_frame)
-
+#        self.showFullScreen()
 #        self.setWindowTitle(self.tr("KhtEditor"))
 
     def about(self):
@@ -115,9 +115,9 @@ class Window(QtGui.QMainWindow):
         print "do_indent"
     def do_unindent(self):
         print "do_unindent"
-    def do_execute(self):
+    def do_execute(self,widget,*args):
         print "execute"
     def closeEvent(self,widget,*args):
-        print 'call editor close event'
+#        print 'call editor close event'
         self.editor.closeEvent()
         

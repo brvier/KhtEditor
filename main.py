@@ -4,13 +4,12 @@
 
 import sys
 import welcome_window
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 
 class KhtEditor:
     def __init__(self):
       self.window_list = []
       self.app = QtGui.QApplication(sys.argv)
-
       self.run()
 
     def run(self):
