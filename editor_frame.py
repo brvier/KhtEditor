@@ -58,8 +58,8 @@ class Frame(QScrollArea):
 
                 # Draw the line number right justified at the y position of the
                 # line. 3 is a magic padding number. drawText(x, y, text).
-                # 2 is a magic number for y under maemo
-                painter.drawText(self.width() - font_metrics.width(str(line_count)) - 3, round(position.y()) - contents_y + font_metrics.ascent() - 2, str(line_count))
+                # 4 is a magic number for y under maemo
+                painter.drawText(self.width() - font_metrics.width(str(line_count)) - 3, round(position.y()) - contents_y + font_metrics.ascent() + 4, str(line_count))
 
                 # Remove the bold style if it was set previously.
                 if bold:
@@ -77,21 +77,13 @@ class Frame(QScrollArea):
     def __init__(self, editor, *args):
         QScrollArea.__init__(self, *args)
 
-#        self.setFrameStyle(QScrollArea.StyledPanel | QScrollArea.Sunken)
-
         self.edit = editor
-#        self.edit.setFrameStyle(QFrame.NoFrame)
         self.setProperty("fingerScrollable", True)     
-#        self.edit.setAcceptRichText(False)
 
         self.number_bar = self.NumberBar()
         self.number_bar.setTextEdit(self.edit)
 
-#        abs_scrolling = QAbstractScrollArea(self)
-#        abs_scrolling.setProperty("FingerScrollable", True)     
-
         hbox = QHBoxLayout(self)
-#        hbox.setProperty("FingerScrollable", True)   
         hbox.setSpacing(0)
         hbox.setMargin(0)
         hbox.addWidget(self.number_bar)
