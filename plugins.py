@@ -1,7 +1,6 @@
 import sys
 import os
 
-
 class Plugin(object):
     capabilities = []
 

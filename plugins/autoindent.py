@@ -12,11 +12,8 @@ class AutoIndent_Plugin(Plugin):
             cursor = widget.textCursor()
             block = widget.document().findBlockByNumber(cursor.blockNumber()-1)
             whitespace = re.match(r"(\s*)", str(block.text().toUtf8())).group(1)
-#            event.ignore()
-#            QTextEdit.keyPressEvent(widget, event)
             cursor = widget.textCursor()
             format = cursor.blockFormat()
             format.clearBackground()
             cursor.setBlockFormat(format)
             cursor.insertText(whitespace)
-#            print 'marche pas'

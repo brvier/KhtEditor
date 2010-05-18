@@ -10,16 +10,10 @@ import editor_window
 class WelcomeWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(QtGui.QMainWindow, self).__init__(parent)
-        #self.resize(800, 480)
 
         self.setupMenu()
         self.setupMain()
 
-#        self.main = main
-#        self.main.window_list.append(self)
-
-#        self.setCentralWidget(self.layout)
-#        self.setLayout(self.layout)
         self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
         self.setWindowTitle("KhtEditor")
 

@@ -13,16 +13,12 @@ import editor_frame
 class Window(QtGui.QMainWindow):
     def __init__(self, parent=None):
         super(QtGui.QMainWindow, self).__init__(parent)
-        #self.resize(800, 480)
-        #self.setupHelpMenu()
+        self.setupHelpMenu()
         self.setupFileMenu()
         self.setupEditor()
-        #self.main = main
-        #self.main.window_list.append(self)
+
         self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
         self.setCentralWidget(self.editor_frame)
-#        self.showFullScreen()
-#        self.setWindowTitle(self.tr("KhtEditor"))
 
     def about(self):
         QtGui.QMessageBox.about(self, self.tr("About Syntax Highlighter"),
@@ -110,7 +106,6 @@ class Window(QtGui.QMainWindow):
         self.menuBar().addMenu(helpMenu)
 
         helpMenu.addAction(self.tr("&About"), self.about)
-#        helpMenu.addAction(self.tr("About &Qt"), QtGui.qApp.aboutQt)
 
     def do_indent(self):
         print "do_indent"
