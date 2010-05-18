@@ -1,4 +1,4 @@
-from PySide.QtGui import QScrollArea, QFrame, QWidget, QTextEdit, QHBoxLayout, QPainter, QFont
+from PyQt4.QtGui import QScrollArea, QFrame, QWidget, QTextEdit, QHBoxLayout, QPainter, QFont
 
 class Frame(QScrollArea):
 

@@ -4,7 +4,7 @@
 
 import sys
 import re
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 from plugins import init_plugin_system, get_plugins_by_capability
 
 class Kht_Editor(QtGui.QTextEdit):

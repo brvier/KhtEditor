@@ -4,22 +4,24 @@
 
 import sys
 from PyQt4 import QtCore, QtGui
+from PyQt4.QtCore import Qt
 import editor_window
 
 class WelcomeWindow(QtGui.QMainWindow):
-    def __init__(self, parent=None, main=None):
-        super(WelcomeWindow, self).__init__(parent)
-        self.resize(800, 480)
+    def __init__(self, parent=None):
+        super(QtGui.QMainWindow, self).__init__(parent)
+        #self.resize(800, 480)
 
         self.setupMenu()
         self.setupMain()
 
-        self.main = main
-        self.main.window_list.append(self)
+#        self.main = main
+#        self.main.window_list.append(self)
 
 #        self.setCentralWidget(self.layout)
 #        self.setLayout(self.layout)
-        self.setWindowTitle(self.tr("KhtEditor"))
+        self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
+        self.setWindowTitle("KhtEditor")
 
     def about(self):
         QtGui.QMessageBox.about(self, self.tr("About KhtEditor"),
@@ -27,17 +29,10 @@ class WelcomeWindow(QtGui.QMainWindow):
                         "Mainly designed for Maemo and Meego.</p>"))
 
     def newFile(self):
-        w = editor_window.Window(None,self.main)
+        w = editor_window.Window(self)
         w.show()
 
     def openFile(self, path=QtCore.QString()):
-#        fileName = QtCore.QString(path)
-#
-#        if fileName.isNull():
-#            fileName = QtGui.QFileDialog.getOpenFileName(self,
-#                    self.tr("Open File"), "", "C++ Files (*.cpp *.h *.py)")
-#
-#        if not fileName.isEmpty():
             editor_win=editor_window.Window(None,self.main)
             filename = editor_win.openFile(path)
             if not filename.isEmpty():

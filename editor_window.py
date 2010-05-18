@@ -4,20 +4,21 @@
 
 import sys
 import re
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
+from PyQt4.QtCore import Qt
 from plugins import init_plugin_system, get_plugins_by_capability
 import editor
 import editor_frame
 
 class Window(QtGui.QMainWindow):
-    def __init__(self, parent=None,main=None):
-        super(Window, self).__init__(parent)
-        self.resize(800, 480)
+    def __init__(self, parent=None):
+        super(QtGui.QMainWindow, self).__init__(parent)
+        #self.resize(800, 480)
         #self.setupHelpMenu()
         self.setupFileMenu()
         self.setupEditor()
-        self.main = main
-        self.main.window_list.append(self)
+        #self.main = main
+        #self.main.window_list.append(self)
         self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
         self.setCentralWidget(self.editor_frame)
 #        self.showFullScreen()
@@ -46,7 +47,7 @@ class Window(QtGui.QMainWindow):
             self.fileSave()
 
     def newFile(self):
-        w = Window(None,self.main)
+        w = Window(self)
         w.show()
 
     def openFile(self, path=QtCore.QString()):

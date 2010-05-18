@@ -4,7 +4,7 @@
 
 import sys
 import welcome_window
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 
 class KhtEditor:
     def __init__(self):
@@ -13,7 +13,10 @@ class KhtEditor:
       self.run()
 
     def run(self):
-      window = welcome_window.WelcomeWindow(None,self)
+      window = welcome_window.WelcomeWindow()
       window.show()
 
       sys.exit(self.app.exec_())
+
+if __name__ == '__main__':
+    KhtEditor()
