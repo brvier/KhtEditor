@@ -23,8 +23,9 @@ class WelcomeWindow(QtGui.QMainWindow):
                         "Mainly designed for Maemo and Meego.</p>"))
 
     def newFile(self):
-        w = editor_window.Window(self)
+        w = editor_window.Window()
         w.show()
+        self.parent.window_list.append(w)
 
     def openFile(self, path=QtCore.QString()):
             editor_win=editor_window.Window(None,self.main)
