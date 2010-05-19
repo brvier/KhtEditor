@@ -5,26 +5,27 @@
 import sys
 import re
 from PyQt4 import QtCore, QtGui
+from PyQt4.QtCore import Qt
 from plugins import init_plugin_system, get_plugins_by_capability
 
 class Kht_Editor(QtGui.QTextEdit):
     def __init__(self, parent=None, fileName=QtCore.QString('')):
         QtGui.QTextEdit.__init__(self,parent)
         init_plugin_system({'plugin_path': './plugins', 'plugins': ['autoindent']})
-#        self.setAttribute(Qt.WA_DeleteOnClose)
         self.fileName = fileName
         if self.fileName.isEmpty():
             self.fileName = QtCore.QString("Unnamed.txt")
         self.document().setModified(False)
-#        self.parent = parent
-#        print type(parent)
+
         parent.setWindowTitle(self.fileName)
         print self.dynamicPropertyNames()
         self.kineticScroller = True
         self.setProperty("FingerScrollable", True)
-        self.setProperty("kineticScroller", True)  
-#        self.setProperty("NoWrap", 1)
+        self.setProperty("kineticScroller", True) 
+#        self.setTextInteractionFlags(Qt.TextBrowserInteraction) 
+
         self.setLineWrapMode(QtGui.QTextEdit.NoWrap)
+
     def keyPressEvent(self, e):
         for plugin in get_plugins_by_capability('beforeKeyPressEvent'):
             plg = plugin()
@@ -48,7 +49,6 @@ class Kht_Editor(QtGui.QTextEdit):
                 QtGui.QMessageBox.warning(self, "Text Editor -- Save Error",
                         "Failed to save %s: %s" % (self.fileName, e))
 
-
     def save(self):
         if self.fileName.startsWith("Unnamed"):
             fileName = QtGui.QFileDialog.getSaveFileName(self,
@@ -57,7 +57,7 @@ class Kht_Editor(QtGui.QTextEdit):
             if fileName.isEmpty():
                 return
             self.fileName = fileName
-        self.parent.setWindowTitle(QtCore.QFileInfo(self.fileName).fileName())
+        self.setWindowTitle(QtCore.QFileInfo(self.fileName).fileName())
         exception = None
         fh = None
         try:
@@ -88,7 +88,7 @@ class Kht_Editor(QtGui.QTextEdit):
             stream.setCodec("UTF-8")
             self.setPlainText(stream.readAll())
             self.document().setModified(False)
-            self.parent.setWindowTitle(QtCore.QFileInfo(self.fileName).fileName())
+            self.setWindowTitle(QtCore.QFileInfo(self.fileName).fileName())
         except (IOError, OSError), e:
             exception = e
         finally:

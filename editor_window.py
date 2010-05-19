@@ -11,21 +11,17 @@ import editor
 import editor_frame
 
 class Window(QtGui.QMainWindow):
-    def __init__(self, parent=None):
-        super(QtGui.QMainWindow, self).__init__(parent)
-        self.setupHelpMenu()
+    def __init__(self, parent):
+        super(QtGui.QMainWindow, self).__init__(None)
+        self.parent = parent
+        
         self.setupFileMenu()
+        self.setupHelpMenu()
         self.setupEditor()
 
         self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
         self.setCentralWidget(self.editor_frame)
 
-    def about(self):
-        QtGui.QMessageBox.about(self, self.tr("About Syntax Highlighter"),
-                self.tr("<p>The <b>Syntax Highlighter</b> example shows how "
-                        "to perform simple syntax highlighting by subclassing "
-                        "the QSyntaxHighlighter class and describing "
-                        "highlighting rules using regular expressions.</p>"))
 
     def fileSave(self):
         try:
@@ -42,9 +38,9 @@ class Window(QtGui.QMainWindow):
             self.editor.fileName = fileName
             self.fileSave()
 
-    def newFile(self):
-        w = Window(self)
-        w.show()
+#    def newFile(self):
+#        w = Window(self)
+#        w.show()
 
     def openFile(self, path=QtCore.QString()):
         filename = QtGui.QFileDialog.getOpenFileName(self,
@@ -58,6 +54,7 @@ class Window(QtGui.QMainWindow):
         self.editor.fileName = fileName
         try:
             self.editor.load()
+            self.setWindowTitle(QtCore.QFileInfo(self.editor.fileName).fileName())
         except (IOError, OSError), e:
             QtGui.QMessageBox.warning(self, "KhtEditor -- Load Error",
                     "Failed to load %s: %s" % (filename, e))
@@ -94,9 +91,9 @@ class Window(QtGui.QMainWindow):
         fileMenu = QtGui.QMenu(self.tr("&File"), self)
         self.menuBar().addMenu(fileMenu)
 
-        fileMenu.addAction(self.tr("New..."), self.newFile,
+        fileMenu.addAction(self.tr("New..."), self.parent.newFile,
                 QtGui.QKeySequence(self.tr("Ctrl+N", "New")))
-        fileMenu.addAction(self.tr("Open..."), self.openFile,
+        fileMenu.addAction(self.tr("Open..."), self.parent.openFile,
                 QtGui.QKeySequence(self.tr("Ctrl+O", "Open")))
         fileMenu.addAction(self.tr("Save As"), self.saveAsFile,
                 QtGui.QKeySequence(self.tr("Ctrl+Maj+S", "Save As")))
@@ -105,8 +102,11 @@ class Window(QtGui.QMainWindow):
         helpMenu = QtGui.QMenu(self.tr("&Help"), self)
         self.menuBar().addMenu(helpMenu)
 
-        helpMenu.addAction(self.tr("&About"), self.about)
-
+        helpMenu.addAction(self.tr("&About"), self.do_about)
+        
+    def do_about(self):
+        self.parent.about(self)
+        
     def do_indent(self):
         print "do_indent"
     def do_unindent(self):
