@@ -9,7 +9,8 @@ import editor_window
 
 class WelcomeWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
-        super(QtGui.QMainWindow, self).__init__(parent)
+        super(QtGui.QMainWindow, self).__init__(None)
+        self.parent = parent
 
         self.setupMenu()
         self.setupMain()
@@ -17,23 +18,8 @@ class WelcomeWindow(QtGui.QMainWindow):
         self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
         self.setWindowTitle("KhtEditor")
 
-    def about(self):
-        QtGui.QMessageBox.about(self, self.tr("About KhtEditor"),
-                self.tr("<p><b>KhtEditor</b> is a source code editor "
-                        "Mainly designed for Maemo and Meego.</p>"))
-
-    def newFile(self):
-        w = editor_window.Window()
-        w.show()
-        self.parent.window_list.append(w)
-
-    def openFile(self, path=QtCore.QString()):
-            editor_win=editor_window.Window(None,self.main)
-            filename = editor_win.openFile(path)
-            if not filename.isEmpty():
-              editor_win.show()
-            else:
-              editor_win.destroy()
+    def do_about(self):
+        self.parent.about(self)
 
     def setupMain(self):
         self.layout = QtGui.QVBoxLayout()
@@ -42,8 +28,8 @@ class WelcomeWindow(QtGui.QMainWindow):
         fileMenu = QtGui.QMenu(self.tr("&Menu"), self)
         self.menuBar().addMenu(fileMenu)
 
-        fileMenu.addAction(self.tr("&New..."), self.newFile,
+        fileMenu.addAction(self.tr("&New..."), self.parent.newFile,
                 QtGui.QKeySequence(self.tr("Ctrl+N", "New")))
-        fileMenu.addAction(self.tr("&Open..."), self.openFile,
+        fileMenu.addAction(self.tr("&Open..."), self.parent.openFile,
                 QtGui.QKeySequence(self.tr("Ctrl+O", "Open")))
-        fileMenu.addAction(self.tr("&About"), self.about)
+        fileMenu.addAction(self.tr("&About"), self.do_about)
