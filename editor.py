@@ -20,20 +20,25 @@ class Kht_Editor(QtGui.QTextEdit):
         parent.setWindowTitle(self.fileName)
         print self.dynamicPropertyNames()
         self.kineticScroller = True
-        self.setProperty("FingerScrollable", True)
-        self.setProperty("kineticScroller", True) 
+#        self.setProperty("FingerScrollable", True)
+#        self.setProperty("kineticScroller", True) 
+#        scroller = self.property("kineticScroller")
+#        scroller.setProperty("kineticScroller", True) 
 #        self.setTextInteractionFlags(Qt.TextBrowserInteraction) 
 
         self.setLineWrapMode(QtGui.QTextEdit.NoWrap)
 
+    #PySide Bug : The type of e is QEvent instead of QKeyEvent
     def keyPressEvent(self, e):
-        for plugin in get_plugins_by_capability('beforeKeyPressEvent'):
-            plg = plugin()
-            plg.do_beforeKeyPressEvent(self,e)
-        QtGui.QTextEdit.keyPressEvent(self, e)
-        for plugin in get_plugins_by_capability('afterKeyPressEvent'):
-            plg = plugin()
-            plg.do_afterKeyPressEvent(self,e)
+        if e.type() == QtCore.QEvent.KeyPress:
+            print "let s go"
+            for plugin in get_plugins_by_capability('beforeKeyPressEvent'):
+                plg = plugin()
+                plg.do_beforeKeyPressEvent(self,e)
+            QtGui.QTextEdit.keyPressEvent(self, e)
+            for plugin in get_plugins_by_capability('afterKeyPressEvent'):
+                plg = plugin()
+                plg.do_afterKeyPressEvent(self,e)
 
     def closeEvent(self):
         print 'closeEvent called'
@@ -99,4 +104,38 @@ class Kht_Editor(QtGui.QTextEdit):
 
     def isModified(self):
         return self.document().isModified()
+
+    def unIndent(self):
+        maincursor = self.textCursor()
+        if not maincursor.hasSelection():
+            maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
+            line = str(self.document().findBlockByNumber(maincursor.blockNumber()).text().toUtf8())
+            whitespace = re.match(r"(\s{0,2})", line).group(1)
+            for i in range(len(whitespace)): #@UnusedVariable
+                maincursor.deleteChar()
+        else:
+            block = self.document().findBlock(maincursor.selectionStart())
+            while True:
+                whitespace = re.match(r"(\s{0,2})", str(block.text().toUtf8())).group(1)
+                cursor = self.textCursor() 
+                cursor.setPosition(block.position())
+                for i in range(len(whitespace)): #@UnusedVariable
+                    cursor.deleteChar()
+                if block.contains(maincursor.selectionEnd()):
+                    break
+                block = block.next()
+
+    def indent(self):
+		maincursor = self.textCursor()
+		if not maincursor.hasSelection():
+			maincursor.insertText("  ")
+		else:
+			block = self.document().findBlock(maincursor.selectionStart())
+			while True:
+				cursor = self.textCursor() 
+				cursor.setPosition(block.position())
+				cursor.insertText("  ")
+				if block.contains(maincursor.selectionEnd()):
+					break
+				block = block.next()
 

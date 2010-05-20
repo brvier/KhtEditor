@@ -109,7 +109,7 @@ class Frame(QAbstractKineticScroller, QScrollArea):
         if object in (self.edit, self.edit.viewport()):
             self.number_bar.update()
             return False
-        return QAbstractKineticScroller.eventFilter(object, event)
+        return QScrollArea.eventFilter(object, event)
 
     def getTextEdit(self):
         return self.edit

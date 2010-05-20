@@ -76,15 +76,15 @@ class Window(QtGui.QMainWindow):
         self.toolbar = self.addToolBar('Toolbar')
         self.tb_indent = QtGui.QAction(QtGui.QIcon('icons/tb_indent.png'), 'Indent', self)
         self.tb_indent.setShortcut('Ctrl+U')
-        self.connect(self.toolbar, QtCore.SIGNAL('triggered()'), self.do_indent)
+        self.connect(self.tb_indent, QtCore.SIGNAL('triggered()'), self.do_indent)
         self.toolbar.addAction(self.tb_indent)
         self.tb_unindent = QtGui.QAction(QtGui.QIcon('icons/tb_unindent.png'), 'Unindent', self)
         self.tb_unindent.setShortcut('Ctrl+I')
-        self.connect(self.toolbar, QtCore.SIGNAL('triggered()'), self.do_unindent)
+        self.connect(self.tb_unindent, QtCore.SIGNAL('triggered()'), self.do_unindent)
         self.toolbar.addAction(self.tb_unindent)
         self.tb_execute = QtGui.QAction(QtGui.QIcon.fromTheme('execute'), 'Execute', self)
         self.tb_execute.setShortcut('Ctrl+E')
-        self.connect(self.toolbar, QtCore.SIGNAL('triggered()'), self.do_execute)
+        self.connect(self.tb_execute, QtCore.SIGNAL('triggered()'), self.do_execute)
         self.toolbar.addAction(self.tb_execute)
 
     def setupFileMenu(self): 
@@ -108,11 +108,14 @@ class Window(QtGui.QMainWindow):
         self.parent.about(self)
         
     def do_indent(self):
-        print "do_indent"
+        self.editor.indent()
+
     def do_unindent(self):
-        print "do_unindent"
-    def do_execute(self,widget,*args):
+        self.editor.unIndent()
+        
+    def do_execute(self):
         print "execute"
+
     def closeEvent(self,widget,*args):
 #        print 'call editor close event'
         self.editor.closeEvent()
