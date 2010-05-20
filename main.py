@@ -2,14 +2,18 @@
 
 """KhtEditor a source code editor by Khertan : Welcome Window"""
 
+VERSION = '0.0.0'
+
 import sys
 import welcome_window
-from PyQt4 import QtCore, QtGui
+from PySide import QtCore, QtGui
 import editor_window
 
 class KhtEditor:
     def __init__(self):
       self.window_list = []
+      self.version = VERSION
+
       self.app = QtGui.QApplication(sys.argv)
       self.run()
 

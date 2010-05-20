@@ -4,15 +4,15 @@
 
 import sys
 import re
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import Qt
+from PySide import QtCore, QtGui
+from PySide.QtCore import Qt
 from plugins import init_plugin_system, get_plugins_by_capability
 import editor
 import editor_frame
 
 class Window(QtGui.QMainWindow):
     def __init__(self, parent):
-        super(QtGui.QMainWindow, self).__init__(None)
+        QtGui.QMainWindow.__init__(self,None)
         self.parent = parent
         
         self.setupFileMenu()

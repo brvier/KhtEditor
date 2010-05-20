@@ -1,6 +1,6 @@
-from PyQt4.QtGui import QScrollArea, QFrame, QWidget, QTextEdit, QHBoxLayout, QPainter, QFont
+from PySide.QtGui import QScrollArea, QFrame, QWidget, QTextEdit, QHBoxLayout, QPainter, QFont, QFontMetrics, QAbstractKineticScroller
 
-class Frame(QScrollArea):
+class Frame(QAbstractKineticScroller, QScrollArea):
 
     class NumberBar(QWidget):
 
@@ -20,7 +20,13 @@ class Frame(QScrollArea):
             Also, adjusts the width of the number bar if necessary.
             '''
             # The + 4 is used to compensate for the current line being bold.
-            width = self.fontMetrics().width(str(self.highest_line)) + 4
+
+            #QWidget.fontMetrics didn't exist on current 0.3.0 version of PySide
+            #binding. Just a work arround for the moment
+            #width = self.fontMetrics().width(str(self.highest_line)) + 4
+            #PySide Work Arround
+            width = QFontMetrics(self.font).width(str(self.highest_line)) + 4
+
             if self.width() != width:
                 self.setFixedWidth(width)
             QWidget.update(self, *args)
@@ -28,7 +34,11 @@ class Frame(QScrollArea):
         def paintEvent(self, event):
             contents_y = self.edit.verticalScrollBar().value()
             page_bottom = contents_y + self.edit.viewport().height()
-            font_metrics = self.fontMetrics()
+            #QWidget.fontMetrics didn't exist on current 0.3.0 version of PySide
+            #binding. Just a work arround for the moment
+            #font_metrics = self.fontMetrics()
+            #PySide Work Arround
+            font_metrics = QFontMetrics(self.font)
             current_block = self.edit.document().findBlock(self.edit.textCursor().position())
 
             painter = QPainter(self)
@@ -79,6 +89,7 @@ class Frame(QScrollArea):
 
         self.edit = editor
         self.setProperty("fingerScrollable", True)     
+        self.setProperty("kineticScroller", True)
 
         self.number_bar = self.NumberBar()
         self.number_bar.setTextEdit(self.edit)
@@ -98,7 +109,7 @@ class Frame(QScrollArea):
         if object in (self.edit, self.edit.viewport()):
             self.number_bar.update()
             return False
-        return QScrollArea.eventFilter(object, event)
+        return QAbstractKineticScroller.eventFilter(object, event)
 
     def getTextEdit(self):
         return self.edit

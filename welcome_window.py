@@ -3,19 +3,20 @@
 """KhtEditor a source code editor by Khertan : Welcome Window"""
 
 import sys
-from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import Qt
+from PySide import QtCore, QtGui
+from PySide.QtCore import Qt
 import editor_window
 
 class WelcomeWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
-        super(QtGui.QMainWindow, self).__init__(None)
+        QtGui.QMainWindow.__init__(self,None)
         self.parent = parent
 
         self.setupMenu()
         self.setupMain()
 
         self.setCentralWidget(self.welcome_layout)
+ 	#TODO : Test if on maemo or not
         self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
         self.setWindowTitle("KhtEditor")
 
@@ -26,12 +27,16 @@ class WelcomeWindow(QtGui.QMainWindow):
         self.welcome_layout = QtGui.QWidget()
         self._layout = QtGui.QVBoxLayout()
         
-        self.label = QtGui.QLabel("KhtEditor")
+        self.label = QtGui.QLabel("KhtEditor Version "+self.parent.version)
+        self.label.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
+
         self._layout.addWidget(self.label)
 
         self._layout_button = QtGui.QHBoxLayout()        
         self.new_button = QtGui.QPushButton("New")
-        self.open_button = QtGui.QPushButton("9pen")
+        self.connect(self.new_button, QtCore.SIGNAL('clicked()'),self.parent.newFile)
+        self.open_button = QtGui.QPushButton("Open")
+        self.connect(self.open_button, QtCore.SIGNAL('clicked()'),self.parent.openFile)
         self._layout_button.addWidget(self.new_button)
         self._layout_button.addWidget(self.open_button)
         self._layout.addLayout(self._layout_button)
