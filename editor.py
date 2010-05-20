@@ -4,8 +4,8 @@
 
 import sys
 import re
-from PySide import QtCore, QtGui
-from PySide.QtCore import Qt
+from PyQt4 import QtCore, QtGui
+from PyQt4.QtCore import Qt
 from plugins import init_plugin_system, get_plugins_by_capability
 
 class Kht_Editor(QtGui.QTextEdit):
@@ -22,8 +22,9 @@ class Kht_Editor(QtGui.QTextEdit):
         self.kineticScroller = True
 #        self.setProperty("FingerScrollable", True)
 #        self.setProperty("kineticScroller", True) 
-#        scroller = self.property("kineticScroller")
+        scroller = self.property("kineticScroller").toPyObject()
 #        scroller.setProperty("kineticScroller", True) 
+        scroller.setEnabled(True)
 #        self.setTextInteractionFlags(Qt.TextBrowserInteraction) 
 
         self.setLineWrapMode(QtGui.QTextEdit.NoWrap)

@@ -4,8 +4,8 @@
 
 import sys
 import re
-from PySide import QtCore, QtGui
-from PySide.QtCore import Qt
+from PyQt4 import QtCore, QtGui
+from PyQt4.QtCore import Qt
 from plugins import init_plugin_system, get_plugins_by_capability
 import editor
 import editor_frame

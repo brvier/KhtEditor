@@ -3,8 +3,8 @@
 """KhtEditor a source code editor by Khertan : Welcome Window"""
 
 import sys
-from PySide import QtCore, QtGui
-from PySide.QtCore import Qt
+from PyQt4 import QtCore, QtGui
+from PyQt4.QtCore import Qt
 import editor_window
 
 class WelcomeWindow(QtGui.QMainWindow):
