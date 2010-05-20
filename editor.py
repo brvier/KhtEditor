@@ -129,6 +129,7 @@ class Kht_Editor(QtGui.QTextEdit):
     def indent(self):
 		maincursor = self.textCursor()
 		if not maincursor.hasSelection():
+			maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
 			maincursor.insertText("  ")
 		else:
 			block = self.document().findBlock(maincursor.selectionStart())
