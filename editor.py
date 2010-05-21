@@ -32,7 +32,6 @@ class Kht_Editor(QtGui.QTextEdit):
     #PySide Bug : The type of e is QEvent instead of QKeyEvent
     def keyPressEvent(self, e):
         if e.type() == QtCore.QEvent.KeyPress:
-            print "let s go"
             for plugin in get_plugins_by_capability('beforeKeyPressEvent'):
                 plg = plugin()
                 plg.do_beforeKeyPressEvent(self,e)
@@ -42,7 +41,6 @@ class Kht_Editor(QtGui.QTextEdit):
                 plg.do_afterKeyPressEvent(self,e)
 
     def closeEvent(self):
-        print 'closeEvent called'
         if self.document().isModified() and \
            QtGui.QMessageBox.question(self,
                    "Text Editor - Unsaved Changes",

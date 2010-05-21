@@ -60,16 +60,16 @@ class Frame(QAbstractKineticScroller, QScrollArea):
 
                 # We want the line number for the selected line to be bold.
                 bold = False
-                if block == current_block:
-                    bold = True
-                    font = painter.font()
-                    font.setBold(True)
-                    painter.setFont(font)
+                #if block == current_block:
+                #    bold = True
+                #    font = painter.font()
+                #    font.setBold(True)
+                #    painter.setFont(font)
 
                 # Draw the line number right justified at the y position of the
                 # line. 3 is a magic padding number. drawText(x, y, text).
                 # 4 is a magic number for y under maemo
-                painter.drawText(self.width() - font_metrics.width(str(line_count)) - 3, round(position.y()) - contents_y + font_metrics.ascent() + 4, str(line_count))
+                painter.drawText(self.width() - font_metrics.width(str(line_count)) - 3, round(position.y()) - contents_y + font_metrics.ascent() + 18, str(line_count))
 
                 # Remove the bold style if it was set previously.
                 if bold:
@@ -101,7 +101,7 @@ class Frame(QAbstractKineticScroller, QScrollArea):
         hbox.addWidget(self.edit)
         self.setWidgetResizable(True)
         self.edit.installEventFilter(self)
-        self.edit.viewport().installEventFilter(self)
+#        self.edit.viewport().installEventFilter(self)
  
     def eventFilter(self, object, event):
         # Update the line numbers for all events on the text edit and the viewport.

@@ -20,7 +20,7 @@ class Window(QtGui.QMainWindow):
         self.setupEditor()
 
         self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
-        self.setCentralWidget(self.editor_frame)
+        self.setCentralWidget(self.editor)
 
 
     def fileSave(self):
@@ -67,7 +67,7 @@ class Window(QtGui.QMainWindow):
 
         self.editor = editor.Kht_Editor(self)
         self.editor.setFont(font)
-        self.editor_frame = editor_frame.Frame(self.editor)
+        #self.editor_frame = editor_frame.Frame(self.editor)
         self.setupToolBar()
         from syntax.python_highlighter import Highlighter
         self.highlighter = Highlighter(self.editor.document())

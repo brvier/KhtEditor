@@ -6,7 +6,7 @@ VERSION = '0.0.0'
 
 import sys
 import welcome_window
-from PySide import QtCore, QtGui
+from PyQt4 import QtCore, QtGui
 import editor_window
 
 class KhtEditor:
