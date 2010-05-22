@@ -36,6 +36,7 @@ class Window(QtGui.QMainWindow):
                         self.editor.fileName, "")
         if not fileName.isEmpty():
             self.editor.fileName = fileName
+            self.setWindowTitle(QtCore.QFileInfo(fileName).fileName())
             self.fileSave()
 
 #    def newFile(self):
@@ -74,6 +75,10 @@ class Window(QtGui.QMainWindow):
 
     def setupToolBar(self):
         self.toolbar = self.addToolBar('Toolbar')
+        self.tb_comment = QtGui.QAction(QtGui.QIcon.fromTheme('comment'), 'Comment', self)
+        #self.tb_comment.setShortcut('Ctrl+S')
+        self.connect(self.tb_comment, QtCore.SIGNAL('triggered()'), self.do_comment)
+        self.toolbar.addAction(self.tb_comment)
         self.tb_indent = QtGui.QAction(QtGui.QIcon('icons/tb_indent.png'), 'Indent', self)
         self.tb_indent.setShortcut('Ctrl+U')
         self.connect(self.tb_indent, QtCore.SIGNAL('triggered()'), self.do_indent)
@@ -82,10 +87,16 @@ class Window(QtGui.QMainWindow):
         self.tb_unindent.setShortcut('Ctrl+I')
         self.connect(self.tb_unindent, QtCore.SIGNAL('triggered()'), self.do_unindent)
         self.toolbar.addAction(self.tb_unindent)
+        self.tb_save = QtGui.QAction(QtGui.QIcon.fromTheme('save'), 'Save', self)
+        self.tb_save.setShortcut('Ctrl+S')
+        self.connect(self.tb_save, QtCore.SIGNAL('triggered()'), self.do_save)
+        self.toolbar.addAction(self.tb_save)
         self.tb_execute = QtGui.QAction(QtGui.QIcon.fromTheme('execute'), 'Execute', self)
         self.tb_execute.setShortcut('Ctrl+E')
         self.connect(self.tb_execute, QtCore.SIGNAL('triggered()'), self.do_execute)
         self.toolbar.addAction(self.tb_execute)
+        self.lineCount = QtGui.QLabel('Line 1/100')
+        self.toolbar.addWidget(self.lineCount)
 
     def setupFileMenu(self): 
         fileMenu = QtGui.QMenu(self.tr("&File"), self)
@@ -112,6 +123,12 @@ class Window(QtGui.QMainWindow):
 
     def do_unindent(self):
         self.editor.unIndent()
+        
+    def do_comment(self):
+        self.editor.comment()
+        
+    def do_save(self):
+        self.fileSave()
         
     def do_execute(self):
         print "execute"

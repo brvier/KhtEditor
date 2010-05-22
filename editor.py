@@ -138,4 +138,27 @@ class Kht_Editor(QtGui.QTextEdit):
 				if block.contains(maincursor.selectionEnd()):
 					break
 				block = block.next()
+				
+    def comment(self):
+        maincursor = self.textCursor()
+        if not maincursor.hasSelection():
+            maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
+            line = str(self.document().findBlockByNumber(maincursor.blockNumber()).text().toUtf8())
+            if line.startswith('#'):
+                maincursor.deleteChar()
+            else:
+                maincursor.insertText("#")
+        else:
+            block = self.document().findBlock(maincursor.selectionStart())
+            while True:
+                cursor = self.textCursor()                                     
+                cursor.setPosition(block.position())
 
+                if str(block.text().toUtf8()).startswith('#'):
+                    cursor.deleteChar()
+                else:
+                    cursor.insertText("#")
+
+                if block.contains(maincursor.selectionEnd()):
+                    break
+                block = block.next()
