@@ -183,7 +183,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         super(Highlighter, self).__init__(document)
         STYLES = {
         'preprocessor': self.format('darkMagenta'),
-        'keyword': self.format('orange'),
+        'keyword': self.format('darkOrange'),
         'special': self.format('darkMagenta'),
         'operator': self.format('darkMagenta'),
         'brace': self.format('darkGray'),
