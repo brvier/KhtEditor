@@ -18,16 +18,19 @@ class Kht_Editor(QtGui.QTextEdit):
         self.document().setModified(False)
 
         parent.setWindowTitle(self.fileName)
-        print self.dynamicPropertyNames()
+        #Set kinetic scrollingly 
         self.kineticScroller = True
-#        self.setProperty("FingerScrollable", True)
-#        self.setProperty("kineticScroller", True) 
         scroller = self.property("kineticScroller").toPyObject()
-#        scroller.setProperty("kineticScroller", True) 
         scroller.setEnabled(True)
-#        self.setTextInteractionFlags(Qt.TextBrowserInteraction) 
 
+        #Set no wrap
         self.setLineWrapMode(QtGui.QTextEdit.NoWrap)
+
+        #Remove auto capitalization
+        inputMode = self.inputContext().property('inputMode').toPyObject()
+#        print type(inputMode),dir(inputMode)
+#        self.inputContext().setInputMode(1)
+#        print self.inputContext().property('inputMode'), dir(self.inputContext())
 
     #PySide Bug : The type of e is QEvent instead of QKeyEvent
     def keyPressEvent(self, e):

@@ -9,6 +9,9 @@ from PyQt4.QtCore import Qt
 from plugins import init_plugin_system, get_plugins_by_capability
 import editor
 import editor_frame
+from subprocess import *
+import commands
+import os
 
 class Window(QtGui.QMainWindow):
     def __init__(self, parent):
@@ -148,7 +151,23 @@ class Window(QtGui.QMainWindow):
         
     def do_execute(self):
         print "execute"
-
+        #ask for save if unsaved
+        self.fileSave()
+    
+        if self.editor.fileName != None:
+#          note = osso.SystemNote(self._parent.context)
+#          result = note.system_note_infoprint("Launching "+ self.filepath +" ...")
+    
+          fileHandle = open('/tmp/khteditor.tmp', 'w')
+          fileHandle.write('#!/bin/sh\n')
+          fileHandle.write('cd '+os.path.dirname(str(self.editor.fileName))+' \n')
+          fileHandle.write("python \'"+self.editor.fileName + "\'\n")
+          fileHandle.write('read -p "Press ENTER to continue ..." foo')
+          fileHandle.write('\nexit')
+          fileHandle.close()
+          commands.getoutput("chmod 777 /tmp/khteditor.tmp")
+          Popen('/usr/bin/osso-xterm /tmp/khteditor.tmp',shell=True,stdout=None)
+    
     def lineCountUpdate(self):
         cursor = self.editor.textCursor()
         self.lineCount.setText("L.%d C.%d" % (cursor.blockNumber()+1,cursor.columnNumber()+1))

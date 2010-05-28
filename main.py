@@ -3,7 +3,7 @@
 
 """KhtEditor a source code editor by Khertan : Welcome Window"""
 
-VERSION = '0.0.0'
+VERSION = '0.0.1'
 
 import sys
 import welcome_window
@@ -30,7 +30,8 @@ class KhtEditor:
         #        ("<p><b>KhtEditor</b> is a source code editor "
         #                "Mainly designed for Maemo and Meego.</p>"))
         aboutWin = QtGui.QMainWindow(widget)
-        aboutWin.setAttribute(Qt.WA_Maemo5StackedWindow)
+        aboutWin.setAttribute(Qt.WA_Maemo5StackedWindow, True)
+        aboutWin.setAttribute(Qt.WA_Maemo5AutoOrientation, True)
         aboutLabel = QtGui.QLabel('<center><b>KhtEditor</b> %s<br><br>A source code editor designed for ease of use on small screen<br><br>By Beno&icirc;t HERVIER (Khertan) </center>' % self.version)
         aboutWin.setWindowTitle('About KhtEditor')
         aboutWin.setCentralWidget(aboutLabel)
