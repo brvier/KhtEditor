@@ -27,7 +27,8 @@ class Kht_Editor(QtGui.QTextEdit):
         self.setLineWrapMode(QtGui.QTextEdit.NoWrap)
 
         #Remove auto capitalization
-        inputMode = self.inputContext().property('inputMode').toPyObject()
+        self.setInputMethodHints(Qt.ImhNoAutoUppercase)
+#        inputMode = self.inputContext().property('inputMode').toPyObject()
 #        print type(inputMode),dir(inputMode)
 #        self.inputContext().setInputMode(1)
 #        print self.inputContext().property('inputMode'), dir(self.inputContext())
@@ -118,7 +119,7 @@ class Kht_Editor(QtGui.QTextEdit):
         else:
             block = self.document().findBlock(maincursor.selectionStart())
             while True:
-                whitespace = re.match(r"(\s{0,2})", str(block.text().toUtf8())).group(1)
+                whitespace = re.match(r"(\s{0,4})", str(block.text().toUtf8())).group(1)
                 cursor = self.textCursor() 
                 cursor.setPosition(block.position())
                 for i in range(len(whitespace)): #@UnusedVariable
@@ -131,13 +132,13 @@ class Kht_Editor(QtGui.QTextEdit):
 		maincursor = self.textCursor()
 		if not maincursor.hasSelection():
 			maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
-			maincursor.insertText("  ")
+			maincursor.insertText("    ")
 		else:
 			block = self.document().findBlock(maincursor.selectionStart())
 			while True:
 				cursor = self.textCursor() 
 				cursor.setPosition(block.position())
-				cursor.insertText("  ")
+				cursor.insertText("    ")
 				if block.contains(maincursor.selectionEnd()):
 					break
 				block = block.next()
