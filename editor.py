@@ -22,6 +22,8 @@ class Kht_Editor(QtGui.QTextEdit):
         self.kineticScroller = True
         scroller = self.property("kineticScroller").toPyObject()
         scroller.setEnabled(True)
+        #scroller.setMode(1)
+        #scroller.setDecelerationFactor(0.90)
 
         #Set no wrap
         self.setLineWrapMode(QtGui.QTextEdit.NoWrap)
@@ -113,7 +115,7 @@ class Kht_Editor(QtGui.QTextEdit):
         if not maincursor.hasSelection():
             maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
             line = str(self.document().findBlockByNumber(maincursor.blockNumber()).text().toUtf8())
-            whitespace = re.match(r"(\s{0,2})", line).group(1)
+            whitespace = re.match(r"(\s{0,4})", line).group(1)
             for i in range(len(whitespace)): #@UnusedVariable
                 maincursor.deleteChar()
         else:

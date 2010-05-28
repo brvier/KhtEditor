@@ -18,6 +18,7 @@ class WelcomeWindow(QtGui.QMainWindow):
         self.setCentralWidget(self.welcome_layout)
  	#TODO : Test if on maemo or not
         self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
+        self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
         self.setWindowTitle("KhtEditor")
 
     def do_about(self):

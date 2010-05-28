@@ -8,7 +8,7 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
 from plugins import init_plugin_system, get_plugins_by_capability
 import editor
-import editor_frame
+#import editor_frame
 from subprocess import *
 import commands
 import os
@@ -23,6 +23,7 @@ class Window(QtGui.QMainWindow):
         self.setupEditor()
 
         self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
+        self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
         self.setCentralWidget(self.editor)
 
 
