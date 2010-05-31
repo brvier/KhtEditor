@@ -77,7 +77,7 @@ class KhtEditor:
     def openRecentFile(self, path=QtCore.QString()):
             editor_win=editor_window.Window(self)
             self.window_list.append(editor_win)
-            editor_win.loadFile(path)
+            editor_win.loadFile(path.text())
             editor_win.show()
             RecentFiles().append(path)
 

@@ -51,7 +51,7 @@ class WelcomeWindow(QtGui.QMainWindow):
     def setupMain(self):
         self.welcome_layout = QtGui.QWidget()
         self._layout = QtGui.QVBoxLayout()
-        
+        #self._layout.resize(800,800)
         self.label = QtGui.QLabel("KhtEditor Version "+self.parent.version)
         self.label.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
 
@@ -65,13 +65,18 @@ class WelcomeWindow(QtGui.QMainWindow):
         self._layout_button.addWidget(self.new_button)
         self._layout_button.addWidget(self.open_button)
         self._layout.addLayout(self._layout_button)
-#        self.layout().addItem(self._layout)
         self.welcome_layout.setLayout(self._layout)
         
-        for recentFile in RecentFiles().get():
-            recentFileButton = QtGui.QPushButton(recentFile)
-            self.connect(recentFileButton, QtCore.SIGNAL('clicked()'), Curry(self.parent.openRecentFile,recentFile))
+        recentfiles = RecentFiles().get()
+        for index in range(10):
+            recentFileButton = QtGui.QPushButton()
+            self.connect(recentFileButton, QtCore.SIGNAL('clicked()'), Curry(self.parent.openRecentFile,recentFileButton))
             self._layout.addWidget(recentFileButton)
+            try:
+                recentFileButton.setText(recentfiles[index])         
+            except:
+                recentFileButton.setDisabled(True)
+                 
 
     def setupMenu(self):
         fileMenu = QtGui.QMenu(self.tr("&Menu"), self)
