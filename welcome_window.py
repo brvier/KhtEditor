@@ -6,6 +6,30 @@ import sys
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
 import editor_window
+from recent_files import RecentFiles
+
+class Curry:
+  #keep a reference to all curried instances
+  #or they are immediately garbage collected
+  instances = []
+  def __init__(self, func, *args, **kwargs):
+    self.func = func
+    self.pending = args[:]
+    self.kwargs = kwargs.copy()
+    self.instances.append(self)
+ 
+  def __call__(self, *args, **kwargs):
+    kw = self.kwargs
+    kw.update(kwargs)
+    funcArgs = self.pending + args
+    #sometimes we want to limit the number of arguments that get passed,
+    #calling the constructor with the option __max_args__ = n will limit
+    #the function call args to the first n items
+    maxArgs = kw.get("__max_args__", -1)
+    if maxArgs != -1:
+        funcArgs = funcArgs[:maxArgs]
+        del kw["__max_args__"]
+    return self.func(*funcArgs, **kw)
 
 class WelcomeWindow(QtGui.QMainWindow):
     def __init__(self, parent=None):
@@ -43,6 +67,11 @@ class WelcomeWindow(QtGui.QMainWindow):
         self._layout.addLayout(self._layout_button)
 #        self.layout().addItem(self._layout)
         self.welcome_layout.setLayout(self._layout)
+        
+        for recentFile in RecentFiles().get():
+            recentFileButton = QtGui.QPushButton(recentFile)
+            self.connect(recentFileButton, QtCore.SIGNAL('clicked()'), Curry(self.parent.openRecentFile,recentFile))
+            self._layout.addWidget(recentFileButton)
 
     def setupMenu(self):
         fileMenu = QtGui.QMenu(self.tr("&Menu"), self)

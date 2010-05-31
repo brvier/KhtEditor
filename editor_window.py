@@ -58,7 +58,8 @@ class Window(QtGui.QMainWindow):
     def loadFile(self, fileName):
         self.editor.fileName = fileName
         try:
-            self.editor.load()
+            #self.editor.load()
+            QtCore.QTimer.singleShot(100, self.editor.load)
             self.setWindowTitle(QtCore.QFileInfo(self.editor.fileName).fileName())
         except (IOError, OSError), e:
             QtGui.QMessageBox.warning(self, "KhtEditor -- Load Error",
@@ -76,6 +77,7 @@ class Window(QtGui.QMainWindow):
         self.setupToolBar()
         from syntax.python_highlighter import Highlighter
         self.highlighter = Highlighter(self.editor.document())
+        self.connect(self.editor.document(),QtCore.SIGNAL('modificationChanged(bool)'),self.do_documentChanged)
 
     def setupToolBar(self):
         self.toolbar = self.addToolBar('Toolbar')
@@ -182,3 +184,10 @@ class Window(QtGui.QMainWindow):
             self.showMaximized()
         else:
             self.showFullScreen() 
+
+    def do_documentChanged(self,changed):
+        if changed == True:
+            self.setWindowTitle('*'+QtCore.QFileInfo(self.editor.fileName).fileName())
+        else:
+            self.setWindowTitle(QtCore.QFileInfo(self.editor.fileName).fileName())
+

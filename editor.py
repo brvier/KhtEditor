@@ -7,6 +7,7 @@ import re
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
 from plugins import init_plugin_system, get_plugins_by_capability
+from recent_files import RecentFiles
 
 class Kht_Editor(QtGui.QTextEdit):
     def __init__(self, parent=None, fileName=QtCore.QString('')):
@@ -78,6 +79,7 @@ class Kht_Editor(QtGui.QTextEdit):
             stream.setCodec("UTF-8")
             stream << self.toPlainText()
             self.document().setModified(False)
+            RecentFiles().append(self.fileName)
         except (IOError, OSError), e:
             exception = e
         finally:
