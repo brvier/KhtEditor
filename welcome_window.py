@@ -61,10 +61,11 @@ class WelcomeWindow(QtGui.QMainWindow):
     def setupMain(self):
 #        awidget.setMinimumSize(480,480)
         self.scrollArea = QtGui.QScrollArea(self)
+        self.scrollArea.setWidgetResizable(True)
         awidget = QtGui.QWidget(self.scrollArea)
         awidget.setMinimumSize(480,800)
-        awidget.setSizePolicy( QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Maximum)
-        self.scrollArea.setSizePolicy( QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Expanding)
+        awidget.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        self.scrollArea.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
    
 #        self.scrollArea.setMinimumHeight(800)
         scroller = self.scrollArea.property("kineticScroller").toPyObject()
