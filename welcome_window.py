@@ -3,7 +3,8 @@
 """KhtEditor a source code editor by Khertan : Welcome Window"""
 
 import sys
-from PyQt4 import QtCore, QtGui
+import os
+from PyQt4 import QtCore, QtGui, QtMaemo5
 from PyQt4.QtCore import Qt
 import editor_window
 from recent_files import RecentFiles
@@ -39,7 +40,7 @@ class WelcomeWindow(QtGui.QMainWindow):
         self.setupMenu()
         self.setupMain()
 
-        self.setCentralWidget(self.welcome_layout)
+        self.setCentralWidget(self.scrollArea)
  	#TODO : Test if on maemo or not
         self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
         self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
@@ -48,9 +49,29 @@ class WelcomeWindow(QtGui.QMainWindow):
     def do_about(self):
         self.parent.about(self)
 
+    def showEvent(self,event):
+        print 'showEvent'
+
+    def focusInEvent(self,event):
+        print 'focusInEvent'
+
+    def paintEvent(self,event):
+        print 'focusInEvent'
+
     def setupMain(self):
-        self.welcome_layout = QtGui.QWidget()
-        self._layout = QtGui.QVBoxLayout()
+#        awidget.setMinimumSize(480,480)
+        self.scrollArea = QtGui.QScrollArea(self)
+        awidget = QtGui.QWidget(self.scrollArea)
+        awidget.setMinimumSize(480,800)
+        awidget.setSizePolicy( QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Maximum)
+        self.scrollArea.setSizePolicy( QtGui.QSizePolicy.Ignored, QtGui.QSizePolicy.Expanding)
+   
+#        self.scrollArea.setMinimumHeight(800)
+        scroller = self.scrollArea.property("kineticScroller").toPyObject()
+        scroller.setEnabled(True)
+
+        self._layout = QtGui.QVBoxLayout(awidget)
+        
         #self._layout.resize(800,800)
         self.label = QtGui.QLabel("KhtEditor Version "+self.parent.version)
         self.label.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
@@ -65,15 +86,21 @@ class WelcomeWindow(QtGui.QMainWindow):
         self._layout_button.addWidget(self.new_button)
         self._layout_button.addWidget(self.open_button)
         self._layout.addLayout(self._layout_button)
-        self.welcome_layout.setLayout(self._layout)
-        
+#        self.scrollArea.setLayout(self._layout)
+#        awidget.setMinimumSize(800,800)
+        awidget.setLayout(self._layout)
+        self.scrollArea.setWidget(awidget)
         recentfiles = RecentFiles().get()
         for index in range(10):
-            recentFileButton = QtGui.QPushButton()
+            recentFileButton = QtMaemo5.QMaemo5ValueButton()
+            recentFileButton.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+            
+#            recentFileButton.setMinimumSize(200,480)
             self.connect(recentFileButton, QtCore.SIGNAL('clicked()'), Curry(self.parent.openRecentFile,recentFileButton))
             self._layout.addWidget(recentFileButton)
             try:
-                recentFileButton.setText(recentfiles[index])         
+                recentFileButton.setText(os.path.basename(str(recentfiles[index])))         
+                recentFileButton.setValueText(recentfiles[index])
             except:
                 recentFileButton.setDisabled(True)
                  

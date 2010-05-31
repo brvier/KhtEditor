@@ -20,7 +20,7 @@ class Kht_Editor(QtGui.QTextEdit):
 
         parent.setWindowTitle(self.fileName)
         #Set kinetic scrollingly 
-        self.kineticScroller = True
+#        self.kineticScroller = True
         scroller = self.property("kineticScroller").toPyObject()
         scroller.setEnabled(True)
         #scroller.setMode(1)

@@ -33,12 +33,12 @@ class KhtEditor:
       
       for arg in self.app.argv()[1:]:
           path = os.path.abspath(arg)
-          if os.path.isfile(arg):
+          if os.path.isfile(path):
               editor_win=editor_window.Window(self)
               self.window_list.append(editor_win)
-              editor_win.loadFile(QtCore.QString(arg))
+              editor_win.loadFile(QtCore.QString(path))
               editor_win.show()
-              RecentFiles().append(QtCore.QString(arg))
+              RecentFiles().append(QtCore.QString(path))
 
       sys.exit(self.app.exec_())
       
@@ -79,7 +79,7 @@ class KhtEditor:
             self.window_list.append(editor_win)
             editor_win.loadFile(path.text())
             editor_win.show()
-            RecentFiles().append(path)
+            RecentFiles().append(path.text())
 
 if __name__ == '__main__':
     KhtEditor()
