@@ -52,11 +52,28 @@ class WelcomeWindow(QtGui.QMainWindow):
     def showEvent(self,event):
         print 'showEvent'
 
+    def enterEvent(self,event):
+        print 'enterEvent'
+        self.refreshMain()
+
     def focusInEvent(self,event):
         print 'focusInEvent'
 
     def paintEvent(self,event):
-        print 'focusInEvent'
+        print 'paintEvent'
+        
+    def refreshMain(self):
+        recentfiles = RecentFiles().get()
+        print self._layout.count()
+        for index in range(self._layout.count()-3):
+            try:
+                recentFileButton = self._layout.itemAt(index+3).widget()
+                recentFileButton.setText(os.path.basename(str(recentfiles[index])))         
+                recentFileButton.setValueText(os.path.abspath(str(recentfiles[index])))
+            except StandardError, e:
+#                print e,type(recentFileButton),index,dir(recentFileButton)
+                recentFileButton.setDisabled(True)
+        
 
     def setupMain(self):
 #        awidget.setMinimumSize(480,480)
@@ -87,6 +104,12 @@ class WelcomeWindow(QtGui.QMainWindow):
         self._layout_button.addWidget(self.new_button)
         self._layout_button.addWidget(self.open_button)
         self._layout.addLayout(self._layout_button)
+
+        label = QtGui.QLabel("Recent Files")
+        label.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
+
+        self._layout.addWidget(label)
+
 #        self.scrollArea.setLayout(self._layout)
 #        awidget.setMinimumSize(800,800)
         awidget.setLayout(self._layout)
