@@ -2,7 +2,6 @@
 
 """KhtEditor a source code editor by Khertan : Code Editor"""
 
-import sys
 import re
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
@@ -12,7 +11,8 @@ from recent_files import RecentFiles
 class Kht_Editor(QtGui.QTextEdit):
     def __init__(self, parent=None, fileName=QtCore.QString('')):
         QtGui.QTextEdit.__init__(self,parent)
-        init_plugin_system({'plugin_path': './plugins', 'plugins': ['autoindent']})
+        init_plugin_system({'plugin_path': './plugins',
+                            'plugins': ['autoindent']})
         self.fileName = fileName
         if self.fileName.isEmpty():
             self.fileName = QtCore.QString("Unnamed.txt")
@@ -31,10 +31,6 @@ class Kht_Editor(QtGui.QTextEdit):
 
         #Remove auto capitalization
         self.setInputMethodHints(Qt.ImhNoAutoUppercase)
-#        inputMode = self.inputContext().property('inputMode').toPyObject()
-#        print type(inputMode),dir(inputMode)
-#        self.inputContext().setInputMode(1)
-#        print self.inputContext().property('inputMode'), dir(self.inputContext())
 
     #PySide Bug : The type of e is QEvent instead of QKeyEvent
     def keyPressEvent(self, e):
@@ -91,21 +87,21 @@ class Kht_Editor(QtGui.QTextEdit):
 
     def load(self):
         exception = None
-        fh = None
+        filehandle = None
         try:
-            fh = QtCore.QFile(self.fileName)
-            if not fh.open(QtCore.QIODevice.ReadOnly):
+            filehandle = QtCore.QFile(self.fileName)
+            if not filehandle.open(QtCore.QIODevice.ReadOnly):
                 raise IOError, unicode(fh.errorString())
-            stream = QtCore.QTextStream(fh)
+            stream = QtCore.QTextStream(filehandle)
             stream.setCodec("UTF-8")
             self.setPlainText(stream.readAll())
             self.document().setModified(False)
             self.setWindowTitle(QtCore.QFileInfo(self.fileName).fileName())
-        except (IOError, OSError), e:
-            exception = e
+        except (IOError, OSError), error:
+            exception = error
         finally:
-            if fh is not None:
-                fh.close()
+            if filehandle is not None:
+                filehandle.close()
             if exception is not None:
                 raise exception
 
@@ -116,14 +112,16 @@ class Kht_Editor(QtGui.QTextEdit):
         maincursor = self.textCursor()
         if not maincursor.hasSelection():
             maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
-            line = str(self.document().findBlockByNumber(maincursor.blockNumber()).text().toUtf8())
+            line = str(self.document().findBlockByNumber(maincursor\
+                                      .blockNumber()).text().toUtf8())
             whitespace = re.match(r"(\s{0,4})", line).group(1)
             for i in range(len(whitespace)): #@UnusedVariable
                 maincursor.deleteChar()
         else:
             block = self.document().findBlock(maincursor.selectionStart())
             while True:
-                whitespace = re.match(r"(\s{0,4})", str(block.text().toUtf8())).group(1)
+                whitespace = re.match(r"(\s{0,4})",
+                                str(block.text().toUtf8())).group(1)
                 cursor = self.textCursor() 
                 cursor.setPosition(block.position())
                 for i in range(len(whitespace)): #@UnusedVariable
@@ -133,25 +131,26 @@ class Kht_Editor(QtGui.QTextEdit):
                 block = block.next()
 
     def indent(self):
-		maincursor = self.textCursor()
-		if not maincursor.hasSelection():
-			maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
-			maincursor.insertText("    ")
-		else:
-			block = self.document().findBlock(maincursor.selectionStart())
-			while True:
-				cursor = self.textCursor() 
-				cursor.setPosition(block.position())
-				cursor.insertText("    ")
-				if block.contains(maincursor.selectionEnd()):
-					break
-				block = block.next()
-				
+        maincursor = self.textCursor()
+        if not maincursor.hasSelection():
+            maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
+            maincursor.insertText("    ")
+        else:
+            block = self.document().findBlock(maincursor.selectionStart())
+            while True:
+                cursor = self.textCursor() 
+                cursor.setPosition(block.position())
+                cursor.insertText("    ")
+                if block.contains(maincursor.selectionEnd()):
+                    break
+                block = block.next()
+
     def comment(self):
         maincursor = self.textCursor()
         if not maincursor.hasSelection():
             maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
-            line = str(self.document().findBlockByNumber(maincursor.blockNumber()).text().toUtf8())
+            line = str(self.document().\
+                 findBlockByNumber(maincursor.blockNumber()).text().toUtf8())
             if line.startswith('#'):
                 maincursor.deleteChar()
             else:
