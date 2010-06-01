@@ -13,6 +13,106 @@ from subprocess import *
 import commands
 import os
 
+class FindAndReplaceDlg(QtGui.QDialog):
+
+    def __init__(self, parent=None):
+        super(FindAndReplaceDlg, self).__init__(parent)
+
+        findLabel = QtGui.QLabel("Find &what:")
+        self.findLineEdit = QtGui.QLineEdit()
+        findLabel.setBuddy(self.findLineEdit)
+        replaceLabel = QtGui.QLabel("Replace w&ith:")
+        self.replaceLineEdit = QtGui.QLineEdit()
+        replaceLabel.setBuddy(self.replaceLineEdit)
+        self.caseCheckBox = QtGui.QCheckBox("&Case sensitive")
+        self.wholeCheckBox = QtGui.QCheckBox("Wh&ole words")
+        self.wholeCheckBox.setChecked(True)
+        moreFrame = QtGui.QFrame()
+        moreFrame.setFrameStyle(QtGui.QFrame.StyledPanel|QtGui.QFrame.Sunken)
+        self.backwardsCheckBox = QtGui.QCheckBox("Search &Backwards")
+        self.regexCheckBox = QtGui.QCheckBox("Regular E&xpression")
+        self.ignoreNotesCheckBox = QtGui.QCheckBox("Ignore foot&notes "
+                                             "and endnotes")
+        line = QtGui.QFrame()
+        line.setFrameStyle(QtGui.QFrame.VLine|QtGui.QFrame.Sunken)
+        self.findButton = QtGui.QPushButton("&Find")
+        self.replaceButton = QtGui.QPushButton("&Replace")
+        closeButton = QtGui.QPushButton("Close")
+        moreButton = QtGui.QPushButton("&More")
+        moreButton.setCheckable(True)
+        
+        self.findButton.setFocusPolicy(Qt.NoFocus)
+        self.replaceButton.setFocusPolicy(Qt.NoFocus)
+        closeButton.setFocusPolicy(Qt.NoFocus)
+        moreButton.setFocusPolicy(Qt.NoFocus)
+
+        gridLayout = QtGui.QGridLayout()
+        gridLayout.addWidget(findLabel, 0, 0)
+        gridLayout.addWidget(self.findLineEdit, 0, 1)
+        gridLayout.addWidget(replaceLabel, 1, 0)
+        gridLayout.addWidget(self.replaceLineEdit, 1, 1)
+        frameLayout = QtGui.QVBoxLayout()
+        frameLayout.addWidget(self.backwardsCheckBox)
+        frameLayout.addWidget(self.regexCheckBox)
+        frameLayout.addWidget(self.ignoreNotesCheckBox)
+        moreFrame.setLayout(frameLayout)
+        leftLayout = QtGui.QVBoxLayout()
+        leftLayout.addLayout(gridLayout)
+        leftLayout.addWidget(self.caseCheckBox)
+        leftLayout.addWidget(self.wholeCheckBox)
+        leftLayout.addWidget(moreFrame)
+        buttonLayout = QtGui.QVBoxLayout()
+        buttonLayout.addWidget(self.findButton)
+        buttonLayout.addWidget(self.replaceButton)
+        buttonLayout.addWidget(closeButton)
+        buttonLayout.addWidget(moreButton)
+        buttonLayout.addStretch()
+        mainLayout = QtGui.QHBoxLayout()
+        mainLayout.addLayout(leftLayout)
+        mainLayout.addWidget(line)
+        mainLayout.addLayout(buttonLayout)
+        self.setLayout(mainLayout)
+
+        moreFrame.hide()
+        mainLayout.setSizeConstraint(QtGui.QLayout.SetFixedSize)
+ 
+        self.connect(moreButton, QtCore.SIGNAL("toggled(bool)"),
+                     moreFrame, QtCore.SLOT("setVisible(bool)"))
+        self.connect(self.findLineEdit, QtCore.SIGNAL("textEdited(QString)"),
+                     self.updateUi)
+        self.connect(self.findButton, QtCore.SIGNAL("clicked()"),
+                     self.findClicked)
+        self.connect(self.replaceButton, QtCore.SIGNAL("clicked()"),
+                     self.replaceClicked)
+
+        self.updateUi()
+        self.setWindowTitle("Find and Replace")
+        
+
+    def findClicked(self):
+        self.emit(QtCore.SIGNAL("find"), self.findLineEdit.text(),
+                self.caseCheckBox.isChecked(),
+                self.wholeCheckBox.isChecked(),
+                self.backwardsCheckBox.isChecked(),
+                self.regexCheckBox.isChecked(),
+                self.ignoreNotesCheckBox.isChecked())
+        
+        
+    def replaceClicked(self):
+        self.emit(QtCore.SIGNAL("replace"), self.findLineEdit.text(),
+                self.replaceLineEdit.text(),
+                self.caseCheckBox.isChecked(),
+                self.wholeCheckBox.isChecked(),
+                self.backwardsCheckBox.isChecked(),
+                self.regexCheckBox.isChecked(),
+                self.ignoreNotesCheckBox.isChecked())
+        
+
+    def updateUi(self):
+        enable = not self.findLineEdit.text().isEmpty()
+        self.findButton.setEnabled(enable)
+        self.replaceButton.setEnabled(enable)
+
 class Window(QtGui.QMainWindow):
     def __init__(self, parent):
         QtGui.QMainWindow.__init__(self,None)
@@ -25,6 +125,9 @@ class Window(QtGui.QMainWindow):
         self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
         self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
         self.setCentralWidget(self.editor)
+        
+        self.findAndReplace = FindAndReplaceDlg()
+
 
 
     def fileSave(self):
@@ -89,6 +192,7 @@ class Window(QtGui.QMainWindow):
         saveIcon = QtGui.QIcon.fromTheme("notes_save")
         fullscreenIcon = QtGui.QIcon.fromTheme("general_fullsize")
         executeIcon = QtGui.QIcon.fromTheme("general_forward")
+        findIcon = QtGui.QIcon.fromTheme("general_search")
   
 #        for path in commentIcon.themeSearchPaths():
 #            print path
@@ -108,6 +212,10 @@ class Window(QtGui.QMainWindow):
         self.tb_unindent.setShortcut('Ctrl+I')
         self.connect(self.tb_unindent, QtCore.SIGNAL('triggered()'), self.do_unindent)
         self.toolbar.addAction(self.tb_unindent)
+        self.tb_find = QtGui.QAction(findIcon, 'Find', self)
+        self.tb_find.setShortcut('Ctrl+F')
+        self.connect(self.tb_find, QtCore.SIGNAL('triggered()'), self.do_find)
+        self.toolbar.addAction(self.tb_find)
         self.tb_save = QtGui.QAction(saveIcon, 'Save', self)
         self.tb_save.setShortcut('Ctrl+S')
         self.connect(self.tb_save, QtCore.SIGNAL('triggered()'), self.do_save)
@@ -151,6 +259,10 @@ class Window(QtGui.QMainWindow):
         
     def do_save(self):
         self.fileSave()
+        
+    def do_find(self):
+        self.findAndReplace.connect(self.findAndReplace, QtCore.SIGNAL("find"), self.editor.find)
+        self.findAndReplace.show()
         
     def do_execute(self):
         print "execute"

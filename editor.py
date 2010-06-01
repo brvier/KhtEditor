@@ -145,6 +145,10 @@ class Kht_Editor(QtGui.QTextEdit):
                     break
                 block = block.next()
 
+    def find(self, what, *args):
+        print "Find %s %s" % (what, [x for x in args])
+        self.document().FindWholeWord(what)
+
     def comment(self):
         maincursor = self.textCursor()
         if not maincursor.hasSelection():
@@ -169,3 +173,4 @@ class Kht_Editor(QtGui.QTextEdit):
                 if block.contains(maincursor.selectionEnd()):
                     break
                 block = block.next()
+                
