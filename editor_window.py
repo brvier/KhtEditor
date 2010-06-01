@@ -37,7 +37,7 @@ class Window(QtGui.QMainWindow):
     def saveAsFile(self):
         fileName = QtGui.QFileDialog.getSaveFileName(self,
                         "KhtEditor -- Save File As",
-                        self.editor.fileName, "")
+                        self.editor.fileName, "Python files (*.py *.pyw)")
         if not fileName.isEmpty():
             self.editor.fileName = fileName
             self.setWindowTitle(QtCore.QFileInfo(fileName).fileName())

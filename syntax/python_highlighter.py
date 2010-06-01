@@ -198,8 +198,8 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         # Multi-line strings (expression, flag, style)
         # FIXME: The triple-quotes in these two lines will mess up the
         # syntax highlighting from this point onward
-        self.tri_single = (QtCore.QRegExp(r"""'''(?!")"""), 1, STYLES['string2'])
         self.tri_double = (QtCore.QRegExp(r'''"""(?!')'''), 2, STYLES['string2'])
+        self.tri_single = (QtCore.QRegExp(r"""'''(?!")"""), 1, STYLES['string2'])
 
         rules = []
         rules += [(r'\b%s\b' % w, 0, STYLES['keyword']) for w in Highlighter.keywords]
@@ -263,8 +263,8 @@ class Highlighter(QtGui.QSyntaxHighlighter):
 
             # Do multi-line strings
             in_multiline = self.match_multiline(text, *self.tri_single)
-            if not in_multiline:
-                in_multiline = self.match_multiline(text, *self.tri_double)
+#            if not in_multiline:
+            in_multiline = self.match_multiline(text, *self.tri_double)
 
     def match_multiline(self, text, delimiter, in_state, style):
         """Do highlighting of multi-line strings. ``delimiter`` should be a
