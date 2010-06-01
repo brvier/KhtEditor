@@ -147,8 +147,26 @@ class Kht_Editor(QtGui.QTextEdit):
 
     def find(self, what, *args):
         print "Find %s %s" % (what, [x for x in args])
-        self.document().FindWholeWord(what)
+        #arg[0] -> QtGui.QTextDocument.FindCaseSensitively
+        #arg[1] -> QtGui.QTextDocument.FindWholeWords
+        #arg[2] -> QtGui.QTextDocument.FindBackward
+        #arg[3] -> QtGui.QTextDocument.RegEx
+        flags=QtGui.QTextDocument.FindFlags()
+        if args[0]:
+            flags=flags|QtGui.QTextDocument.FindCaseSensitively
+        if args[1]:
+            flags=flags|QtGui.QTextDocument.FindWholeWords
+        if args[2]:
+            flags=flags|QtGui.QTextDocument.FindBackward
 
+        if args[3]==False:
+            cursor = self.document().find(what,self.textCursor(),flags)
+        else:
+            cursor = self.document().find(what,self.textCursor(),flags)            
+
+        if not cursor.isNull():
+            self.setTextCursor(cursor)
+            
     def comment(self):
         maincursor = self.textCursor()
         if not maincursor.hasSelection():

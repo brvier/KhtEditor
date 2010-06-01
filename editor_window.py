@@ -31,41 +31,54 @@ class FindAndReplaceDlg(QtGui.QDialog):
         moreFrame.setFrameStyle(QtGui.QFrame.StyledPanel|QtGui.QFrame.Sunken)
         self.backwardsCheckBox = QtGui.QCheckBox("Search &Backwards")
         self.regexCheckBox = QtGui.QCheckBox("Regular E&xpression")
-        self.ignoreNotesCheckBox = QtGui.QCheckBox("Ignore foot&notes "
-                                             "and endnotes")
+#        self.ignoreNotesCheckBox = QtGui.QCheckBox("Ignore foot&notes "
+#                                             "and endnotes")
         line = QtGui.QFrame()
         line.setFrameStyle(QtGui.QFrame.VLine|QtGui.QFrame.Sunken)
         self.findButton = QtGui.QPushButton("&Find")
         self.replaceButton = QtGui.QPushButton("&Replace")
-        closeButton = QtGui.QPushButton("Close")
-        moreButton = QtGui.QPushButton("&More")
-        moreButton.setCheckable(True)
+#        closeButton = QtGui.QPushButton("Close")
+#        moreButton = QtGui.QPushButton("&More")
+#        moreButton.setCheckable(True)
         
         self.findButton.setFocusPolicy(Qt.NoFocus)
         self.replaceButton.setFocusPolicy(Qt.NoFocus)
-        closeButton.setFocusPolicy(Qt.NoFocus)
-        moreButton.setFocusPolicy(Qt.NoFocus)
+#        closeButton.setFocusPolicy(Qt.NoFocus)
+#        moreButton.setFocusPolicy(Qt.NoFocus)
 
         gridLayout = QtGui.QGridLayout()
+#        gridLayout.addWidget(findLabel, 0, 0)
+#        gridLayout.addWidget(self.findLineEdit, 0, 1)
+#        gridLayout.addWidget(replaceLabel, 1, 0)
+#        gridLayout.addWidget(self.replaceLineEdit, 1, 1)
+#        frameLayout = QtGui.QVBoxLayout()
+#        frameLayout.addWidget(self.backwardsCheckBox)
+#        frameLayout.addWidget(self.regexCheckBox)
+#        frameLayout.addWidget(self.ignoreNotesCheckBox)
+#        moreFrame.setLayout(frameLayout)
+        leftLayout = QtGui.QVBoxLayout()
+#        gridLayout.addWidget(findLabel, 0, 0, 0, 0)
+#        gridLayout.addWidget(self.findLineEdit, 0, 1, 0, 3)
+#        gridLayout.addWidget(replaceLabel, 1, 0, 1, 0)
+#        gridLayout.addWidget(self.replaceLineEdit, 1, 1, 1, 3)
+#        gridLayout.addWidget(self.caseCheckBox, 2, 0, 2, 1)
+#        gridLayout.addWidget(self.wholeCheckBox, 2, 2, 2, 3)
+#        gridLayout.addWidget(self.backwardsCheckBox, 3, 0, 3, 1)
+#        gridLayout.addWidget(self.regexCheckBox, 3, 2, 3, 3)
         gridLayout.addWidget(findLabel, 0, 0)
         gridLayout.addWidget(self.findLineEdit, 0, 1)
         gridLayout.addWidget(replaceLabel, 1, 0)
         gridLayout.addWidget(self.replaceLineEdit, 1, 1)
-        frameLayout = QtGui.QVBoxLayout()
-        frameLayout.addWidget(self.backwardsCheckBox)
-        frameLayout.addWidget(self.regexCheckBox)
-        frameLayout.addWidget(self.ignoreNotesCheckBox)
-        moreFrame.setLayout(frameLayout)
-        leftLayout = QtGui.QVBoxLayout()
+        gridLayout.addWidget(self.caseCheckBox, 2, 0)
+        gridLayout.addWidget(self.wholeCheckBox, 2, 1)
+        gridLayout.addWidget(self.backwardsCheckBox, 3, 0)
+        gridLayout.addWidget(self.regexCheckBox, 3,1)
         leftLayout.addLayout(gridLayout)
-        leftLayout.addWidget(self.caseCheckBox)
-        leftLayout.addWidget(self.wholeCheckBox)
-        leftLayout.addWidget(moreFrame)
         buttonLayout = QtGui.QVBoxLayout()
         buttonLayout.addWidget(self.findButton)
         buttonLayout.addWidget(self.replaceButton)
-        buttonLayout.addWidget(closeButton)
-        buttonLayout.addWidget(moreButton)
+#        buttonLayout.addWidget(closeButton)
+#        buttonLayout.addWidget(moreButton)
         buttonLayout.addStretch()
         mainLayout = QtGui.QHBoxLayout()
         mainLayout.addLayout(leftLayout)
@@ -73,11 +86,11 @@ class FindAndReplaceDlg(QtGui.QDialog):
         mainLayout.addLayout(buttonLayout)
         self.setLayout(mainLayout)
 
-        moreFrame.hide()
+#        moreFrame.hide()
         mainLayout.setSizeConstraint(QtGui.QLayout.SetFixedSize)
  
-        self.connect(moreButton, QtCore.SIGNAL("toggled(bool)"),
-                     moreFrame, QtCore.SLOT("setVisible(bool)"))
+#        self.connect(moreButton, QtCore.SIGNAL("toggled(bool)"),
+#                     moreFrame, QtCore.SLOT("setVisible(bool)"))
         self.connect(self.findLineEdit, QtCore.SIGNAL("textEdited(QString)"),
                      self.updateUi)
         self.connect(self.findButton, QtCore.SIGNAL("clicked()"),
@@ -94,8 +107,8 @@ class FindAndReplaceDlg(QtGui.QDialog):
                 self.caseCheckBox.isChecked(),
                 self.wholeCheckBox.isChecked(),
                 self.backwardsCheckBox.isChecked(),
-                self.regexCheckBox.isChecked(),
-                self.ignoreNotesCheckBox.isChecked())
+                self.regexCheckBox.isChecked(),)
+        self.hide()
         
         
     def replaceClicked(self):
@@ -104,8 +117,8 @@ class FindAndReplaceDlg(QtGui.QDialog):
                 self.caseCheckBox.isChecked(),
                 self.wholeCheckBox.isChecked(),
                 self.backwardsCheckBox.isChecked(),
-                self.regexCheckBox.isChecked(),
-                self.ignoreNotesCheckBox.isChecked())
+                self.regexCheckBox.isChecked(),)
+        self.hide()
         
 
     def updateUi(self):
