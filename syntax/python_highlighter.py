@@ -148,6 +148,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         'repr',
         'round',
         'setattr',
+        'self',
         'slice',
         'staticmethod',
         'str',
@@ -191,13 +192,14 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         'string': self.format('green'),
         'string2': self.format('green'),
         'comment': self.format('red'),
+        'framework': self.format('blue'),
         }
 
         # Multi-line strings (expression, flag, style)
         # FIXME: The triple-quotes in these two lines will mess up the
         # syntax highlighting from this point onward
-        self.tri_single = (QtCore.QRegExp("'''"), 1, STYLES['string2'])
-        self.tri_double = (QtCore.QRegExp('"""'), 2, STYLES['string2'])
+        self.tri_single = (QtCore.QRegExp(r"""'''(?!")"""), 1, STYLES['string2'])
+        self.tri_double = (QtCore.QRegExp(r'''"""(?!')'''), 2, STYLES['string2'])
 
         rules = []
         rules += [(r'\b%s\b' % w, 0, STYLES['keyword']) for w in Highlighter.keywords]
@@ -205,22 +207,29 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         rules += [(r'\b%s\b' % w, 0, STYLES['special']) for w in Highlighter.specials]
         rules += [(r'%s' % o, 0, STYLES['operator']) for o in Highlighter.operators]
         rules += [(r'%s' % b, 0, STYLES['brace']) for b in Highlighter.braces]
+
         rules += [
-                # Double-quoted string, possibly containing escape sequences
-                (r'"[^"\\]*(\\.[^"\\]*)*"', 0, STYLES['string']),
-                # Single-quoted string, possibly containing escape sequences
-                (r"'[^'\\]*(\\.[^'\\]*)*'", 0, STYLES['string']),
+                # Framework PyQt
+                (r'\bPyQt4\b|\bQt?[A-Z][a-z]\w+\b',0,STYLES['framework']), 
                 # 'def' followed by an identifier
                 (r'\bdef\b\s*(\w+)', 1, STYLES['defclass']),
                 # 'class' followed by an identifier
                 (r'\bclass\b\s*(\w+)', 1, STYLES['defclass']),
+                # Double-quoted string, possibly containing escape sequences
+                #(r'"[^"\\]*(\\.[^"\\]*)*"', 0, STYLES['string']),
+                (r"""(:?"["]".*"["]"|'''.*''')""", 0, STYLES['string']),
+                # Single-quoted string, possibly containing escape sequences
+                #(r"'[^'\\]*(\\.[^'\\]*)*'", 0, STYLES['string']),
+                (r"""(?:'[^']*'|"[^"]*")""", 0, STYLES['string']),
                 # From '#' until a newline
                 (r'#[^\n]*', 0, STYLES['comment']),
         ]
 
         # Build a QRegExp for each pattern
         self.rules = [(QtCore.QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
-
+        self.rules[-2][0].setMinimal(True)
+        self.rules[-3][0].setMinimal(True)
+                
     def format(self,color, style=''):
         """Return a QTextCharFormat with the given attributes.
         """

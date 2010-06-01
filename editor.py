@@ -91,7 +91,7 @@ class Kht_Editor(QtGui.QTextEdit):
         try:
             filehandle = QtCore.QFile(self.fileName)
             if not filehandle.open(QtCore.QIODevice.ReadOnly):
-                raise IOError, unicode(fh.errorString())
+                raise IOError, unicode(filehandle.errorString())
             stream = QtCore.QTextStream(filehandle)
             stream.setCodec("UTF-8")
             self.setPlainText(stream.readAll())
