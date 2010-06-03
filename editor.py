@@ -145,12 +145,12 @@ class Kht_Editor(QtGui.QTextEdit):
                     break
                 block = block.next()
 
-    def find(self, what, *args):
-        print "Find %s %s" % (what, [x for x in args])
+    def replaceAll(self, what, new, *args):
         #arg[0] -> QtGui.QTextDocument.FindCaseSensitively
         #arg[1] -> QtGui.QTextDocument.FindWholeWords
         #arg[2] -> QtGui.QTextDocument.FindBackward
         #arg[3] -> QtGui.QTextDocument.RegEx
+        # Use flags for case match
         flags=QtGui.QTextDocument.FindFlags()
         if args[0]:
             flags=flags|QtGui.QTextDocument.FindCaseSensitively
@@ -159,10 +159,84 @@ class Kht_Editor(QtGui.QTextEdit):
         if args[2]:
             flags=flags|QtGui.QTextDocument.FindBackward
 
-        if args[3]==False:
-            cursor = self.document().find(what,self.textCursor(),flags)
+        # Beginning of undo block
+        pcursor=self.textCursor()
+        pcursor.beginEditBlock()
+    
+        #cursor at start as we replace from start
+        cursor = self.textCursor()
+        cursor.setPosition(0)
+        
+        # Replace all we can
+        while True:
+            # self is the QPlainTextEdit
+            if args[3]:
+                cursor=self.document().find(QtCore.QRegExp(what),cursor,flags)                
+            else:
+                cursor=self.document().find(what,cursor,flags)
+            if not cursor.isNull():
+                if cursor.hasSelection():
+                    cursor.insertText(new)
+                    print 'insertText %s' % (new,)
+                else:
+                    print 'no selection'
+            else:
+                break
+    
+        # Mark end of undo block
+        pcursor.endEditBlock()
+        
+    def replace(self, what, new, *args):
+        print "Replace %s %s %s" % (what, new, [x for x in args])        
+        #arg[0] -> QtGui.QTextDocument.FindCaseSensitively
+        #arg[1] -> QtGui.QTextDocument.FindWholeWords
+        #arg[2] -> QtGui.QTextDocument.FindBackward
+        #arg[3] -> QtGui.QTextDocument.RegEx
+        # Use flags for case match
+        flags=QtGui.QTextDocument.FindFlags()
+        if args[0]:
+            flags=flags|QtGui.QTextDocument.FindCaseSensitively
+        if args[1]:
+            flags=flags|QtGui.QTextDocument.FindWholeWords
+        if args[2]:
+            flags=flags|QtGui.QTextDocument.FindBackward
+
+        # Beginning of undo block
+        pcursor=self.textCursor()
+        pcursor.beginEditBlock()
+    
+        # Replace
+        # self is the QPlainTextEdit
+        if args[3]:
+            cursor=self.document().find(QtCore.QRegExp(what),self.textCursor(),flags)                
         else:
-            cursor = self.document().find(what,self.textCursor(),flags)            
+            cursor=self.document().find(what,self.textCursor(),flags)
+        if not cursor.isNull():
+            if cursor.hasSelection():
+                cursor.insertText(new)
+    
+        # Mark end of undo block
+        pcursor.endEditBlock()
+        
+    def find(self, what, *args):
+        print "Find %s %s" % (what, [x for x in args])
+        #arg[0] -> QtGui.QTextDocument.FindCaseSensitively
+        #arg[1] -> QtGui.QTextDocument.FindWholeWords
+        #arg[2] -> QtGui.QTextDocument.FindBackward
+        #arg[3] -> QtGui.QTextDocument.RegEx
+        # Use flags for case match
+        flags=QtGui.QTextDocument.FindFlags()
+        if args[0]:
+            flags=flags|QtGui.QTextDocument.FindCaseSensitively
+        if args[1]:
+            flags=flags|QtGui.QTextDocument.FindWholeWords
+        if args[2]:
+            flags=flags|QtGui.QTextDocument.FindBackward
+
+        if args[3]:
+            cursor = self.document().find(QtCore.QRegExp(what),self.textCursor(),flags)
+        else:
+            cursor = self.document().find(what,self.textCursor(),flags)
 
         if not cursor.isNull():
             self.setTextCursor(cursor)

@@ -20,13 +20,17 @@ class FindAndReplaceDlg(QtGui.QDialog):
 
         findLabel = QtGui.QLabel("Find &what:")
         self.findLineEdit = QtGui.QLineEdit()
+        #Remove auto capitalization
+        self.findLineEdit.setInputMethodHints(Qt.ImhNoAutoUppercase)
         findLabel.setBuddy(self.findLineEdit)
         replaceLabel = QtGui.QLabel("Replace w&ith:")
         self.replaceLineEdit = QtGui.QLineEdit()
+        #Remove auto capitalization
+        self.replaceLineEdit.setInputMethodHints(Qt.ImhNoAutoUppercase)
         replaceLabel.setBuddy(self.replaceLineEdit)
         self.caseCheckBox = QtGui.QCheckBox("&Case sensitive")
         self.wholeCheckBox = QtGui.QCheckBox("Wh&ole words")
-        self.wholeCheckBox.setChecked(True)
+#        self.wholeCheckBox.setChecked(True)
         moreFrame = QtGui.QFrame()
         moreFrame.setFrameStyle(QtGui.QFrame.StyledPanel|QtGui.QFrame.Sunken)
         self.backwardsCheckBox = QtGui.QCheckBox("Search &Backwards")
@@ -37,12 +41,14 @@ class FindAndReplaceDlg(QtGui.QDialog):
         line.setFrameStyle(QtGui.QFrame.VLine|QtGui.QFrame.Sunken)
         self.findButton = QtGui.QPushButton("&Find")
         self.replaceButton = QtGui.QPushButton("&Replace")
+        self.replaceAllButton = QtGui.QPushButton("&ReplaceAll")
 #        closeButton = QtGui.QPushButton("Close")
 #        moreButton = QtGui.QPushButton("&More")
 #        moreButton.setCheckable(True)
         
         self.findButton.setFocusPolicy(Qt.NoFocus)
         self.replaceButton.setFocusPolicy(Qt.NoFocus)
+        self.replaceAllButton.setFocusPolicy(Qt.NoFocus)
 #        closeButton.setFocusPolicy(Qt.NoFocus)
 #        moreButton.setFocusPolicy(Qt.NoFocus)
 
@@ -77,6 +83,7 @@ class FindAndReplaceDlg(QtGui.QDialog):
         buttonLayout = QtGui.QVBoxLayout()
         buttonLayout.addWidget(self.findButton)
         buttonLayout.addWidget(self.replaceButton)
+        buttonLayout.addWidget(self.replaceAllButton)
 #        buttonLayout.addWidget(closeButton)
 #        buttonLayout.addWidget(moreButton)
         buttonLayout.addStretch()
@@ -97,7 +104,8 @@ class FindAndReplaceDlg(QtGui.QDialog):
                      self.findClicked)
         self.connect(self.replaceButton, QtCore.SIGNAL("clicked()"),
                      self.replaceClicked)
-
+        self.connect(self.replaceAllButton, QtCore.SIGNAL("clicked()"),
+                     self.replaceAllClicked)
         self.updateUi()
         self.setWindowTitle("Find and Replace")
         
@@ -120,11 +128,20 @@ class FindAndReplaceDlg(QtGui.QDialog):
                 self.regexCheckBox.isChecked(),)
         self.hide()
         
+    def replaceAllClicked(self):
+        self.emit(QtCore.SIGNAL("replaceAll"), self.findLineEdit.text(),
+                self.replaceLineEdit.text(),
+                self.caseCheckBox.isChecked(),
+                self.wholeCheckBox.isChecked(),
+                self.backwardsCheckBox.isChecked(),
+                self.regexCheckBox.isChecked(),)
+        self.hide()        
 
     def updateUi(self):
         enable = not self.findLineEdit.text().isEmpty()
         self.findButton.setEnabled(enable)
         self.replaceButton.setEnabled(enable)
+        self.replaceAllButton.setEnabled(enable)        
 
 class Window(QtGui.QMainWindow):
     def __init__(self, parent):
@@ -275,6 +292,8 @@ class Window(QtGui.QMainWindow):
         
     def do_find(self):
         self.findAndReplace.connect(self.findAndReplace, QtCore.SIGNAL("find"), self.editor.find)
+        self.findAndReplace.connect(self.findAndReplace, QtCore.SIGNAL("replace"), self.editor.replace)
+        self.findAndReplace.connect(self.findAndReplace, QtCore.SIGNAL("replaceAll"), self.editor.replaceAll)
         self.findAndReplace.show()
         
     def do_execute(self):
