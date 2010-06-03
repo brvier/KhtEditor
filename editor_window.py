@@ -154,11 +154,18 @@ class Window(QtGui.QMainWindow):
 
         self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
         self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
+        
+#        self.area = QtGui.QScrollArea(self)
+#        self.area.setWidget(self.editor)
+#        self.area.setWidgetResizable(True)
+
+#        scroller = self.area.property("kineticScroller").toPyObject()
+#        scroller.setEnabled(True)
+
         self.setCentralWidget(self.editor)
         
         self.findAndReplace = FindAndReplaceDlg()
-
-
+        
 
     def fileSave(self):
         try:
@@ -166,6 +173,7 @@ class Window(QtGui.QMainWindow):
         except (IOError, OSError), e:
             QtGui.QMessageBox.warning(self, "KhtEditor -- Save Error",
                     "Failed to save %s: %s" % (self.fileName, e))
+
 
     def saveAsFile(self):
         fileName = QtGui.QFileDialog.getSaveFileName(self,
@@ -176,9 +184,6 @@ class Window(QtGui.QMainWindow):
             self.setWindowTitle(QtCore.QFileInfo(fileName).fileName())
             self.fileSave()
 
-#    def newFile(self):
-#        w = Window(self)
-#        w.show()
 
     def openFile(self, path=QtCore.QString()):
         filename = QtGui.QFileDialog.getOpenFileName(self,
@@ -223,9 +228,6 @@ class Window(QtGui.QMainWindow):
         fullscreenIcon = QtGui.QIcon.fromTheme("general_fullsize")
         executeIcon = QtGui.QIcon.fromTheme("general_forward")
         findIcon = QtGui.QIcon.fromTheme("general_search")
-  
-#        for path in commentIcon.themeSearchPaths():
-#            print path
 
         self.lineCount = QtGui.QLabel('L.1 C.1')                             
         self.toolbar.addWidget(self.lineCount)                                 
@@ -235,11 +237,11 @@ class Window(QtGui.QMainWindow):
         self.connect(self.tb_comment, QtCore.SIGNAL('triggered()'), self.do_comment)
         self.toolbar.addAction(self.tb_comment)
         self.tb_indent = QtGui.QAction(indentIcon, 'Indent', self)
-        self.tb_indent.setShortcut('Ctrl+U')
+        self.tb_indent.setShortcut('Ctrl+I')
         self.connect(self.tb_indent, QtCore.SIGNAL('triggered()'), self.do_indent)
         self.toolbar.addAction(self.tb_indent)
         self.tb_unindent = QtGui.QAction(unindentIcon, 'Unindent', self)
-        self.tb_unindent.setShortcut('Ctrl+I')
+        self.tb_unindent.setShortcut('Ctrl+U')
         self.connect(self.tb_unindent, QtCore.SIGNAL('triggered()'), self.do_unindent)
         self.toolbar.addAction(self.tb_unindent)
         self.tb_find = QtGui.QAction(findIcon, 'Find', self)
@@ -257,7 +259,18 @@ class Window(QtGui.QMainWindow):
         self.tb_fullscreen = QtGui.QAction(fullscreenIcon, 'Execute', self)          
         self.connect(self.tb_fullscreen, QtCore.SIGNAL('triggered()'), self.do_fullscreen)
         self.toolbar.addAction(self.tb_fullscreen)
-  
+
+        #Actions not in toolbar
+        self.tb_duplicate = QtGui.QAction('Duplicate', self)          
+        self.tb_duplicate.setShortcut('Ctrl+D')
+        self.connect(self.tb_duplicate, QtCore.SIGNAL('triggered()'), self.do_duplicate)
+        self.addAction(self.tb_duplicate)
+        self.tb_findagain = QtGui.QAction('Find Again', self)          
+        self.tb_findagain.setShortcut('Ctrl+G')
+        self.connect(self.tb_findagain, QtCore.SIGNAL('triggered()'), self.do_findagain)
+        self.addAction(self.tb_findagain)
+
+        
     def setupFileMenu(self): 
         fileMenu = QtGui.QMenu(self.tr("&File"), self)
         self.menuBar().addMenu(fileMenu)
@@ -289,6 +302,12 @@ class Window(QtGui.QMainWindow):
         
     def do_save(self):
         self.fileSave()
+        
+    def do_duplicate(self):
+        self.editor.duplicate()
+        
+    def do_findagain(self):
+        self.findAndReplace.findClicked()
         
     def do_find(self):
         self.findAndReplace.connect(self.findAndReplace, QtCore.SIGNAL("find"), self.editor.find)

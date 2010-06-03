@@ -23,8 +23,13 @@ class Kht_Editor(QtGui.QTextEdit):
 #        self.kineticScroller = True
         scroller = self.property("kineticScroller").toPyObject()
         scroller.setEnabled(True)
-        #scroller.setMode(1)
-        #scroller.setDecelerationFactor(0.90)
+#        scroller.setMode(0)
+#        scroller.setDecelerationFactor(0)
+#        scroller.setFastVelocityFactor(0)
+#        scroller.setMinimumVelocity(0)
+#        scroller.setDragInertia(0)
+#        scroller.setMaximumVelocity(0)
+#        scroller.setLowFrictionEnabled(True)
 
         #Set no wrap
         self.setLineWrapMode(QtGui.QTextEdit.NoWrap)
@@ -169,7 +174,7 @@ class Kht_Editor(QtGui.QTextEdit):
         
         # Replace all we can
         while True:
-            # self is the QPlainTextEdit
+            # self is the QTextEdit
             if args[3]:
                 cursor=self.document().find(QtCore.QRegExp(what),cursor,flags)                
             else:
@@ -206,7 +211,7 @@ class Kht_Editor(QtGui.QTextEdit):
         pcursor.beginEditBlock()
     
         # Replace
-        # self is the QPlainTextEdit
+        # self is the QTextEdit
         if args[3]:
             cursor=self.document().find(QtCore.QRegExp(what),self.textCursor(),flags)                
         else:
@@ -241,6 +246,49 @@ class Kht_Editor(QtGui.QTextEdit):
         if not cursor.isNull():
             self.setTextCursor(cursor)
             
+    def duplicate(self):
+        print 'Duplicate' 
+        maincursor = self.textCursor()
+        if not maincursor.hasSelection():
+            maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
+            line = str(self.document().\
+                 findBlockByNumber(maincursor.blockNumber()).text().toUtf8())
+            maincursor.movePosition(QtGui.QTextCursor.EndOfBlock)
+            maincursor.insertText('\n'+line)
+        else:
+            block = self.document().findBlock(maincursor.selectionStart())
+            line = QtCore.QString()
+            while True:
+                cursor = self.textCursor()                                     
+                cursor.setPosition(block.position())
+
+                line = line + '\n' + block.text()
+                
+                if block.contains(maincursor.selectionEnd()):
+                    break
+                block = block.next()
+            cursor.movePosition(QtGui.QTextCursor.EndOfBlock)
+            cursor.insertText(line)
+            
+#            maincursor.setPosition(maincursor.position(),QtGui.QTextCursor.KeepAnchor)
+#            maincursor.movePosition(QtGui.QTextCursor.EndOfBlock,QtGui.QTextCursor.KeepAnchor)
+#            line = maincursor.selectedText()
+#            maincursor.movePosition(QtGui.QTextCursor.EndOfBlock)
+#            
+#            line = QtCore.QString()
+#            while True:
+#                cursor = self.textCursor()                                     
+#                cursor.movePosition(QtGui.QTextCursor.StartOfBlock)
+#                line = line + '\n' + str(self.document().\
+#                    findBlockByNumber(cursor.blockNumber()).text().toUtf8())
+#                block = block.next()
+#
+#                if block.contains(maincursor.selectionEnd()):
+#                    break
+#                    
+#            cursor.movePosition(QtGui.QTextCursor.EndOfBlock)
+#            maincursor.insertText('\n'+line)
+        
     def comment(self):
         maincursor = self.textCursor()
         if not maincursor.hasSelection():
