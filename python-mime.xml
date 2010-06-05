@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info"
+           xmlns:osso="http://nokia.com/osso/mime-categories">
+  <mime-type type="text/python">
+
+         <comment>Python source file</comment>
+         <osso:category name="documents"/>
+         <magic priority="50">
+                <match type="string" value="Python" offset="0"/>
+
+         </magic>
+         <glob pattern="*.py"/>
+  </mime-type>
+</mime-info>
