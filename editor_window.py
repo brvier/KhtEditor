@@ -30,47 +30,22 @@ class FindAndReplaceDlg(QtGui.QDialog):
         replaceLabel.setBuddy(self.replaceLineEdit)
         self.caseCheckBox = QtGui.QCheckBox("&Case sensitive")
         self.wholeCheckBox = QtGui.QCheckBox("Wh&ole words")
-#        self.wholeCheckBox.setChecked(True)
         moreFrame = QtGui.QFrame()
         moreFrame.setFrameStyle(QtGui.QFrame.StyledPanel|QtGui.QFrame.Sunken)
         self.backwardsCheckBox = QtGui.QCheckBox("Search &Backwards")
         self.regexCheckBox = QtGui.QCheckBox("Regular E&xpression")
-#        self.ignoreNotesCheckBox = QtGui.QCheckBox("Ignore foot&notes "
-#                                             "and endnotes")
         line = QtGui.QFrame()
         line.setFrameStyle(QtGui.QFrame.VLine|QtGui.QFrame.Sunken)
         self.findButton = QtGui.QPushButton("&Find")
         self.replaceButton = QtGui.QPushButton("&Replace")
         self.replaceAllButton = QtGui.QPushButton("&ReplaceAll")
-#        closeButton = QtGui.QPushButton("Close")
-#        moreButton = QtGui.QPushButton("&More")
-#        moreButton.setCheckable(True)
         
         self.findButton.setFocusPolicy(Qt.NoFocus)
         self.replaceButton.setFocusPolicy(Qt.NoFocus)
         self.replaceAllButton.setFocusPolicy(Qt.NoFocus)
-#        closeButton.setFocusPolicy(Qt.NoFocus)
-#        moreButton.setFocusPolicy(Qt.NoFocus)
 
         gridLayout = QtGui.QGridLayout()
-#        gridLayout.addWidget(findLabel, 0, 0)
-#        gridLayout.addWidget(self.findLineEdit, 0, 1)
-#        gridLayout.addWidget(replaceLabel, 1, 0)
-#        gridLayout.addWidget(self.replaceLineEdit, 1, 1)
-#        frameLayout = QtGui.QVBoxLayout()
-#        frameLayout.addWidget(self.backwardsCheckBox)
-#        frameLayout.addWidget(self.regexCheckBox)
-#        frameLayout.addWidget(self.ignoreNotesCheckBox)
-#        moreFrame.setLayout(frameLayout)
         leftLayout = QtGui.QVBoxLayout()
-#        gridLayout.addWidget(findLabel, 0, 0, 0, 0)
-#        gridLayout.addWidget(self.findLineEdit, 0, 1, 0, 3)
-#        gridLayout.addWidget(replaceLabel, 1, 0, 1, 0)
-#        gridLayout.addWidget(self.replaceLineEdit, 1, 1, 1, 3)
-#        gridLayout.addWidget(self.caseCheckBox, 2, 0, 2, 1)
-#        gridLayout.addWidget(self.wholeCheckBox, 2, 2, 2, 3)
-#        gridLayout.addWidget(self.backwardsCheckBox, 3, 0, 3, 1)
-#        gridLayout.addWidget(self.regexCheckBox, 3, 2, 3, 3)
         gridLayout.addWidget(findLabel, 0, 0)
         gridLayout.addWidget(self.findLineEdit, 0, 1)
         gridLayout.addWidget(replaceLabel, 1, 0)
@@ -84,8 +59,6 @@ class FindAndReplaceDlg(QtGui.QDialog):
         buttonLayout.addWidget(self.findButton)
         buttonLayout.addWidget(self.replaceButton)
         buttonLayout.addWidget(self.replaceAllButton)
-#        buttonLayout.addWidget(closeButton)
-#        buttonLayout.addWidget(moreButton)
         buttonLayout.addStretch()
         mainLayout = QtGui.QHBoxLayout()
         mainLayout.addLayout(leftLayout)
@@ -93,11 +66,8 @@ class FindAndReplaceDlg(QtGui.QDialog):
         mainLayout.addLayout(buttonLayout)
         self.setLayout(mainLayout)
 
-#        moreFrame.hide()
         mainLayout.setSizeConstraint(QtGui.QLayout.SetFixedSize)
  
-#        self.connect(moreButton, QtCore.SIGNAL("toggled(bool)"),
-#                     moreFrame, QtCore.SLOT("setVisible(bool)"))
         self.connect(self.findLineEdit, QtCore.SIGNAL("textEdited(QString)"),
                      self.updateUi)
         self.connect(self.findButton, QtCore.SIGNAL("clicked()"),
@@ -148,6 +118,7 @@ class Window(QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self,None)
         self.parent = parent
         
+        self.findAndReplace = FindAndReplaceDlg()               
         self.setupFileMenu()
         self.setupHelpMenu()
         self.setupEditor()
@@ -164,7 +135,6 @@ class Window(QtGui.QMainWindow):
 
         self.setCentralWidget(self.editor)
         
-        self.findAndReplace = FindAndReplaceDlg()
         
 
     def fileSave(self):
@@ -172,16 +142,16 @@ class Window(QtGui.QMainWindow):
             self.editor.save()
         except (IOError, OSError), e:
             QtGui.QMessageBox.warning(self, "KhtEditor -- Save Error",
-                    "Failed to save %s: %s" % (self.fileName, e))
+                    "Failed to save %s: %s" % (self.filename, e))
 
 
     def saveAsFile(self):
-        fileName = QtGui.QFileDialog.getSaveFileName(self,
+        filename = QtGui.QFileDialog.getSaveFileName(self,
                         "KhtEditor -- Save File As",
-                        self.editor.fileName, "Python files (*.py *.pyw)")
-        if not fileName.isEmpty():
-            self.editor.fileName = fileName
-            self.setWindowTitle(QtCore.QFileInfo(fileName).fileName())
+                        self.editor.filename, "Python files (*.py *.pyw)")
+        if not filename.isEmpty():
+            self.editor.filename = filename
+            self.setWindowTitle(QtCore.QFileInfo(filename).fileName())
             self.fileSave()
 
 
@@ -193,12 +163,12 @@ class Window(QtGui.QMainWindow):
         return filename
 
 
-    def loadFile(self, fileName):
-        self.editor.fileName = fileName
+    def loadFile(self, filename):
+        self.editor.filename = filename
         try:
             #self.editor.load()
             QtCore.QTimer.singleShot(100, self.editor.load)
-            self.setWindowTitle(QtCore.QFileInfo(self.editor.fileName).fileName())
+            self.setWindowTitle(QtCore.QFileInfo(self.editor.filename).fileName())
         except (IOError, OSError), e:
             QtGui.QMessageBox.warning(self, "KhtEditor -- Load Error",
                     "Failed to load %s: %s" % (filename, e))
@@ -209,13 +179,14 @@ class Window(QtGui.QMainWindow):
         font.setFixedPitch(True)
         font.setPointSize(12)
 
-        self.editor = editor.Kht_Editor(self)
+        self.editor = editor.KhtTextEdit(self)
         self.editor.setFont(font)
         #self.editor_frame = editor_frame.Frame(self.editor)
         self.setupToolBar()
         from syntax.python_highlighter import Highlighter
         self.highlighter = Highlighter(self.editor.document())
-        self.connect(self.editor.document(),QtCore.SIGNAL('modificationChanged(bool)'),self.do_documentChanged)
+        self.connect(self.editor.document(),
+            QtCore.SIGNAL('modificationChanged(bool)'),self.do_documentChanged)
 
     def setupToolBar(self):
         self.toolbar = self.addToolBar('Toolbar')
@@ -231,18 +202,18 @@ class Window(QtGui.QMainWindow):
 
         self.lineCount = QtGui.QLabel('L.1 C.1')                             
         self.toolbar.addWidget(self.lineCount)                                 
-        self.connect(self.editor, QtCore.SIGNAL('cursorPositionChanged()'),self.lineCountUpdate)
+        self.connect(self.editor, 
+                QtCore.SIGNAL('cursorPositionChanged()'),self.lineCountUpdate)
         self.tb_comment = QtGui.QAction(commentIcon, 'Comment', self)
-        #self.tb_comment.setShortcut('Ctrl+S')
-        self.connect(self.tb_comment, QtCore.SIGNAL('triggered()'), self.do_comment)
+        self.connect(self.tb_comment, QtCore.SIGNAL('triggered()'), self.editor.comment)
         self.toolbar.addAction(self.tb_comment)
         self.tb_indent = QtGui.QAction(indentIcon, 'Indent', self)
         self.tb_indent.setShortcut('Ctrl+I')
-        self.connect(self.tb_indent, QtCore.SIGNAL('triggered()'), self.do_indent)
+        self.connect(self.tb_indent, QtCore.SIGNAL('triggered()'), self.editor.indent)
         self.toolbar.addAction(self.tb_indent)
         self.tb_unindent = QtGui.QAction(unindentIcon, 'Unindent', self)
         self.tb_unindent.setShortcut('Ctrl+U')
-        self.connect(self.tb_unindent, QtCore.SIGNAL('triggered()'), self.do_unindent)
+        self.connect(self.tb_unindent, QtCore.SIGNAL('triggered()'), self.editor.unindent)
         self.toolbar.addAction(self.tb_unindent)
         self.tb_find = QtGui.QAction(findIcon, 'Find', self)
         self.tb_find.setShortcut('Ctrl+F')
@@ -250,7 +221,7 @@ class Window(QtGui.QMainWindow):
         self.toolbar.addAction(self.tb_find)
         self.tb_save = QtGui.QAction(saveIcon, 'Save', self)
         self.tb_save.setShortcut('Ctrl+S')
-        self.connect(self.tb_save, QtCore.SIGNAL('triggered()'), self.do_save)
+        self.connect(self.tb_save, QtCore.SIGNAL('triggered()'), self.fileSave)
         self.toolbar.addAction(self.tb_save)
         self.tb_execute = QtGui.QAction(executeIcon, 'Execute', self)
         self.tb_execute.setShortcut('Ctrl+E')
@@ -263,11 +234,13 @@ class Window(QtGui.QMainWindow):
         #Actions not in toolbar
         self.tb_duplicate = QtGui.QAction('Duplicate', self)          
         self.tb_duplicate.setShortcut('Ctrl+D')
-        self.connect(self.tb_duplicate, QtCore.SIGNAL('triggered()'), self.do_duplicate)
+        self.connect(self.tb_duplicate,
+             QtCore.SIGNAL('triggered()'), self.editor.duplicate)
         self.addAction(self.tb_duplicate)
         self.tb_findagain = QtGui.QAction('Find Again', self)          
         self.tb_findagain.setShortcut('Ctrl+G')
-        self.connect(self.tb_findagain, QtCore.SIGNAL('triggered()'), self.do_findagain)
+        self.connect(self.tb_findagain,
+             QtCore.SIGNAL('triggered()'), self.findAndReplace.findClicked)
         self.addAction(self.tb_findagain)
 
         
@@ -291,28 +264,31 @@ class Window(QtGui.QMainWindow):
     def do_about(self):
         self.parent.about(self)
         
-    def do_indent(self):
-        self.editor.indent()
+#    def do_indent(self):
+#        self.editor.indent()
 
-    def do_unindent(self):
-        self.editor.unIndent()
+#    def do_unindent(self):
+#        self.editor.unindent()
         
-    def do_comment(self):
-        self.editor.comment()
+#    def do_comment(self):
+#        self.editor.comment()
         
-    def do_save(self):
-        self.fileSave()
+#    def do_save(self):
+#        self.fileSave()
         
-    def do_duplicate(self):
-        self.editor.duplicate()
+#    def do_duplicate(self):
+#        self.editor.duplicate()
         
-    def do_findagain(self):
-        self.findAndReplace.findClicked()
+#    def do_findagain(self):
+#        self.findAndReplace.findClicked()
         
     def do_find(self):
-        self.findAndReplace.connect(self.findAndReplace, QtCore.SIGNAL("find"), self.editor.find)
-        self.findAndReplace.connect(self.findAndReplace, QtCore.SIGNAL("replace"), self.editor.replace)
-        self.findAndReplace.connect(self.findAndReplace, QtCore.SIGNAL("replaceAll"), self.editor.replaceAll)
+        self.findAndReplace.connect(self.findAndReplace,
+                         QtCore.SIGNAL("find"), self.editor.find)
+        self.findAndReplace.connect(self.findAndReplace,
+                         QtCore.SIGNAL("replace"), self.editor.replace)
+        self.findAndReplace.connect(self.findAndReplace,
+                         QtCore.SIGNAL("replaceAll"), self.editor.replaceall)
         self.findAndReplace.show()
         
     def do_execute(self):
@@ -320,14 +296,11 @@ class Window(QtGui.QMainWindow):
         #ask for save if unsaved
         self.fileSave()
     
-        if self.editor.fileName != None:
-#          note = osso.SystemNote(self._parent.context)
-#          result = note.system_note_infoprint("Launching "+ self.filepath +" ...")
-    
+        if self.editor.filename != None:
           fileHandle = open('/tmp/khteditor.tmp', 'w')
           fileHandle.write('#!/bin/sh\n')
-          fileHandle.write('cd '+os.path.dirname(str(self.editor.fileName))+' \n')
-          fileHandle.write("python \'"+self.editor.fileName + "\'\n")
+          fileHandle.write('cd '+os.path.dirname(str(self.editor.filename))+' \n')
+          fileHandle.write("python \'"+self.editor.filename + "\'\n")
           fileHandle.write('read -p "Press ENTER to continue ..." foo')
           fileHandle.write('\nexit')
           fileHandle.close()
@@ -336,10 +309,10 @@ class Window(QtGui.QMainWindow):
     
     def lineCountUpdate(self):
         cursor = self.editor.textCursor()
-        self.lineCount.setText("L.%d C.%d" % (cursor.blockNumber()+1,cursor.columnNumber()+1))
+        self.lineCount.setText("L.%d C.%d" % (cursor.blockNumber()+1, 
+                                            cursor.columnNumber()+1))
         
     def closeEvent(self,widget,*args):
-#        print 'call editor close event'
         self.editor.closeEvent()
        
     def do_fullscreen(self):
@@ -350,7 +323,7 @@ class Window(QtGui.QMainWindow):
 
     def do_documentChanged(self,changed):
         if changed == True:
-            self.setWindowTitle('*'+QtCore.QFileInfo(self.editor.fileName).fileName())
+            self.setWindowTitle('*'+QtCore.QFileInfo(self.editor.filename).fileName())
         else:
-            self.setWindowTitle(QtCore.QFileInfo(self.editor.fileName).fileName())
+            self.setWindowTitle(QtCore.QFileInfo(self.editor.filename).fileName())
 

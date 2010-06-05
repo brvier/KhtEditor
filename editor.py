@@ -8,28 +8,28 @@ from PyQt4.QtCore import Qt
 from plugins import init_plugin_system, get_plugins_by_capability
 from recent_files import RecentFiles
 
-class Kht_Editor(QtGui.QTextEdit):
-    def __init__(self, parent=None, fileName=QtCore.QString('')):
-        QtGui.QTextEdit.__init__(self,parent)
+class KhtTextEdit(QtGui.QTextEdit):
+    """ Widget which handle all specifities of implemented in the editor"""
+        
+    def __init__(self, parent=None, filename=QtCore.QString('')):
+        """Initialization, can accept a filepath as argument"""
+        QtGui.QTextEdit.__init__(self, parent)
+        
+        #initialization init of plugin system
+        #Maybe be not the best place to do it ... 
         init_plugin_system({'plugin_path': './plugins',
                             'plugins': ['autoindent']})
-        self.fileName = fileName
-        if self.fileName.isEmpty():
-            self.fileName = QtCore.QString("Unnamed.txt")
+                            
+        #If we have a filename
+        self.filename = filename
+        if self.filename.isEmpty():
+            self.filename = QtCore.QString("Unnamed.txt")
         self.document().setModified(False)
-
-        parent.setWindowTitle(self.fileName)
-        #Set kinetic scrollingly 
-#        self.kineticScroller = True
+        parent.setWindowTitle(self.filename)
+        
+        #Maemo Finger Kinetic Scrolling
         scroller = self.property("kineticScroller").toPyObject()
         scroller.setEnabled(True)
-#        scroller.setMode(0)
-#        scroller.setDecelerationFactor(0)
-#        scroller.setFastVelocityFactor(0)
-#        scroller.setMinimumVelocity(0)
-#        scroller.setDragInertia(0)
-#        scroller.setMaximumVelocity(0)
-#        scroller.setLowFrictionEnabled(True)
 
         #Set no wrap
         self.setLineWrapMode(QtGui.QTextEdit.NoWrap)
@@ -38,70 +38,74 @@ class Kht_Editor(QtGui.QTextEdit):
         self.setInputMethodHints(Qt.ImhNoAutoUppercase)
 
     #PySide Bug : The type of e is QEvent instead of QKeyEvent
-    def keyPressEvent(self, e):
-        if e.type() == QtCore.QEvent.KeyPress:
+    def keyPressEvent(self, event):
+        """Intercept the key event to lets plugin do something if they want"""
+        if event.type() == QtCore.QEvent.KeyPress:
             for plugin in get_plugins_by_capability('beforeKeyPressEvent'):
                 plg = plugin()
-                plg.do_beforeKeyPressEvent(self,e)
-            QtGui.QTextEdit.keyPressEvent(self, e)
+                plg.do_beforeKeyPressEvent(self,event)
+            QtGui.QTextEdit.keyPressEvent(self, event)
             for plugin in get_plugins_by_capability('afterKeyPressEvent'):
                 plg = plugin()
-                plg.do_afterKeyPressEvent(self,e)
+                plg.do_afterKeyPressEvent(self,event)
 
     def closeEvent(self):
+        """Catch the close event and ask to save if document is modified"""
         if self.document().isModified() and \
            QtGui.QMessageBox.question(self,
                    "Text Editor - Unsaved Changes",
-                   "Save unsaved changes in %s?" % self.fileName,
+                   "Save unsaved changes in %s?" % self.filename,
                    QtGui.QMessageBox.Yes|QtGui.QMessageBox.No) == \
                 QtGui.QMessageBox.Yes:
             try:
                 self.save()
-            except (IOError, OSError), e:
+            except (IOError, OSError), ioError:
                 QtGui.QMessageBox.warning(self, "Text Editor -- Save Error",
-                        "Failed to save %s: %s" % (self.fileName, e))
+                        "Failed to save %s: %s" % (self.filename, ioError))
 
     def save(self):
-        if self.fileName.startsWith("Unnamed"):
-            fileName = QtGui.QFileDialog.getSaveFileName(self,
+        """Hum ... just save ..."""
+        if self.filename.startsWith("Unnamed"):
+            filename = QtGui.QFileDialog.getSaveFileName(self,
                             "Text Editor -- Save File As",
-                            self.fileName, "Text files (*.txt *.*)")
-            if fileName.isEmpty():
+                            self.filename, "Text files (*.txt *.*)")
+            if filename.isEmpty():
                 return
-            self.fileName = fileName
-        self.setWindowTitle(QtCore.QFileInfo(self.fileName).fileName())
+            self.filename = filename
+        self.setWindowTitle(QtCore.QFileInfo(self.filename).filename())
         exception = None
-        fh = None
+        filehandle = None
         try:
-            fh = QtCore.QFile(self.fileName)
-            if not fh.open(QtCore.QIODevice.WriteOnly):
-                raise IOError, unicode(fh.errorString())
-            stream = QtCore.QTextStream(fh)
+            filehandle = QtCore.QFile(self.filename)
+            if not filehandle.open(QtCore.QIODevice.WriteOnly):
+                raise IOError, unicode(filehandle.errorString())
+            stream = QtCore.QTextStream(filehandle)
             stream.setCodec("UTF-8")
             stream << self.toPlainText()
             self.document().setModified(False)
-            RecentFiles().append(self.fileName)
-        except (IOError, OSError), e:
-            exception = e
+            RecentFiles().append(self.filename)
+        except (IOError, OSError), ioError:
+            exception = ioError
         finally:
-            if fh is not None:
-                fh.close()
+            if filehandle is not None:
+                filehandle.close()
             if exception is not None:
                 raise exception
 
 
     def load(self):
+        """Load ?"""
         exception = None
         filehandle = None
         try:
-            filehandle = QtCore.QFile(self.fileName)
+            filehandle = QtCore.QFile(self.filename)
             if not filehandle.open(QtCore.QIODevice.ReadOnly):
                 raise IOError, unicode(filehandle.errorString())
             stream = QtCore.QTextStream(filehandle)
             stream.setCodec("UTF-8")
             self.setPlainText(stream.readAll())
             self.document().setModified(False)
-            self.setWindowTitle(QtCore.QFileInfo(self.fileName).fileName())
+            self.setWindowTitle(QtCore.QFileInfo(self.filename).filename())
         except (IOError, OSError), error:
             exception = error
         finally:
@@ -111,9 +115,11 @@ class Kht_Editor(QtGui.QTextEdit):
                 raise exception
 
     def isModified(self):
+        """Return True if the document is modified"""
         return self.document().isModified()
 
-    def unIndent(self):
+    def unindent(self):
+        """UnIndent the current selection or line"""
         maincursor = self.textCursor()
         if not maincursor.hasSelection():
             maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
@@ -136,6 +142,7 @@ class Kht_Editor(QtGui.QTextEdit):
                 block = block.next()
 
     def indent(self):
+        """Indent the current selection or line"""
         maincursor = self.textCursor()
         if not maincursor.hasSelection():
             maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
@@ -150,22 +157,24 @@ class Kht_Editor(QtGui.QTextEdit):
                     break
                 block = block.next()
 
-    def replaceAll(self, what, new, *args):
-        #arg[0] -> QtGui.QTextDocument.FindCaseSensitively
-        #arg[1] -> QtGui.QTextDocument.FindWholeWords
-        #arg[2] -> QtGui.QTextDocument.FindBackward
-        #arg[3] -> QtGui.QTextDocument.RegEx
+    def replace_all(self, what, new, *args):
+        """Replace all occurence of a search
+        arg[0] -> QtGui.QTextDocument.FindCaseSensitively
+        arg[1] -> QtGui.QTextDocument.FindWholeWords
+        arg[2] -> QtGui.QTextDocument.FindBackward
+        arg[3] -> QtGui.QTextDocument.RegEx
+        """
         # Use flags for case match
-        flags=QtGui.QTextDocument.FindFlags()
+        flags = QtGui.QTextDocument.FindFlags()
         if args[0]:
-            flags=flags|QtGui.QTextDocument.FindCaseSensitively
+            flags = flags|QtGui.QTextDocument.FindCaseSensitively
         if args[1]:
-            flags=flags|QtGui.QTextDocument.FindWholeWords
+            flags = flags|QtGui.QTextDocument.FindWholeWords
         if args[2]:
-            flags=flags|QtGui.QTextDocument.FindBackward
+            flags = flags|QtGui.QTextDocument.FindBackward
 
         # Beginning of undo block
-        pcursor=self.textCursor()
+        pcursor = self.textCursor()
         pcursor.beginEditBlock()
     
         #cursor at start as we replace from start
@@ -176,7 +185,8 @@ class Kht_Editor(QtGui.QTextEdit):
         while True:
             # self is the QTextEdit
             if args[3]:
-                cursor=self.document().find(QtCore.QRegExp(what),cursor,flags)                
+                cursor=self.document().find(QtCore.QRegExp(what),
+                                       cursor,flags)                
             else:
                 cursor=self.document().find(what,cursor,flags)
             if not cursor.isNull():
@@ -192,30 +202,32 @@ class Kht_Editor(QtGui.QTextEdit):
         pcursor.endEditBlock()
         
     def replace(self, what, new, *args):
-        print "Replace %s %s %s" % (what, new, [x for x in args])        
-        #arg[0] -> QtGui.QTextDocument.FindCaseSensitively
-        #arg[1] -> QtGui.QTextDocument.FindWholeWords
-        #arg[2] -> QtGui.QTextDocument.FindBackward
-        #arg[3] -> QtGui.QTextDocument.RegEx
+        """Replace the first occurence of a search
+        arg[0] -> QtGui.QTextDocument.FindCaseSensitively
+        arg[1] -> QtGui.QTextDocument.FindWholeWords
+        arg[2] -> QtGui.QTextDocument.FindBackward
+        arg[3] -> QtGui.QTextDocument.RegEx
+        """
         # Use flags for case match
-        flags=QtGui.QTextDocument.FindFlags()
+        flags = QtGui.QTextDocument.FindFlags()
         if args[0]:
-            flags=flags|QtGui.QTextDocument.FindCaseSensitively
+            flags = flags|QtGui.QTextDocument.FindCaseSensitively
         if args[1]:
-            flags=flags|QtGui.QTextDocument.FindWholeWords
+            flags = flags|QtGui.QTextDocument.FindWholeWords
         if args[2]:
-            flags=flags|QtGui.QTextDocument.FindBackward
+            flags = flags|QtGui.QTextDocument.FindBackward
 
         # Beginning of undo block
-        pcursor=self.textCursor()
+        pcursor = self.textCursor()
         pcursor.beginEditBlock()
     
         # Replace
         # self is the QTextEdit
         if args[3]:
-            cursor=self.document().find(QtCore.QRegExp(what),self.textCursor(),flags)                
+            cursor = self.document().find(QtCore.QRegExp(what),
+                                    self.textCursor(), flags)                
         else:
-            cursor=self.document().find(what,self.textCursor(),flags)
+            cursor = self.document().find(what, self.textCursor(), flags)
         if not cursor.isNull():
             if cursor.hasSelection():
                 cursor.insertText(new)
@@ -224,30 +236,32 @@ class Kht_Editor(QtGui.QTextEdit):
         pcursor.endEditBlock()
         
     def find(self, what, *args):
-        print "Find %s %s" % (what, [x for x in args])
-        #arg[0] -> QtGui.QTextDocument.FindCaseSensitively
-        #arg[1] -> QtGui.QTextDocument.FindWholeWords
-        #arg[2] -> QtGui.QTextDocument.FindBackward
-        #arg[3] -> QtGui.QTextDocument.RegEx
+        """Perform a search
+        arg[0] -> QtGui.QTextDocument.FindCaseSensitively
+        arg[1] -> QtGui.QTextDocument.FindWholeWords
+        arg[2] -> QtGui.QTextDocument.FindBackward
+        arg[3] -> QtGui.QTextDocument.RegEx
+        """
         # Use flags for case match
-        flags=QtGui.QTextDocument.FindFlags()
+        flags = QtGui.QTextDocument.FindFlags()
         if args[0]:
-            flags=flags|QtGui.QTextDocument.FindCaseSensitively
+            flags = flags|QtGui.QTextDocument.FindCaseSensitively
         if args[1]:
-            flags=flags|QtGui.QTextDocument.FindWholeWords
+            flags = flags|QtGui.QTextDocument.FindWholeWords
         if args[2]:
-            flags=flags|QtGui.QTextDocument.FindBackward
+            flags = flags|QtGui.QTextDocument.FindBackward
 
         if args[3]:
-            cursor = self.document().find(QtCore.QRegExp(what),self.textCursor(),flags)
+            cursor = self.document().find(QtCore.QRegExp(what),
+                                        self.textCursor(), flags)
         else:
-            cursor = self.document().find(what,self.textCursor(),flags)
+            cursor = self.document().find(what, self.textCursor(), flags)
 
         if not cursor.isNull():
             self.setTextCursor(cursor)
             
     def duplicate(self):
-        print 'Duplicate' 
+        """Duplicate the current line or selection"""
         maincursor = self.textCursor()
         if not maincursor.hasSelection():
             maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
@@ -269,27 +283,9 @@ class Kht_Editor(QtGui.QTextEdit):
                 block = block.next()
             cursor.movePosition(QtGui.QTextCursor.EndOfBlock)
             cursor.insertText(line)
-            
-#            maincursor.setPosition(maincursor.position(),QtGui.QTextCursor.KeepAnchor)
-#            maincursor.movePosition(QtGui.QTextCursor.EndOfBlock,QtGui.QTextCursor.KeepAnchor)
-#            line = maincursor.selectedText()
-#            maincursor.movePosition(QtGui.QTextCursor.EndOfBlock)
-#            
-#            line = QtCore.QString()
-#            while True:
-#                cursor = self.textCursor()                                     
-#                cursor.movePosition(QtGui.QTextCursor.StartOfBlock)
-#                line = line + '\n' + str(self.document().\
-#                    findBlockByNumber(cursor.blockNumber()).text().toUtf8())
-#                block = block.next()
-#
-#                if block.contains(maincursor.selectionEnd()):
-#                    break
-#                    
-#            cursor.movePosition(QtGui.QTextCursor.EndOfBlock)
-#            maincursor.insertText('\n'+line)
         
     def comment(self):
+        """Comment the current line or selection"""
         maincursor = self.textCursor()
         if not maincursor.hasSelection():
             maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
