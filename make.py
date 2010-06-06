@@ -26,7 +26,7 @@ if __name__ == "__main__":
     p.author="Benoît HERVIER"
     p.maintainer="Khertan"
     p.email="khertan@khertan.net"
-    p.depends = "python2.5-qt4-gui,python2.5-qt4-core, python-qt4-maemo5"
+    p.depends = "python2.5-qt4-gui,python2.5-qt4-core, python2.5-qt4-maemo5"
     p.section="user/development"
     p.arch="armel"
     p.urgency="low"
@@ -38,15 +38,15 @@ if __name__ == "__main__":
     p["/usr/share/dbus-1/services"] = ["khteditor.service",]
     p["/usr/share/pixmaps"] = ["khteditor.png",]
     p["/usr/share/applications/hildon"] = ["khteditor.desktop",]
-    p["/usr/share/mime/packages"] = ["python-mime.xml",]
     files = [ "khteditor.py",
                               "editor.py",
                               "editor_window.py",
                               "plugins.py",
-                              "main.py.py",
+                              "main.py",
                               "welcome_window.py",
                               "recent_files.py",
                               "snippets.py",
+                              ]
 
     #Syntax
     for root, dirs, fs in os.walk('/home/user/MyDocs/Projects/khteditor/syntax'):
