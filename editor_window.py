@@ -288,7 +288,7 @@ class Window(QtGui.QMainWindow):
         self.findAndReplace.connect(self.findAndReplace,
                          QtCore.SIGNAL("replace"), self.editor.replace)
         self.findAndReplace.connect(self.findAndReplace,
-                         QtCore.SIGNAL("replaceAll"), self.editor.replaceall)
+                         QtCore.SIGNAL("replaceAll"), self.editor.replace_all)
         self.findAndReplace.show()
         
     def do_execute(self):

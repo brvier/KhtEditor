@@ -68,11 +68,11 @@ class KhtTextEdit(QtGui.QTextEdit):
         if self.filename.startsWith("Unnamed"):
             filename = QtGui.QFileDialog.getSaveFileName(self,
                             "Text Editor -- Save File As",
-                            self.filename, "Text files (*.txt *.*)")
+                            self.filename, "Text files (*.py *.*)")
             if filename.isEmpty():
                 return
             self.filename = filename
-        self.setWindowTitle(QtCore.QFileInfo(self.filename).filename())
+        self.setWindowTitle(QtCore.QFileInfo(self.filename).fileName())
         exception = None
         filehandle = None
         try:
@@ -105,7 +105,7 @@ class KhtTextEdit(QtGui.QTextEdit):
             stream.setCodec("UTF-8")
             self.setPlainText(stream.readAll())
             self.document().setModified(False)
-            self.setWindowTitle(QtCore.QFileInfo(self.filename).filename())
+            self.setWindowTitle(QtCore.QFileInfo(self.filename).fileName())
         except (IOError, OSError), error:
             exception = error
         finally:
