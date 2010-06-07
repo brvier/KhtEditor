@@ -62,7 +62,7 @@ class KhtEditor:
         aboutLayout = QtGui.QVBoxLayout(awidget)
         
         aboutIcon = QtGui.QLabel()
-        aboutIcon.setPixmap(QtGui.QPixmap('khteditor.png').scaledToHeight(128))
+        aboutIcon.setPixmap(QtGui.QPixmap('/home/opt/khteditor/icons/khteditor.png').scaledToHeight(128))
         aboutIcon.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
         aboutIcon.resize(140,140)
         aboutLayout.addWidget(aboutIcon)
