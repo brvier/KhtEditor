@@ -69,8 +69,11 @@ class KhtEditor:
         
         aboutLabel = QtGui.QLabel('''<center><b>KhtEditor</b> %s
                                    <br><br>A source code editor designed for ease of use on small screen
-                                   <br><br>By Beno&icirc;t HERVIER (Khertan) 
-                                   <br><br><br><b>Thanks to :</b>
+                                   <br>Licenced under GPLv3
+                                   <br>By Beno&icirc;t HERVIER (Khertan) 
+                                   <br><br><br><b>Bugtracker : </b>http://khertan.net/flyspray
+                                   <br><b>Sources : </b>http://gitorious.org/khteditor                                   
+                                   <br><br><b>Thanks to :</b>
                                    <br>achipa on #pyqt
                                    <br>ddoodie on #pyqt
                                    <br>Attila77 on talk.maemo.org
