@@ -192,9 +192,9 @@ class Window(QtGui.QMainWindow):
         self.toolbar = self.addToolBar('Toolbar')
 
         commentIcon = QtGui.QIcon.fromTheme("general_tag")
-        indentIcon = QtGui.QIcon('icons/tb_indent.png')
+        indentIcon = QtGui.QIcon('/home/opt/khteditor/icons/tb_indent.png')
 
-        unindentIcon = QtGui.QIcon('icons/tb_unindent.png')
+        unindentIcon = QtGui.QIcon('/home/opt/khteditor/icons/tb_unindent.png')
         saveIcon = QtGui.QIcon.fromTheme("notes_save")
         fullscreenIcon = QtGui.QIcon.fromTheme("general_fullsize")
         executeIcon = QtGui.QIcon.fromTheme("general_forward")
