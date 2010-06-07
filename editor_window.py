@@ -14,7 +14,7 @@ import commands
 import os
 
 class FindAndReplaceDlg(QtGui.QDialog):
-
+    """ Find and replace dialog """
     def __init__(self, parent=None):
         super(FindAndReplaceDlg, self).__init__(parent)
 

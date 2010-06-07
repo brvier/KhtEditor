@@ -65,9 +65,9 @@ class WelcomeWindow(QtGui.QMainWindow):
     def refreshMain(self):
         recentfiles = RecentFiles().get()
         print self._layout.count()
-        for index in range(self._layout.count()-3):
+        for index in range(self._layout.count()-4):
             try:
-                recentFileButton = self._layout.itemAt(index+3).widget()
+                recentFileButton = self._layout.itemAt(index+4).widget()
                 recentFileButton.setText(os.path.basename(str(recentfiles[index])))         
                 recentFileButton.setValueText(os.path.abspath(str(recentfiles[index])))
             except StandardError, e:
@@ -80,7 +80,7 @@ class WelcomeWindow(QtGui.QMainWindow):
         self.scrollArea = QtGui.QScrollArea(self)
         self.scrollArea.setWidgetResizable(True)
         awidget = QtGui.QWidget(self.scrollArea)
-        awidget.setMinimumSize(480,800)
+        awidget.setMinimumSize(480,1000)
         awidget.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         self.scrollArea.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
    
@@ -91,9 +91,15 @@ class WelcomeWindow(QtGui.QMainWindow):
         self._layout = QtGui.QVBoxLayout(awidget)
         
         #self._layout.resize(800,800)
+        self.icon = QtGui.QLabel()
+        self.icon.setPixmap(QtGui.QPixmap('khteditor.png').scaledToHeight(64))
+        self.icon.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
+        self.icon.resize(70,70)
+        
         self.label = QtGui.QLabel("KhtEditor Version "+self.parent.version)
         self.label.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
 
+        self._layout.addWidget(self.icon)
         self._layout.addWidget(self.label)
 
         self._layout_button = QtGui.QHBoxLayout()        

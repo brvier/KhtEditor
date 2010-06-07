@@ -49,9 +49,40 @@ class KhtEditor:
         aboutWin = QtGui.QMainWindow(widget)
         aboutWin.setAttribute(Qt.WA_Maemo5StackedWindow, True)
         aboutWin.setAttribute(Qt.WA_Maemo5AutoOrientation, True)
-        aboutLabel = QtGui.QLabel('<center><b>KhtEditor</b> %s<br><br>A source code editor designed for ease of use on small screen<br><br>By Beno&icirc;t HERVIER (Khertan) </center>' % self.version)
+
+        aboutScrollArea = QtGui.QScrollArea(aboutWin)
+        aboutScrollArea.setWidgetResizable(True)
+        awidget = QtGui.QWidget(aboutScrollArea)
+        awidget.setMinimumSize(480,600)
+        awidget.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        aboutScrollArea.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        scroller = aboutScrollArea.property("kineticScroller").toPyObject()
+        scroller.setEnabled(True)
+
+        aboutLayout = QtGui.QVBoxLayout(awidget)
+        
+        aboutIcon = QtGui.QLabel()
+        aboutIcon.setPixmap(QtGui.QPixmap('khteditor.png').scaledToHeight(128))
+        aboutIcon.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
+        aboutIcon.resize(140,140)
+        aboutLayout.addWidget(aboutIcon)
+        
+        aboutLabel = QtGui.QLabel('''<center><b>KhtEditor</b> %s
+                                   <br><br>A source code editor designed for ease of use on small screen
+                                   <br><br>By Beno&icirc;t HERVIER (Khertan) 
+                                   <br><br><br><b>Thanks to :</b>
+                                   <br>achipa on #pyqt
+                                   <br>ddoodie on #pyqt
+                                   <br>Attila77 on talk.maemo.org
+                                   
+                                   </center>''' % self.version)
+        aboutLayout.addWidget(aboutLabel)
+
+        awidget.setLayout(aboutLayout)
+        aboutScrollArea.setWidget(awidget)
+
         aboutWin.setWindowTitle('About KhtEditor')
-        aboutWin.setCentralWidget(aboutLabel)
+        aboutWin.setCentralWidget(aboutScrollArea)
         aboutWin.show()
         
     def newFile(self):
