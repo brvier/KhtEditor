@@ -17,7 +17,7 @@ class KhtTextEdit(QtGui.QTextEdit):
         
         #initialization init of plugin system
         #Maybe be not the best place to do it ... 
-        init_plugin_system({'plugin_path': './plugins',
+        init_plugin_system({'plugin_path': '/home/opt/khteditor/plugins',
                             'plugins': ['autoindent']})
                             
         #If we have a filename
