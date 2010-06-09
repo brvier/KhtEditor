@@ -260,9 +260,14 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                 index = expression.indexIn(text, index + length)
 
             self.setCurrentBlockState(0)
+            
+#            QtGui.QApplication.processEvents()
 
             # Do multi-line strings
             in_multiline = self.match_multiline(text, *self.tri_single)
+            
+#            QtGui.QApplication.processEvents()
+
 #            if not in_multiline:
             in_multiline = self.match_multiline(text, *self.tri_double)
 

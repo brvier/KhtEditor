@@ -157,7 +157,7 @@ class Window(QtGui.QMainWindow):
 
     def openFile(self, path=QtCore.QString()):
         filename = QtGui.QFileDialog.getOpenFileName(self,
-                            "KhtEditor -- Open File")
+                            "KhtEditor -- Open File",path)
         if not filename.isEmpty():
             self.loadFile(filename)
         return filename
@@ -166,8 +166,8 @@ class Window(QtGui.QMainWindow):
     def loadFile(self, filename):
         self.editor.filename = filename
         try:
-            #self.editor.load()
-            QtCore.QTimer.singleShot(100, self.editor.load)
+            self.editor.load()
+#            QtCore.QTimer.singleShot(100, self.editor.load)
             self.setWindowTitle(QtCore.QFileInfo(self.editor.filename).fileName())
         except (IOError, OSError), e:
             QtGui.QMessageBox.warning(self, "KhtEditor -- Load Error",

@@ -126,7 +126,7 @@ class WelcomeWindow(QtGui.QMainWindow):
             recentFileButton.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
             
 #            recentFileButton.setMinimumSize(200,480)
-            self.connect(recentFileButton, QtCore.SIGNAL('clicked()'), Curry(self.parent.openRecentFile,recentFileButton))
+            self.connect(recentFileButton, QtCore.SIGNAL('clicked()'), Curry(self.openRecentFile,recentFileButton))
             self._layout.addWidget(recentFileButton)
             try:
                 recentFileButton.setText(os.path.basename(str(recentfiles[index])))         
@@ -134,6 +134,11 @@ class WelcomeWindow(QtGui.QMainWindow):
             except:
                 recentFileButton.setDisabled(True)
                  
+
+    def openRecentFile(self,button):
+        self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
+        self.parent.openRecentFile(button)
+        self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
 
     def setupMenu(self):
         fileMenu = QtGui.QMenu(self.tr("&Menu"), self)

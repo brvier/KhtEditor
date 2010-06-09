@@ -22,6 +22,8 @@ class KhtEditor:
       self.app.setOrganizationName("Khertan Software")
       self.app.setOrganizationDomain("khertan.net")
       self.app.setApplicationName("KhtEditor")
+      
+      self.last_know_path='/home/user/MyDocs'
       self.run()
 
     def run(self):
@@ -95,16 +97,12 @@ class KhtEditor:
 
     def openFile(self, path=QtCore.QString()):
             editor_win=editor_window.Window(self)
-            filename = editor_win.openFile(path)
+            filename = editor_win.openFile(self.last_know_path)
             if not filename.isEmpty():
               editor_win.show()
               self.window_list.append(editor_win)
-#              self.recentFiles.append(filename)
-#              settings = QtCore.QSettings()
-#              recentFiles = QtCore.QVariant(self.recentFiles) \
-#                  if self.recentFiles else QtCore.QVariant()
-#              settings.setValue('RecentFiles',recentFiles)
               RecentFiles().append(filename)
+              self.last_know_path=QtCore.QString(os.path.dirname(str(filename)))
             else:
               editor_win.destroy()
 
@@ -114,6 +112,7 @@ class KhtEditor:
             editor_win.loadFile(path.valueText())
             editor_win.show()
             RecentFiles().append(path.valueText())
+            self.last_know_path=QtCore.QString(os.path.dirname(str(path))) 
 
 if __name__ == '__main__':
     KhtEditor()
