@@ -14,11 +14,12 @@ class KhtTextEdit(QtGui.QTextEdit):
     def __init__(self, parent=None, filename=QtCore.QString('')):
         """Initialization, can accept a filepath as argument"""
         QtGui.QTextEdit.__init__(self, parent)
-        
+
+        #Plugin init move to editor_window.py        
         #initialization init of plugin system
         #Maybe be not the best place to do it ... 
-        init_plugin_system({'plugin_path': '/home/opt/khteditor/plugins',
-                            'plugins': ['autoindent']})
+        #init_plugin_system({'plugin_path': '/home/opt/khteditor/plugins',
+        #                    'plugins': ['autoindent']})
                             
         #If we have a filename
         self.filename = filename
@@ -36,6 +37,9 @@ class KhtTextEdit(QtGui.QTextEdit):
 
         #Remove auto capitalization
         self.setInputMethodHints(Qt.ImhNoAutoUppercase)
+        
+        #Keep threaded plugins references to avoid them to be garbage collected
+        self.threaded_plugins = []
 
     #PySide Bug : The type of e is QEvent instead of QKeyEvent
     def keyPressEvent(self, event):
@@ -89,9 +93,16 @@ class KhtTextEdit(QtGui.QTextEdit):
         finally:
             if filehandle is not None:
                 filehandle.close()
+                for plugin in get_plugins_by_capability('afterFileSave'):
+                    plg = plugin()
+                    self.threaded_plugins.append(plg)
+                    plg.do_afterFileSave(self)
+
             if exception is not None:
                 raise exception
 
+    def hilighterror(self,type,line,comment):
+        print type,line,comment
 
     def load(self):
         """Load ?"""

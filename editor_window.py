@@ -134,9 +134,12 @@ class Window(QtGui.QMainWindow):
 #        scroller.setEnabled(True)
 
         self.setCentralWidget(self.editor)
-        
-        
 
+        #Initialization of the plugin system
+        init_plugin_system({'plugin_path': '/home/opt/khteditor/plugins',
+                            'plugins': ['autoindent','pylint']})
+        
+        
     def fileSave(self):
         try:
             self.editor.save()
