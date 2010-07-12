@@ -117,6 +117,10 @@ class Window(QtGui.QMainWindow):
     def __init__(self, parent):
         QtGui.QMainWindow.__init__(self,None)
         self.parent = parent
+
+        #Initialization of the plugin system
+        init_plugin_system({'plugin_path': '/home/opt/khteditor/plugins',
+                            'plugins': ['autoindent','pylint']})
         
         self.findAndReplace = FindAndReplaceDlg()               
         self.setupFileMenu()
@@ -134,10 +138,6 @@ class Window(QtGui.QMainWindow):
 #        scroller.setEnabled(True)
 
         self.setCentralWidget(self.editor)
-
-        #Initialization of the plugin system
-        init_plugin_system({'plugin_path': '/home/opt/khteditor/plugins',
-                            'plugins': ['autoindent','pylint']})
         
         
     def fileSave(self):
@@ -230,7 +230,7 @@ class Window(QtGui.QMainWindow):
         self.tb_execute.setShortcut('Ctrl+E')
         self.connect(self.tb_execute, QtCore.SIGNAL('triggered()'), self.do_execute)
         self.toolbar.addAction(self.tb_execute)
-        self.tb_fullscreen = QtGui.QAction(fullscreenIcon, 'Execute', self)          
+        self.tb_fullscreen = QtGui.QAction(fullscreenIcon, 'Fullscreen', self)          
         self.connect(self.tb_fullscreen, QtCore.SIGNAL('triggered()'), self.do_fullscreen)
         self.toolbar.addAction(self.tb_fullscreen)
 
@@ -246,7 +246,12 @@ class Window(QtGui.QMainWindow):
              QtCore.SIGNAL('triggered()'), self.findAndReplace.findClicked)
         self.addAction(self.tb_findagain)
 
-        
+        #Hook for plugins to add buttons :
+        for plugin in get_plugins_by_capability('toolbarHook'):
+            print 'Found 1 Plugin for toolbarHook'
+            plg = plugin()
+            plg.do_toolbarHook(self)
+
     def setupFileMenu(self): 
         fileMenu = QtGui.QMenu(self.tr("&File"), self)
         self.menuBar().addMenu(fileMenu)

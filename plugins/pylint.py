@@ -1,67 +1,87 @@
-from PyQt4.QtGui import QTextEdit
-from PyQt4.QtCore import Qt,QThread,QProcess,QRegExp,SIGNAL,QString
+from PyQt4.QtCore import Qt,QThread,QProcess,QRegExp,SIGNAL,QString,QObject
+from PyQt4.QtGui import QColor,QTextEdit,QTextFormat,QAction,QIcon
 from plugins import Plugin
 import re
-#from pylint import lint
-#import pylint.lint
+import os.path
 
-class PyLint_Plugin(Plugin):
-    capabilities = ['afterFileSave']
+class PyLint_Plugin(Plugin, QObject):
+    capabilities = ['toolbarHook']
     thread = None
     
-    def do_afterFileSave(self, parent):
-        '''Lauch the PyLint syntax check QThread after a save'''
+    def do_toolbarHook(self,parent):
         self.parent = parent
-        print 'FilePath : ',str(parent.filename)
-        self.thread = PyLint_Worker(str(parent.filename))
-        print 'now start the pylint thread'
-        self.parent.connect(self.thread,SIGNAL("hilighterror ( QString,int,QString )"),self.parent.hilighterror)
-        self.thread.start()
-                
-class PyLint_Worker(QThread):
-    '''The QThread doing the pylint check'''
-    
-    def __init__(self,filepath):
-        super(PyLint_Worker,self).__init__()
-        self.filepath = filepath
-        self.stopped = True
-        self.completed = False
         
-    def run(self):
-        print 'thread started'
-        self.stopped = False
-        result = self.check()
-        print 'results :',result
-        if result != None:        
-            result = QString(result)
-            regex = QRegExp('(\w):\s*(\d+):?\s([\w ]*)')
-            pos = 0
-            while True:
-                pos = regex.indexIn(result,pos)
-                if pos<0:
-                    break            
-                self.emit(Qt.SIGNAL('hilighterror(QString,int,QString)',regex.cap(1),regex.cap(2).toInt(),regex.cap(3)))
-                pos = pos + regex.matchedLength()
-#        while ((pos = rx.indexIn(str, pos)) != -1) {
-#     list << rx.cap(1);
-#     pos += rx.matchedLength();}
-        self.completed = True
-        self.stop()
+        #Keep a references to prevent gc 
+        #deleting our callback methode
+        try:
+            self.parent.plugins_ref.append(self)
+        except:
+            self.parent.plugins_ref = [self,]
+            
+        icon = QIcon('/home/opt/khteditor/icons/tb_pylint.png')
+        print 'test'
+        self.parent.tb_pylint = QAction(icon, 'PyLint', self.parent)          
+        self.connect(self.parent.tb_pylint, SIGNAL('triggered()'), self.do_pylint)
+        self.parent.toolbar.addAction(self.parent.tb_pylint)
         
-#        self.emit(Qt.SIGNAL('finished(bool)',self.completed))
+    def do_pylint(self):
+        print 'do_pylint'
+
+        #ask for save if unsaved
+        self.parent.editor.closeEvent()
+
+        self.pylintProc = QProcess()
+
+        self.pylintProc.setProcessChannelMode(QProcess.MergedChannels)
+        self.pylintProc.setWorkingDirectory(os.path.dirname(str(self.parent.editor.filename)))
+        self.pylintProc.setReadChannel(QProcess.StandardOutput)
+
+        self.connect(self.pylintProc, SIGNAL('finished()'), self.handleStdout)
+        self.connect(self.pylintProc, SIGNAL('readyReadStandardOutput()'), self.handleStdout)
+        self.connect(self.pylintProc, SIGNAL('readyReadStandardError()'), self.handleStderr)
+        if (self.pylintProc.start("pylint", [self.parent.editor.filename,])):
+            print 'Cannot start process'
+        self.pylintProc.waitForStarted()
         
-    def stop(self):
-        print 'Thread stopped'
-        self.stopped = True
-        
-    def check(self):
-        print 'starting check !'
-        lint = QProcess()
-        lint.start("pylint", [self.filepath,])
-        if not(lint.waitForStarted()):
-            return None
-       
-        if not(lint.waitForFinished()):
-            return None
-    
-        return lint.readAll()
+    def handleStdout(self):
+        """
+        Private slot to handle the readyReadStdout signal of the pylint process.
+        """
+        while self.pylintProc and self.pylintProc.canReadLine():
+            result = self.pylintProc.readLine()
+            if result != None:        
+                result = QString(result)
+                regex = QRegExp('(\w):\s*(\d+):?\s([\w ]*)')
+                pos = 0
+                inserted_line = 0
+                while True:
+                    pos = regex.indexIn(result,pos)
+                    if pos<0:
+                        break            
+                    line = int(regex.cap(2))
+                    block = self.parent.editor.document().findBlockByLineNumber((line-2)+inserted_line)
+                    if not (block.text().startsWith('#PYLINT:')):                    
+                        block = self.parent.editor.document().findBlockByLineNumber((line-1)+inserted_line)
+                        cursor = self.parent.editor.textCursor() 
+                        cursor.setPosition(block.position())
+                        
+                        #Hilgight background
+#                        _color = QColor()
+#                        _color.setNamedColor('red')
+#                        _color.lighter(160)
+#                        _selection = QTextEdit.ExtraSelection()
+#                        _selection.format.setBackground(_color)
+#                        _selection.format.setProperty(QTextFormat.FullWidthSelection, True)       
+#                        _selection.cursor = cursor
+#                        _selection.cursor.clearSelection()
+#                        self.parent.extraSelections().append(_selection)                        
+                        cursor.insertText("#PYLINT:"+regex.cap(1)+':'+regex.cap(3)+'\n')
+                        inserted_line=inserted_line+1
+            
+                    pos = pos + regex.matchedLength()
+
+    def handleStderr(self):
+        """
+        Private slot to handle the readyReadStderr signal of the pylint process.
+        """
+        print 'error stderr'

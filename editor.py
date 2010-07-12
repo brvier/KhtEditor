@@ -3,7 +3,7 @@
 """KhtEditor a source code editor by Khertan : Code Editor"""
 
 import re
-from PyQt4 import QtCore, QtGui
+from PyQt4 import QtCore,QtGui
 from PyQt4.QtCore import Qt
 from plugins import init_plugin_system, get_plugins_by_capability
 from recent_files import RecentFiles
@@ -101,9 +101,39 @@ class KhtTextEdit(QtGui.QTextEdit):
             if exception is not None:
                 raise exception
 
-    def hilighterror(self,type,line,comment):
-        print type,line,comment
+#    def hilighterror(self,type,line,comment):
+#        print type,line,comment
+#        _color = QtGui.QColor()
+#        _color.setNamedColor('red')
+#        _format = QtGui.QTextCharFormat()
+#        _format.setBackground(_color)
+#        _format.setFontItalic(True)
 
+        #Hilgight background
+#        _color = QtGui.QColor()
+#        _color.setNamedColor('red')
+#        _color.lighter(160)
+#        _selection = QtGui.QTextEdit.ExtraSelection()
+#        _selection.format.setBackground(_color)
+#        _selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, true)
+#        
+#        _selection.cursor = textCursor()
+#        block = self.document().findBlockByLineNumber(line-1)        
+#        _selection.cursor.cursor.setPosition(block.position())
+#        _selection.cursor.clearSelection()
+#        self.extraSelections.append(_selection)
+#
+#Version text add
+#        block = self.document().findBlockByLineNumber(line-1)
+#        if not (block.text().startsWith('FIXME:')):
+#            block = self.document().findBlockByLineNumber(line)
+#            cursor = self.textCursor() 
+#            cursor.setPosition(block.position())
+#            cursor.insertText("FIXME:"+type+':'+str(line)+':'+comment+'\n')
+                        
+#        block.setUnderlineColor(_color)       
+#        block.setFontItalic(True)
+        
     def load(self):
         """Load ?"""
         exception = None
