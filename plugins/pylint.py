@@ -1,3 +1,7 @@
+#PYLINT:W:Unused import QThread
+#PYLINT:W:Unused import Qt
+#PYLINT:C:Comma not followed by a space
+#PYLINT:C:Missing docstring
 from PyQt4.QtCore import Qt,QThread,QProcess,QRegExp,SIGNAL,QString,QObject
 from PyQt4.QtGui import QColor,QTextEdit,QTextFormat,QAction,QIcon
 from plugins import Plugin
@@ -21,6 +25,7 @@ class PyLint_Plugin(Plugin, QObject):
         icon = QIcon('/home/opt/khteditor/icons/tb_pylint.png')
         print 'test'
         self.parent.tb_pylint = QAction(icon, 'PyLint', self.parent)          
+#PYLINT:C:Line too long 
         self.connect(self.parent.tb_pylint, SIGNAL('triggered()'), self.do_pylint)
         self.parent.toolbar.addAction(self.parent.tb_pylint)
         
@@ -32,9 +37,11 @@ class PyLint_Plugin(Plugin, QObject):
 
         self.pylintProc = QProcess()
 
+#PYLINT:C:Line too long 
         self.pylintProc.setProcessChannelMode(QProcess.MergedChannels)
         self.pylintProc.setWorkingDirectory(os.path.dirname(str(self.parent.editor.filename)))
         self.pylintProc.setReadChannel(QProcess.StandardOutput)
+#PYLINT:C:Line too long 
 
         self.connect(self.pylintProc, SIGNAL('finished()'), self.handleStdout)
         self.connect(self.pylintProc, SIGNAL('readyReadStandardOutput()'), self.handleStdout)
@@ -57,7 +64,7 @@ class PyLint_Plugin(Plugin, QObject):
                 while True:
                     pos = regex.indexIn(result,pos)
                     if pos<0:
-                        break            
+                        break
                     line = int(regex.cap(2))
                     block = self.parent.editor.document().findBlockByLineNumber((line-2)+inserted_line)
                     if not (block.text().startsWith('#PYLINT:')):                    
@@ -66,8 +73,10 @@ class PyLint_Plugin(Plugin, QObject):
                         cursor.setPosition(block.position())
                         
                         #Hilgight background
+#PYLINT:C:Line too long 
 #                        _color = QColor()
 #                        _color.setNamedColor('red')
+#PYLINT:C:Line too long 
 #                        _color.lighter(160)
 #                        _selection = QTextEdit.ExtraSelection()
 #                        _selection.format.setBackground(_color)

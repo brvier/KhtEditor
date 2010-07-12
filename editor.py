@@ -14,6 +14,7 @@ class KhtTextEdit(QtGui.QTextEdit):
     def __init__(self, parent=None, filename=QtCore.QString('')):
         """Initialization, can accept a filepath as argument"""
         QtGui.QTextEdit.__init__(self, parent)
+        self.connect(self, QtCore.SIGNAL('cursorPositionChanged()'),  self.highlightCurrentLine);
 
         #Plugin init move to editor_window.py        
         #initialization init of plugin system
@@ -100,6 +101,18 @@ class KhtTextEdit(QtGui.QTextEdit):
 
             if exception is not None:
                 raise exception
+                
+    def highlightCurrentLine(self):
+        #Hilgight background
+        _color = QtGui.QColor('lightblue').lighter(120)
+        _selection = QtGui.QTextEdit.ExtraSelection()
+        _selection.format.setBackground(_color)
+        _selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, True)        
+        _selection.cursor = self.textCursor()
+        _selection.cursor.clearSelection()
+        extraSelection = []
+        extraSelection.append(_selection)
+        self.setExtraSelections(extraSelection)
 
 #    def hilighterror(self,type,line,comment):
 #        print type,line,comment
