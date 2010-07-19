@@ -27,6 +27,7 @@ if __name__ == "__main__":
     p.maintainer="Khertan"
     p.email="khertan@khertan.net"
     p.depends = "python2.5-qt4-gui,python2.5-qt4-core, python2.5-qt4-maemo5"
+    p.suggests = "pylint"
     p.section="user/development"
     p.arch="armel"
     p.urgency="low"
