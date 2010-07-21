@@ -87,4 +87,4 @@ python -m compileall /home/opt/khteditor"""
 """
 
 #print p.generate(build_binary=False,build_src=True)
-print p.generate(build_binary=True,build_src=False)
+print p.generate(build_binary=False,build_src=True)
