@@ -12,6 +12,7 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
 import editor_window
 from recent_files import RecentFiles
+import khteditor
 
 class KhtEditor:
     def __init__(self):
