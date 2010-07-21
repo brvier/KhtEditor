@@ -8,6 +8,7 @@ from PyQt4 import QtCore, QtGui, QtMaemo5
 from PyQt4.QtCore import Qt
 import editor_window
 from recent_files import RecentFiles
+import khteditor
 
 class Curry:
   #keep a reference to all curried instances
@@ -92,7 +93,7 @@ class WelcomeWindow(QtGui.QMainWindow):
         
         #self._layout.resize(800,800)
         self.icon = QtGui.QLabel()
-        self.icon.setPixmap(QtGui.QPixmap('/home/opt/khteditor/icons/khteditor.png').scaledToHeight(64))
+        self.icon.setPixmap(QtGui.QPixmap(os.path.join(khteditor.__path__[0],'icons','khteditor.png')).scaledToHeight(64))
         self.icon.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
         self.icon.resize(70,70)
         

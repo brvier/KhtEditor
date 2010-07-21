@@ -6,12 +6,13 @@ import sys
 import re
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
-from plugins import init_plugin_system, get_plugins_by_capability
+from plugins_api import init_plugin_system, get_plugins_by_capability
 import editor
 #import editor_frame
 from subprocess import *
 import commands
 import os
+import khteditor
 
 class FindAndReplaceDlg(QtGui.QDialog):
     """ Find and replace dialog """
@@ -119,7 +120,7 @@ class Window(QtGui.QMainWindow):
         self.parent = parent
 
         #Initialization of the plugin system
-        init_plugin_system({'plugin_path': '/home/opt/khteditor/plugins',
+        init_plugin_system({'plugin_path': [os.path.join(khteditor.__path__[0],'plugins'),os.path.join(os.path.expanduser("~"),'.khteditor','plugins')],
                             'plugins': ['autoindent','pylint']})
         
         self.findAndReplace = FindAndReplaceDlg()               
@@ -195,9 +196,10 @@ class Window(QtGui.QMainWindow):
         self.toolbar = self.addToolBar('Toolbar')
 
         commentIcon = QtGui.QIcon.fromTheme("general_tag")
-        indentIcon = QtGui.QIcon('/home/opt/khteditor/icons/tb_indent.png')
+        prefix = os.path.join(khteditor.__path__[0],'icons')
+        indentIcon = QtGui.QIcon(os.path.join(prefix,'tb_indent.png'))
 
-        unindentIcon = QtGui.QIcon('/home/opt/khteditor/icons/tb_unindent.png')
+        unindentIcon = QtGui.QIcon(os.path.join(prefix,'tb_unindent.png'))
         saveIcon = QtGui.QIcon.fromTheme("notes_save")
         fullscreenIcon = QtGui.QIcon.fromTheme("general_fullsize")
         executeIcon = QtGui.QIcon.fromTheme("general_forward")

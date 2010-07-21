@@ -4,7 +4,7 @@
 #PYLINT:C:Missing docstring
 from PyQt4.QtCore import Qt,QThread,QProcess,QRegExp,SIGNAL,QString,QObject
 from PyQt4.QtGui import QColor,QTextEdit,QTextFormat,QAction,QIcon
-from plugins import Plugin
+from khteditor.plugins_api import Plugin
 import re
 import os.path
 

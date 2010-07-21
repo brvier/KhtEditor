@@ -31,7 +31,6 @@ class ReporterView(QMainWindow):
     def __init__(self):
         super(self)
         
-    def      
         
 if __name__ == "__main__":
     v = ReporterView()

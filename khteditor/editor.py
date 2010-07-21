@@ -5,7 +5,7 @@
 import re
 from PyQt4 import QtCore,QtGui
 from PyQt4.QtCore import Qt
-from plugins import init_plugin_system, get_plugins_by_capability
+from plugins_api import init_plugin_system, get_plugins_by_capability
 from recent_files import RecentFiles
 
 class KhtTextEdit(QtGui.QTextEdit):
