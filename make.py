@@ -61,5 +61,5 @@ python -m compileall /usr/lib/python2.5/site-packages/khteditor"""
     p.changelog="""First Release
 """
 
-#print p.generate(build_binary=False,build_src=True)
-print p.generate(build_binary=True,build_src=True)
+print p.generate(build_binary=False,build_src=True)
+#print p.generate(build_binary=True,build_src=True)

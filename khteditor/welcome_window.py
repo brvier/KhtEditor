@@ -66,11 +66,14 @@ class WelcomeWindow(QtGui.QMainWindow):
     def refreshMain(self):
         recentfiles = RecentFiles().get()
         print self._layout.count()
-        for index in range(self._layout.count()-4):
+        for index in range(0,self._layout.count()-4):
+#            recentFileLabel = self._layout.itemAt(index+4).widget()
+            recentFileButton = self._layout.itemAt(index+4).widget()
             try:
-                recentFileButton = self._layout.itemAt(index+4).widget()
-                recentFileButton.setText(os.path.basename(str(recentfiles[index])))         
-                recentFileButton.setValueText(os.path.abspath(str(recentfiles[index])))
+#                recentFileLabel.setText(os.path.abspath(str(recentfiles[index])))              
+                recentFileButton.setText(os.path.basename(str(recentfiles[index])))
+                recentFileButton.setValueText(os.path.abspath(str(recentfiles[index])))         
+#                recentFileButton.setValueText(os.path.abspath(str(recentfiles[index])))
             except StandardError, e:
 #                print e,type(recentFileButton),index,dir(recentFileButton)
                 recentFileButton.setDisabled(True)
@@ -124,17 +127,20 @@ class WelcomeWindow(QtGui.QMainWindow):
         recentfiles = RecentFiles().get()
         for index in range(10):
             recentFileButton = QtMaemo5.QMaemo5ValueButton()
-            recentFileButton.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+#            recentFileLabel = QtGui.QLabel()
+#            recentFileButton = QtGui.QPushButton()
+#            recentFileButton.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
             
 #            recentFileButton.setMinimumSize(200,480)
             self.connect(recentFileButton, QtCore.SIGNAL('clicked()'), Curry(self.openRecentFile,recentFileButton))
+#            self._layout.addWidget(recentFileLabel)
             self._layout.addWidget(recentFileButton)
-            try:
-                recentFileButton.setText(os.path.basename(str(recentfiles[index])))         
-                recentFileButton.setValueText(recentfiles[index])
-            except:
-                recentFileButton.setDisabled(True)
-                 
+#            try:
+#                recentFileButton.setText('<b>'+os.path.basename(str(recentfiles[index]))+'</b>\n'+recentfiles[index])         
+#                recentFileButton.setValueText(recentfiles[index])
+#            except StandardError,e:
+#                recentFileButton.setDisabled(True)
+#                print e
 
     def openRecentFile(self,button):
         self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)

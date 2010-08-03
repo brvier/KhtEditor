@@ -3,7 +3,7 @@
 
 """KhtEditor a source code editor by Khertan : Welcome Window"""
 
-VERSION = '0.0.1'
+VERSION = '0.0.2'
 
 import os
 import sys
