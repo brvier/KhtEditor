@@ -30,11 +30,9 @@ class WhiteSpaceRemover_Plugin(Plugin):
         text = cursor.selectedText()
         new_text = u''
         for line in unicode(text).splitlines():
-            new_text += '%s%s' % (unicode.rstrip(line,' \t'),os.linesep)
-        
-        text = unicode.rstrip(unicode(cursor.selectedText()),' \t')
-        cursor.removeSelectedText()
-        cursor.insertText(text)
+            new_text += '%s%s' % (unicode.rstrip(line,' \t'),os.linesep)        
+        widget.document().setPlainText(new_text)
+        cursor = widget.textCursor()
         cursor.setPosition(widget.document().findBlockByLineNumber(line_number).position())
         widget.setTextCursor(cursor)
         cursor.endEditBlock()
