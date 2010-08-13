@@ -37,4 +37,5 @@ class WhiteSpaceRemover_Plugin(Plugin):
         widget.setTextCursor(cursor)
         cursor.endEditBlock()
         widget.document().setModified(False)
+        widget.document().emit(Qt.SIGNAL('modificationChanged(bool)'),False)
         
