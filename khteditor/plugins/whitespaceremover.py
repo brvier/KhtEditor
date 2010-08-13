@@ -22,30 +22,19 @@ class WhiteSpaceRemover_Plugin(Plugin):
             widget.setTextCursor(cursor)
             
     def do_beforeFileSave(self, widget):
-        if (event.key() == Qt.Key_Return) or (event.key() == Qt.Key_Enter):
-            # delete whitespace at end of the previous line
-            cursor = widget.textCursor()
-            line_number = widget.document().findBlock( cursor.position()).blockNumber()
-            cursor.beginEditBlock()
-            cursor.select(QTextCursor.Document)
-            text = cursor.selectedText()
-            new_text = u''
-            for line in text.splitlines():
-                new_text += '%s%s' % (unicode.rstrip(unicode(line),' \t'),os.linesep)
-            
-            text = unicode.rstrip(unicode(cursor.selectedText()),' \t')
-            cursor.removeSelectedText()
-            cursor.insertText(text)
-            cursor.setPosition(widget.document().findBlockByLineNumber(line_number).position())
-            widget.setTextCursor(cursor)
-            
-#            block = widget.document().findBlockByNumber(cursor.blockNumber()-1)
-#            cursor.select(QTextCursor.Document)            
-#            cursor.select(block)            
-#            text = unicode.lstrip(unicode(cursor.selectedText()),' \t')
-#            cursor.removeSelectedText()
-#            text = text.replace(unichr(8233), u'\n')
-#            cursor.insertText(text)
-#            cursor.setPosition(widget.document().findBlockByLineNumber(line_number).position())
-#            widget.setTextCursor(cursor)
-            cursor.endEditBlock()
+        # delete whitespace at end of the previous line
+        cursor = widget.textCursor()
+        line_number = widget.document().findBlock( cursor.position()).blockNumber()
+        cursor.beginEditBlock()
+        cursor.select(QTextCursor.Document)
+        text = cursor.selectedText()
+        new_text = u''
+        for line in unicode(text).splitlines():
+            new_text += '%s%s' % (unicode.rstrip(unicode(line),' \t'),os.linesep)
+        
+        text = unicode.rstrip(unicode(cursor.selectedText()),' \t')
+        cursor.removeSelectedText()
+        cursor.insertText(text)
+        cursor.setPosition(widget.document().findBlockByLineNumber(line_number).position())
+        widget.setTextCursor(cursor)
+        cursor.endEditBlock()
