@@ -1,5 +1,5 @@
 from PyQt4.QtGui import QTextEdit,QTextCursor
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import Qt,SIGNAL
 from khteditor.plugins_api import Plugin
 import os
 import re
@@ -37,5 +37,5 @@ class WhiteSpaceRemover_Plugin(Plugin):
         widget.setTextCursor(cursor)
         cursor.endEditBlock()
         widget.document().setModified(False)
-        widget.document().emit(Qt.SIGNAL('modificationChanged(bool)'),False)
+        widget.document().emit(SIGNAL('modificationChanged(bool)'),False)
         
