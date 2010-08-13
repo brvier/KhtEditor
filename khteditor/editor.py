@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """KhtEditor a source code editor by Khertan : Code Editor"""
-
+              
 import re
 from PyQt4 import QtCore,QtGui
 from PyQt4.QtCore import Qt

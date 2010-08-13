@@ -30,7 +30,7 @@ class WhiteSpaceRemover_Plugin(Plugin):
         text = cursor.selectedText()
         new_text = u''
         for line in unicode(text).splitlines():
-            new_text += '%s%s' % (unicode.rstrip(unicode(line),' \t'),os.linesep)
+            new_text += '%s%s' % (unicode.rstrip(line,' \t'),os.linesep)
         
         text = unicode.rstrip(unicode(cursor.selectedText()),' \t')
         cursor.removeSelectedText()
