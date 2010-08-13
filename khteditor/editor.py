@@ -84,6 +84,13 @@ class KhtTextEdit(QtGui.QTextEdit):
             filehandle = QtCore.QFile(self.filename)
             if not filehandle.open(QtCore.QIODevice.WriteOnly):
                 raise IOError, unicode(filehandle.errorString())
+
+            #Before FileSave plugin hook
+            for plugin in get_plugins_by_capability('beforeFileSave'):
+                plg = plugin()
+                self.threaded_plugins.append(plg)
+                plg.do_beforeFileSave(self)
+                
             stream = QtCore.QTextStream(filehandle)
             stream.setCodec("UTF-8")
             stream << self.toPlainText()

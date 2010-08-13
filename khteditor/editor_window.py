@@ -121,7 +121,7 @@ class Window(QtGui.QMainWindow):
 
         #Initialization of the plugin system
         init_plugin_system({'plugin_path': [os.path.join(khteditor.__path__[0],'plugins'),os.path.join(os.path.expanduser("~"),'.khteditor','plugins')],
-                            'plugins': ['autoindent','pylint']})
+                            'plugins': ['autoindent','pylint','whitespaceremover']})
         
         self.findAndReplace = FindAndReplaceDlg()               
         self.setupFileMenu()
