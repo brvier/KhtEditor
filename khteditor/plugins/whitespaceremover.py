@@ -20,7 +20,7 @@ class WhiteSpaceRemover_Plugin(Plugin):
             cursor.insertText(text)
             cursor.setPosition(widget.document().findBlockByLineNumber(line_number).position())
             widget.setTextCursor(cursor)
-            
+
     def do_beforeFileSave(self, widget):
         # delete whitespace at end of the previous line
         cursor = widget.textCursor()
@@ -30,7 +30,7 @@ class WhiteSpaceRemover_Plugin(Plugin):
         text = cursor.selectedText()
         new_text = u''
         for line in unicode(text).splitlines():
-            new_text += '%s%s' % (unicode.rstrip(line,' \t'),os.linesep)        
+            new_text += '%s%s' % (unicode.rstrip(line,' \t'),os.linesep)
         widget.document().setPlainText(new_text)
         cursor = widget.textCursor()
         cursor.setPosition(widget.document().findBlockByLineNumber(line_number).position())
@@ -38,4 +38,4 @@ class WhiteSpaceRemover_Plugin(Plugin):
         cursor.endEditBlock()
         widget.document().setModified(False)
         widget.document().emit(SIGNAL('modificationChanged(bool)'),False)
-        
+
