@@ -13,6 +13,7 @@ from PyQt4.QtCore import Qt
 import editor_window
 from recent_files import RecentFiles
 import khteditor
+import settings
 
 class KhtEditor:
     def __init__(self):
@@ -108,12 +109,16 @@ class KhtEditor:
               editor_win.destroy()
 
     def openRecentFile(self, path=QtCore.QString()):
-            editor_win=editor_window.Window(self)
-            self.window_list.append(editor_win)
-            editor_win.loadFile(path.valueText())
-            editor_win.show()
-            RecentFiles().append(path.valueText())
-            self.last_know_path=QtCore.QString(os.path.dirname(str(path))) 
+        editor_win=editor_window.Window(self)
+        self.window_list.append(editor_win)
+        editor_win.loadFile(path.valueText())
+        editor_win.show()
+        RecentFiles().append(path.valueText())
+        self.last_know_path=QtCore.QString(os.path.dirname(str(path))) 
+            
+    def showPrefs(self,win):
+        self.khtsettings = settings.KhtSettings(win)
+        self.khtsettings.show()
 
 if __name__ == '__main__':
     KhtEditor()

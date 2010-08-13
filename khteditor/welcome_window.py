@@ -155,4 +155,8 @@ class WelcomeWindow(QtGui.QMainWindow):
                 QtGui.QKeySequence(self.tr("Ctrl+N", "New")))
         fileMenu.addAction(self.tr("&Open..."), self.parent.openFile,
                 QtGui.QKeySequence(self.tr("Ctrl+O", "Open")))
+        fileMenu.addAction(self.tr("&Preferences..."), self.showPrefs)
         fileMenu.addAction(self.tr("&About"), self.do_about)
+        
+    def showPrefs(self):
+        self.parent.showPrefs(self)

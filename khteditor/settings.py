@@ -18,11 +18,14 @@ class KhtSettings(QMainWindow):
         self.loadPrefs()
         
     def loadPrefs(self):
-        pass
+        for checkBox in self.plugins_widgets :
+            checkBox.setCheckState(self.settings.value(checkBox.text()).toInt()[0])
+
 
     def savePrefs(self):
-        pass
-        
+        for checkBox in self.plugins_widgets :
+            self.settings.setValue(checkBox.text(),checkBox.checkState())
+            
     def closeEvent(self,widget,*args):
         self.savePrefs()
                      
@@ -34,9 +37,12 @@ class KhtSettings(QMainWindow):
         self._main_layout.addWidget(QLabel('Plugins :'),gridIndex,0)
         gridIndex += 1
         
-        for plugin_name in findPlugins():        
-            self.login_value = QLineEdit('PluginName')
-            self._main_layout.addWidget(self.login_value,gridIndex,1)
+        plugins = plugins_api.discover_plugin_in_paths()        
+        self.plugins_widgets = []
+        for plugin_name in plugins:        
+            aCheckBox = QCheckBox(plugin_name)
+            self.plugins_widgets.append(aCheckBox)
+            self._main_layout.addWidget(aCheckBox,gridIndex,0)
             gridIndex += 1
                             
         self.aWidget.setLayout(self._main_layout)
