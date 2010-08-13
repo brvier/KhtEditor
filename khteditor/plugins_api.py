@@ -2,6 +2,8 @@ import sys
 import os
 import glob
 
+PATHS = [os.path.join(khteditor.__path__[0],'plugins'),os.path.join(os.path.expanduser("~"),'.khteditor','plugins')]
+
 class Plugin(object):
     capabilities = []
 
@@ -23,24 +25,24 @@ def load_plugins(plugins):
         __import__(plugin, None, None, [''])
 
 
-def init_plugin_system(cfg):
+def init_plugin_system():
     #Add path to sys.path
-    for path in cfg['plugin_path']:
+    for path in PATHS:
         if not path in sys.path:
             sys.path.insert(0, path)
             print 'added to sys path',path
 
-    cfg['plugins'] = []
     #Discover plugins in path
-    for path in cfg['plugin_path']:
+    plugins = ()
+    for path in PATHS:
         for plug_path in glob.glob(os.path.join(path,'*.pyo')):
             plugin_name = os.path.splitext(os.path.basename(plug_path))[0] 
-            if not (plugin_name in cfg['plugins']):
+            if not (plugin_name in plugins):
                 print 'Discover plugin : ' + plugin_name
-                cfg['plugins'].append(plugin_name)
+                plugins.append(plugin_name)
                 
     #Load plugins       
-    load_plugins(cfg['plugins'])
+    load_plugins(plugins)
 
 
 def find_plugins():
