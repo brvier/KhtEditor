@@ -35,6 +35,6 @@ class WhiteSpaceRemover_Plugin(Plugin):
         cursor = widget.textCursor()
         cursor.setPosition(widget.document().findBlockByLineNumber(line_number).position())
         widget.setTextCursor(cursor)
-        self.document().setModified(False)
+        widget.document().setModified(False)
         cursor.endEditBlock()
         
