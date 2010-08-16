@@ -5,7 +5,8 @@ import os
 import re
 
 class WhiteSpaceRemover_Plugin(Plugin):
-    capabilities = ['afterKeyPressEvent','beforeFileSave']
+    #Unactivate on save. Too slow for n900 use
+    capabilities = ['afterKeyPressEvent',]#'beforeFileSave']
 
     def do_afterKeyPressEvent(self, widget,event):
         if (event.key() == Qt.Key_Return) or (event.key() == Qt.Key_Enter):
