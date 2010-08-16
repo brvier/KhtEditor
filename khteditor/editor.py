@@ -84,7 +84,7 @@ class KhtTextEdit(QtGui.QTextEdit):
         filehandle = None
         try:
             #Before FileSave plugin hook
-            for plugin in get_plugins_by_capability('beforeFileSave'):
+            for plugin in filter_plugins_by_capability('beforeFileSave',self.enabled_plugins):
                 plg = plugin()
                 self.threaded_plugins.append(plg)
                 plg.do_beforeFileSave(self)
