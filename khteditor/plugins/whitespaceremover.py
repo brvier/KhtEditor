@@ -18,7 +18,9 @@ class WhiteSpaceRemover_Plugin(Plugin):
             text = unicode.rstrip(unicode(cursor.selectedText()),' \t')
             cursor.removeSelectedText()
             cursor.insertText(text)
+            cursor.endEditBlock()
             cursor.setPosition(widget.document().findBlockByLineNumber(line_number).position())
+            cursor.movePosition(QTextCursor.EndOfLine,QTextCursor.MoveAnchor)
             widget.setTextCursor(cursor)
 
     def do_beforeFileSave(self, widget):
@@ -33,9 +35,8 @@ class WhiteSpaceRemover_Plugin(Plugin):
             new_text += '%s%s' % (unicode.rstrip(line,' \t'),os.linesep)
         widget.document().setPlainText(new_text)
         cursor = widget.textCursor()
+        cursor.endEditBlock()
         cursor.setPosition(widget.document().findBlockByLineNumber(line_number).position())
         widget.setTextCursor(cursor)
-        cursor.endEditBlock()
         widget.document().setModified(False)
         widget.document().emit(SIGNAL('modificationChanged(bool)'),False)
-
