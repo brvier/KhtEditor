@@ -2,6 +2,7 @@ import sys
 import os
 import glob
 import khteditor
+#from PyQt4.QtCore import QSettings
 
 PATHS = [os.path.join(khteditor.__path__[0],'plugins'),os.path.join(os.path.expanduser("~"),'.khteditor','plugins')]
 
@@ -14,6 +15,13 @@ class Plugin(object):
             self.capabilities
         )
 
+def filter_plugins_by_capability(capability,plugins_list):
+    result = []
+    for plugin in plugins_list:
+        if capability in plugin.capabilities:
+            result.append(plugin)
+    return result
+            
 def get_plugins_by_capability(capability):
     result = []
     for plugin in Plugin.__subclasses__():

@@ -5,7 +5,7 @@
 import re
 from PyQt4 import QtCore,QtGui
 from PyQt4.QtCore import Qt
-from plugins_api import init_plugin_system, get_plugins_by_capability
+from plugins_api import init_plugin_system, filter_plugins_by_capability
 from recent_files import RecentFiles
 
 class KhtTextEdit(QtGui.QTextEdit):
@@ -42,15 +42,17 @@ class KhtTextEdit(QtGui.QTextEdit):
         #Keep threaded plugins references to avoid them to be garbage collected
         self.threaded_plugins = []
 
+        self.enabled_plugins = parent.enabled_plugins
+
     #PySide Bug : The type of e is QEvent instead of QKeyEvent
     def keyPressEvent(self, event):
         """Intercept the key event to lets plugin do something if they want"""
         if event.type() == QtCore.QEvent.KeyPress:
-            for plugin in get_plugins_by_capability('beforeKeyPressEvent'):
+            for plugin in filter_plugins_by_capability('beforeKeyPressEvent',self.enabled_plugins):
                 plg = plugin()
                 plg.do_beforeKeyPressEvent(self,event)
             QtGui.QTextEdit.keyPressEvent(self, event)
-            for plugin in get_plugins_by_capability('afterKeyPressEvent'):
+            for plugin in filter_plugins_by_capability('afterKeyPressEvent',self.enabled_plugins):
                 plg = plugin()
                 plg.do_afterKeyPressEvent(self,event)
 
@@ -100,7 +102,7 @@ class KhtTextEdit(QtGui.QTextEdit):
         finally:
             if filehandle is not None:
                 filehandle.close()
-                for plugin in get_plugins_by_capability('afterFileSave'):
+                for plugin in filter_plugins_by_capability('afterFileSave',self.enabled_plugins):
                     plg = plugin()
                     self.threaded_plugins.append(plg)
                     plg.do_afterFileSave(self)

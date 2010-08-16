@@ -31,7 +31,7 @@ if __name__ == "__main__":
     p.section="user/development"
     p.arch="armel"
     p.urgency="low"
-    p.bugtracker='http://khertan.net/flyspray/index.php?project=7'
+    p.bugtracker='http://khertan.net/khteditor/bugs'
     p.distribution="fremantle"
     p.repository="extras-devel"
     p.icon='khteditor.png'

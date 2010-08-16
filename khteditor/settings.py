@@ -36,11 +36,12 @@ class KhtSettings(QMainWindow):
         gridIndex = 0
         self._main_layout.addWidget(QLabel('Plugins :'),gridIndex,0)
         gridIndex += 1
-        
-        plugins = plugins_api.discover_plugin_in_paths()        
+
+        plugins_api.init_plugin_system()
+        plugins = plugins_api.find_plugins()        
         self.plugins_widgets = []
-        for plugin_name in plugins:        
-            aCheckBox = QCheckBox(plugin_name)
+        for plugin in plugins:        
+            aCheckBox = QCheckBox(plugin.__name__)
             self.plugins_widgets.append(aCheckBox)
             self._main_layout.addWidget(aCheckBox,gridIndex,0)
             gridIndex += 1

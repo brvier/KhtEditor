@@ -6,7 +6,7 @@ import sys
 import re
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
-from plugins_api import init_plugin_system, get_plugins_by_capability
+from plugins_api import init_plugin_system, filter_plugins_by_capability, find_plugins
 import editor
 #import editor_frame
 from subprocess import *
@@ -121,6 +121,13 @@ class Window(QtGui.QMainWindow):
 
         #Initialization of the plugin system
         init_plugin_system()
+
+        #Got the enabled plugin
+        self.settings = QtCore.QSettings()
+        self.enabled_plugins = []
+        for plugin in find_plugins():
+            if self.settings.value(plugin.__name__).toBool():
+                self.enabled_plugins.append(plugin)      
 
         self.findAndReplace = FindAndReplaceDlg()
         self.setupFileMenu()
@@ -248,7 +255,7 @@ class Window(QtGui.QMainWindow):
         self.addAction(self.tb_findagain)
 
         #Hook for plugins to add buttons :
-        for plugin in get_plugins_by_capability('toolbarHook'):
+        for plugin in filter_plugins_by_capability('toolbarHook',self.enabled_plugins):
             print 'Found 1 Plugin for toolbarHook'
             plg = plugin()
             plg.do_toolbarHook(self)
