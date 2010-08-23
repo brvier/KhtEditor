@@ -1,6 +1,6 @@
 from PyQt4.QtGui import QTextEdit,QTextCursor
 from PyQt4.QtCore import Qt,SIGNAL
-from khteditor.plugins_api import Plugin
+from plugins_api import Plugin
 import os
 import re
 

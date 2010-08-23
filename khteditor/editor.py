@@ -34,7 +34,23 @@ class KhtTextEdit(QtGui.QTextEdit):
         scroller.setEnabled(True)
 
         #Set no wrap
-        self.setLineWrapMode(QtGui.QTextEdit.NoWrap)
+        if (parent.settings.value("WrapLine").toBool()):
+            self.setLineWrapMode(QtGui.QTextEdit.WidgetWidth)            
+        else:
+            self.setLineWrapMode(QtGui.QTextEdit.NoWrap)
+
+        #Get Font Size
+        fontsize = parent.settings.value("FontSize").toInt()[0]
+        if fontsize==0:
+            fontsize=11
+        #Get Font
+        try:
+            fontname = parent.settings.value("FontName").toString()
+        except:
+            fontname = 'Monospace'
+        #Set Font
+        self.setCurrentFont(QtGui.QFont(fontname,fontsize))
+        
 
         #Remove auto capitalization
         self.setInputMethodHints(Qt.ImhNoAutoUppercase)

@@ -6,7 +6,7 @@
 from distutils.core import setup
 
 setup(name='KhtEditor',
-      version='0.0.1',
+      version='0.0.2',
       license='GNU GPLv3',
       description='A source code editor designed for Maemo and Meego devices, support Scripts and Plugins.',
       author='Benoît HERVIER',

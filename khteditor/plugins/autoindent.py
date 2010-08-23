@@ -1,6 +1,6 @@
 from PyQt4.QtGui import QTextEdit
 from PyQt4.QtCore import Qt
-from khteditor.plugins_api import Plugin
+from plugins_api import Plugin
 import re
 
 class AutoIndent_Plugin(Plugin):

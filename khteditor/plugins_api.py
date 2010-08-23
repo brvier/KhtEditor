@@ -4,7 +4,7 @@ import glob
 import khteditor
 #from PyQt4.QtCore import QSettings
 
-PATHS = [os.path.join(khteditor.__path__[0],'plugins'),os.path.join(os.path.expanduser("~"),'.khteditor','plugins')]
+PATHS = [os.path.join(khteditor.__path__[0],'plugins'),os.path.join(os.path.expanduser("~"),'.khteditor','plugins'),os.path.join(os.path.abspath(sys.path[0]),'plugins')]
 
 class Plugin(object):
     capabilities = []
@@ -31,12 +31,13 @@ def get_plugins_by_capability(capability):
 
 def load_plugins(plugins):
     for plugin in plugins:
-        __import__(plugin, None, None, [''])
+        print 'Load plugin:',plugin 
+        print __import__(plugin, None, None, [''])
 
 def discover_plugin_in_paths():
     plugins = []
-    for path in PATHS:
-        for plug_path in glob.glob(os.path.join(path,'*.pyc')):
+    for path in PATHS:        
+        for plug_path in glob.glob(os.path.join(path,'*.py')):
             plugin_name = os.path.splitext(os.path.basename(plug_path))[0] 
             if not (plugin_name in plugins):
                 print 'Discover plugin : ' + plugin_name
@@ -44,15 +45,17 @@ def discover_plugin_in_paths():
     return plugins
     
 def init_plugin_system():
+    print 'Init plugin system --'
+    
     #Add path to sys.path
     for path in PATHS:
         if not path in sys.path:
-            sys.path.insert(0, path)
+            sys.path.insert(1, path)
             print 'added to sys path',path
 
     #Discover plugins in path
     plugins = discover_plugin_in_paths()
-                
+                    
     #Load plugins       
     load_plugins(plugins)
 
