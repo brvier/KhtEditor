@@ -6,7 +6,7 @@ import sys
 import re
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
-from plugins_api import init_plugin_system, filter_plugins_by_capability, find_plugins
+from plugins.plugins_api import init_plugin_system, filter_plugins_by_capability, find_plugins, Plugin
 import editor
 #import editor_frame
 from subprocess import *

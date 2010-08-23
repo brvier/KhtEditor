@@ -1,6 +1,6 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-from plugins_api import init_plugin_system, filter_plugins_by_capability, find_plugins
+from plugins.plugins_api import init_plugin_system, filter_plugins_by_capability, find_plugins
 import os
 import sys
 

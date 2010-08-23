@@ -322,11 +322,11 @@ class KhtTextEdit(QtGui.QTextEdit):
         """
         # Use flags for case match
         flags = QtGui.QTextDocument.FindFlags()
-        if args[0]:
+        if args[0]==True:
             flags = flags|QtGui.QTextDocument.FindCaseSensitively
-        if args[1]:
+        if args[1]==True:
             flags = flags|QtGui.QTextDocument.FindWholeWords
-        if args[2]:
+        if args[2]==True:
             flags = flags|QtGui.QTextDocument.FindBackward
 
         if args[3]:
