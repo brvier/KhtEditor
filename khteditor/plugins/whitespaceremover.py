@@ -6,21 +6,33 @@ import re
 
 class WhiteSpaceRemover_Plugin(Plugin):
     #Unactivate on save. Too slow for n900 use
-    capabilities = ['beforeKeyPressEvent',]#'beforeFileSave']
+    capabilities = ['afterKeyPressEvent',]#'beforeFileSave']
 
-    def do_beforeKeyPressEvent(self, widget,event):
+    def do_afterKeyPressEvent(self, widget,event):
         if (event.key() == Qt.Key_Return) or (event.key() == Qt.Key_Enter):
             # delete whitespace at end of the previous line
-            print 'Whitespaceremover called'
+            print 'Whitespaceremover after called'
             cursor = widget.textCursor()
+
+            #Do not strip whitespace if there is a selection
+            if cursor.hasSelection():
+                return                
+                
+            #keep position
+            position = cursor.position()
+            
             cursor.beginEditBlock()
+            cursor.movePosition(QTextCursor.Up,QTextCursor.MoveAnchor)
+            cursor.movePosition(QTextCursor.EndOfLine,QTextCursor.MoveAnchor)
             cursor.movePosition(QTextCursor.WordLeft,QTextCursor.MoveAnchor)
             cursor.movePosition(QTextCursor.EndOfWord,QTextCursor.MoveAnchor)
-            if not cursor.atBlockEnd():
-                cursor.movePosition(QTextCursor.NextWord,QTextCursor.KeepAnchor)                
-                cursor.removeSelectedText()
+            cursor.movePosition(QTextCursor.EndOfLine,QTextCursor.KeepAnchor)            
+            cursor.removeSelectedText()
+
+            #Restore position
+            cursor.setPosition(position,QTextCursor.MoveAnchor)            
             cursor.endEditBlock()
-            
+                               
     def do_beforeFileSave(self, widget):
         # delete whitespace at end of the previous line
         cursor = widget.textCursor()
