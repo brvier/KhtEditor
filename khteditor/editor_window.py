@@ -280,23 +280,8 @@ class Window(QtGui.QMainWindow):
     def do_about(self):
         self.parent.about(self)
 
-#    def do_indent(self):
-#        self.editor.indent()
-
-#    def do_unindent(self):
-#        self.editor.unindent()
-
-#    def do_comment(self):
-#        self.editor.comment()
-
-#    def do_save(self):
-#        self.fileSave()
-
-#    def do_duplicate(self):
-#        self.editor.duplicate()
-
-#    def do_findagain(self):
-#        self.findAndReplace.findClicked()
+    def do_gotoLine(self, line):
+        self.editor.gotoLine(line)
 
     def do_find(self):
         self.findAndReplace.connect(self.findAndReplace,

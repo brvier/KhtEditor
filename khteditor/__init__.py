@@ -29,13 +29,14 @@ class KhtEditor:
       self.run()
 
     def run(self):
-#      settings = QtCore.QSettings()
-#      self.recentFiles = settings.value("RecentFiles").toStringList()
+        """
+            Run method
+        """
+        
+        window = welcome_window.WelcomeWindow(self)
+        window.show()
 
-      window = welcome_window.WelcomeWindow(self)
-      window.show()
-      
-      for arg in self.app.argv()[1:]:
+        for arg in self.app.argv()[1:]:
           path = os.path.abspath(arg)
           if os.path.isfile(path):
               editor_win=editor_window.Window(self)
@@ -44,12 +45,13 @@ class KhtEditor:
               editor_win.show()
               RecentFiles().append(QtCore.QString(path))
 
-      sys.exit(self.app.exec_())
+        sys.exit(self.app.exec_())
       
     def about(self,widget):
-        #QtGui.QMessageBox.about(widget, ("About KhtEditor"),
-        #        ("<p><b>KhtEditor</b> is a source code editor "
-        #                "Mainly designed for Maemo and Meego.</p>"))
+        """
+            Display the about dialog
+        """
+        
         aboutWin = QtGui.QMainWindow(widget)
         aboutWin.setAttribute(Qt.WA_Maemo5StackedWindow, True)
         aboutWin.setAttribute(Qt.WA_Maemo5AutoOrientation, True)
@@ -66,7 +68,7 @@ class KhtEditor:
         aboutLayout = QtGui.QVBoxLayout(awidget)
         
         aboutIcon = QtGui.QLabel()
-        aboutIcon.setPixmap(QtGui.QPixmap(os.path.join(khteditor.__path__[0],'icons','khteditor.png')).scaledToHeight(128))
+        aboutIcon.setPixmap(QtGui.QPixmap(khteditor.__path__[0],'icons','khteditor.png').scaledToHeight(128))
         aboutIcon.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
         aboutIcon.resize(140,140)
         aboutLayout.addWidget(aboutIcon)
@@ -75,8 +77,9 @@ class KhtEditor:
                                    <br><br>A source code editor designed for ease of use on small screen
                                    <br>Licenced under GPLv3
                                    <br>By Beno&icirc;t HERVIER (Khertan) 
-                                   <br><br><br><b>Bugtracker : </b>http://khertan.net/flyspray
+                                   <br><br><br><b>Bugtracker : </b>http://khertan.net/khteditor:bugs
                                    <br><b>Sources : </b>http://gitorious.org/khteditor                                   
+                                   <br><b>Www : </b>http://khertan.net/khteditor                                   
                                    <br><br><b>Thanks to :</b>
                                    <br>achipa on #pyqt
                                    <br>ddoodie on #pyqt
@@ -93,22 +96,33 @@ class KhtEditor:
         aboutWin.show()
         
     def newFile(self):
+        """
+            Create a new editor window
+        """
+        
         editor_win = editor_window.Window(self)
         editor_win.show()
         self.window_list.append(editor_win)
 
     def openFile(self, path=QtCore.QString()):
-            editor_win=editor_window.Window(self)
-            filename = editor_win.openFile(self.last_know_path)
-            if not filename.isEmpty():
-              editor_win.show()
-              self.window_list.append(editor_win)
-              RecentFiles().append(filename)
-              self.last_know_path=QtCore.QString(os.path.dirname(str(filename)))
-            else:
-              editor_win.destroy()
+        """
+            Create a new editor window and open selected file
+        """
+        editor_win=editor_window.Window(self)
+        filename = editor_win.openFile(self.last_know_path)
+        if not filename.isEmpty():
+          editor_win.show()
+          self.window_list.append(editor_win)
+          RecentFiles().append(filename)
+          self.last_know_path=QtCore.QString(os.path.dirname(str(filename)))
+        else:
+          editor_win.destroy()
 
     def openRecentFile(self, path=QtCore.QString()):
+        """
+            Create a new editor window and open a recent file
+        """
+        
         editor_win=editor_window.Window(self)
         self.window_list.append(editor_win)
         editor_win.loadFile(path.valueText())
@@ -117,6 +131,10 @@ class KhtEditor:
         self.last_know_path=QtCore.QString(os.path.dirname(str(path))) 
             
     def showPrefs(self,win):
+        """
+            Instantiate the prefs window and show it
+        """
+        
         self.khtsettings = settings.KhtSettings(win)
         self.khtsettings.show()
 

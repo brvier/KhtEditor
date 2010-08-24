@@ -2,38 +2,49 @@
 
 """KhtEditor a source code editor by Khertan : Welcome Window"""
 
-import sys
 import os
-from PyQt4 import QtCore, QtGui, QtMaemo5
+from PyQt4 import QtCore, QtGui
+try:
+    from PyQt4 import QtMaemo5
+    isMAEMO = True
+except:
+    isMAEMO = False
 from PyQt4.QtCore import Qt
-import editor_window
 from recent_files import RecentFiles
+import sys
 import khteditor
 
 class Curry:
-  #keep a reference to all curried instances
-  #or they are immediately garbage collected
-  instances = []
-  def __init__(self, func, *args, **kwargs):
-    self.func = func
-    self.pending = args[:]
-    self.kwargs = kwargs.copy()
-    self.instances.append(self)
+    """keep a reference to all curried instances or they are immediately garbage collected"""
+    instances = []
+    def __init__(self, func, *args, **kwargs):
+        self.func = func
+        self.pending = args[:]
+        self.kwargs = kwargs.copy()
+        self.instances.append(self)
  
-  def __call__(self, *args, **kwargs):
-    kw = self.kwargs
-    kw.update(kwargs)
-    funcArgs = self.pending + args
-    #sometimes we want to limit the number of arguments that get passed,
-    #calling the constructor with the option __max_args__ = n will limit
-    #the function call args to the first n items
-    maxArgs = kw.get("__max_args__", -1)
-    if maxArgs != -1:
-        funcArgs = funcArgs[:maxArgs]
-        del kw["__max_args__"]
-    return self.func(*funcArgs, **kw)
+    def __call__(self, *args, **kwargs):
+        """
+            Call the right methods with right parameters
+        """
+        
+        kwtmp = self.kwargs
+        kwtmp.update(kwargs)
+        funcArgs = self.pending + args
+        #sometimes we want to limit the number of arguments that get passed,
+        #calling the constructor with the option __max_args__ = n will limit
+        #the function call args to the first n items
+        maxArgs = kwtmp.get("__max_args__", -1)
+        if maxArgs != -1:
+            funcArgs = funcArgs[:maxArgs]
+            delkwtmp["__max_args__"]
+        return self.func(*funcArgs, **kwtmp)
 
 class WelcomeWindow(QtGui.QMainWindow):
+    """
+        The welcome window
+    """
+    
     def __init__(self, parent=None):
         QtGui.QMainWindow.__init__(self,None)
         self.parent = parent
@@ -42,45 +53,47 @@ class WelcomeWindow(QtGui.QMainWindow):
         self.setupMain()
 
         self.setCentralWidget(self.scrollArea)
- 	#TODO : Test if on maemo or not
-        self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
-        self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
+        
+        #This is for the case we aren't on Maemo
+        if isMAEMO:
+            self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
+            self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
         self.setWindowTitle("KhtEditor")
 
     def do_about(self):
+        """
+            Display about dialog from parent
+        """
+        
         self.parent.about(self)
 
-    def showEvent(self,event):
-        print 'showEvent'
-
     def enterEvent(self,event):
-        print 'enterEvent'
+        """
+            Redefine the enter event to refresh recent file list
+        """        
         self.refreshMain()
-
-    def focusInEvent(self,event):
-        print 'focusInEvent'
-
-    def paintEvent(self,event):
-        print 'paintEvent'
         
     def refreshMain(self):
+        """
+            Refresh the recent files list
+        """
+        
         recentfiles = RecentFiles().get()
         print self._layout.count()
         for index in range(0,self._layout.count()-4):
-#            recentFileLabel = self._layout.itemAt(index+4).widget()
             recentFileButton = self._layout.itemAt(index+4).widget()
             try:
-#                recentFileLabel.setText(os.path.abspath(str(recentfiles[index])))              
                 recentFileButton.setText(os.path.basename(str(recentfiles[index])))
                 recentFileButton.setValueText(os.path.abspath(str(recentfiles[index])))         
-#                recentFileButton.setValueText(os.path.abspath(str(recentfiles[index])))
             except StandardError, e:
-#                print e,type(recentFileButton),index,dir(recentFileButton)
                 recentFileButton.setDisabled(True)
         
 
     def setupMain(self):
-#        awidget.setMinimumSize(480,480)
+        """
+            GUI Initialization
+        """
+        
         self.scrollArea = QtGui.QScrollArea(self)
         self.scrollArea.setWidgetResizable(True)
         awidget = QtGui.QWidget(self.scrollArea)
@@ -88,13 +101,11 @@ class WelcomeWindow(QtGui.QMainWindow):
         awidget.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         self.scrollArea.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
    
-#        self.scrollArea.setMinimumHeight(800)
         scroller = self.scrollArea.property("kineticScroller").toPyObject()
         scroller.setEnabled(True)
 
         self._layout = QtGui.QVBoxLayout(awidget)
         
-        #self._layout.resize(800,800)
         self.icon = QtGui.QLabel()
         self.icon.setPixmap(QtGui.QPixmap(os.path.join(khteditor.__path__[0],'icons','khteditor.png')).scaledToHeight(64))
         self.icon.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
@@ -120,34 +131,29 @@ class WelcomeWindow(QtGui.QMainWindow):
 
         self._layout.addWidget(label)
 
-#        self.scrollArea.setLayout(self._layout)
-#        awidget.setMinimumSize(800,800)
+
         awidget.setLayout(self._layout)
         self.scrollArea.setWidget(awidget)
         recentfiles = RecentFiles().get()
         for index in range(10):
             recentFileButton = QtMaemo5.QMaemo5ValueButton()
-#            recentFileLabel = QtGui.QLabel()
-#            recentFileButton = QtGui.QPushButton()
-#            recentFileButton.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-            
-#            recentFileButton.setMinimumSize(200,480)
             self.connect(recentFileButton, QtCore.SIGNAL('clicked()'), Curry(self.openRecentFile,recentFileButton))
-#            self._layout.addWidget(recentFileLabel)
             self._layout.addWidget(recentFileButton)
-#            try:
-#                recentFileButton.setText('<b>'+os.path.basename(str(recentfiles[index]))+'</b>\n'+recentfiles[index])         
-#                recentFileButton.setValueText(recentfiles[index])
-#            except StandardError,e:
-#                recentFileButton.setDisabled(True)
-#                print e
 
     def openRecentFile(self,button):
+        """
+            Call back which open a recent file
+        """
+        
         self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
         self.parent.openRecentFile(button)
         self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
 
-    def setupMenu(self):
+    def setupMenu(self):$
+        """
+            Initialization of the maemo menu
+        """
+        
         fileMenu = QtGui.QMenu(self.tr("&Menu"), self)
         self.menuBar().addMenu(fileMenu)
 
@@ -159,4 +165,7 @@ class WelcomeWindow(QtGui.QMainWindow):
         fileMenu.addAction(self.tr("&About"), self.do_about)
         
     def showPrefs(self):
+        """
+            Call the parent class to show window
+        """
         self.parent.showPrefs(self)

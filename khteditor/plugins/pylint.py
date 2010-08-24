@@ -8,6 +8,9 @@ from plugins_api import Plugin
 import re
 import os.path
 
+__version__ = '0.0'
+
+
 class PyLint_Plugin(Plugin, QObject):
     capabilities = ['toolbarHook']
     thread = None

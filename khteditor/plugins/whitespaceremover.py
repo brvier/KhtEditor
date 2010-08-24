@@ -4,6 +4,8 @@ from plugins_api import Plugin
 import os
 import re
 
+__version__ = '0.1'
+
 class WhiteSpaceRemover_Plugin(Plugin):
     #Unactivate on save. Too slow for n900 use
     capabilities = ['afterKeyPressEvent',]#'beforeFileSave']
