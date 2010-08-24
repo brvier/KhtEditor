@@ -2,17 +2,66 @@
 #PYLINT:W:Unused import Qt
 #PYLINT:C:Comma not followed by a space
 #PYLINT:C:Missing docstring
-from PyQt4.QtCore import Qt,QThread,QProcess,QRegExp,SIGNAL,QString,QObject
-from PyQt4.QtGui import QColor,QTextEdit,QTextFormat,QAction,QIcon
+from PyQt4.QtCore import Qt,QThread,QProcess,QRegExp,SIGNAL,QString,QObject,QAbstractListModel,QModelIndex, QVariant
+from PyQt4.QtGui import QColor,QTextEdit,QTextFormat,QAction,QIcon,QMainWindow,QStringListModel,QListView
+from PyQt4.QtMaemo5 import *
 from plugins_api import Plugin
 import re
 import os.path
+import sys
 
-__version__ = '0.0'
 
 
-class PyLint_Plugin(Plugin, QObject):
+class PyLint_ResultModel(QAbstractListModel):
+    """ListModel : A simple list : Start_At,TweetId, Users Screen_name, Tweet Text, Profile Image"""
+
+    def __init__(self, mlist=[]):
+        QAbstractListModel.__init__(self)
+
+        # Cache the passed data list as a class member.
+        self._items = mlist
+
+    def rowCount(self, parent = QModelIndex()):
+        return len(self._items)
+        
+    def setData(self,mlist):
+        try:
+            if len(mlist)>0:
+                if type(mlist[0])==tuple:
+                    if len(mlist[0])==3:
+                        self._items = mlist
+                        QObject.emit(self, SIGNAL("dataChanged(const QModelIndex&, const QModelIndex &)"), self.createIndex(0,0), self.createIndex(0,len(self._items)))
+        except:
+            KhweeteurNotification().info('Wrong cache format. Reinit cache.')
+            print 'Wrong cache format'
+            
+    def data(self, index, role = Qt.DisplayRole):
+        if role == Qt.DisplayRole:
+            text = self._items[index.row()][0]+':L'+self._items[index.row()][1]+' : '+self._items[index.row()][2]
+            return QVariant(text)
+        else:
+           return QVariant()
+           
+class PyLint_Result(QMainWindow):
+    def __init__(self,parent=None):
+        QMainWindow.__init__(self,parent)
+        self.parent = parent
+        self.setAttribute(Qt.WA_Maemo5AutoOrientation, True)
+        
+        self.listView = QListView()
+        self.listModel = PyLint_ResultModel()
+        self.listView.setViewMode(QListView.ListMode)
+        self.listView.setWordWrap(True)
+        self.listView.setResizeMode(QListView.Adjust)
+        self.listView.setModel(self.listModel)
+        self.setCentralWidget(self.listView)
+        
+    def setResult(self,results):
+        self.listModel.setData(results)
+        
+class PyLint(Plugin, QObject):
     capabilities = ['toolbarHook']
+    __version__ = '0.1'
     thread = None
     
     def do_toolbarHook(self,parent):
@@ -25,10 +74,9 @@ class PyLint_Plugin(Plugin, QObject):
         except:
             self.parent.plugins_ref = [self,]
             
-        icon = QIcon('/home/opt/khteditor/icons/tb_pylint.png')
+        icon = QIcon(os.path.join(sys.path[0],'icons/tb_pylint.png'))
         print 'test'
         self.parent.tb_pylint = QAction(icon, 'PyLint', self.parent)          
-#PYLINT:C:Line too long 
         self.connect(self.parent.tb_pylint, SIGNAL('triggered()'), self.do_pylint)
         self.parent.toolbar.addAction(self.parent.tb_pylint)
         
@@ -40,11 +88,9 @@ class PyLint_Plugin(Plugin, QObject):
 
         self.pylintProc = QProcess()
 
-#PYLINT:C:Line too long 
         self.pylintProc.setProcessChannelMode(QProcess.MergedChannels)
         self.pylintProc.setWorkingDirectory(os.path.dirname(str(self.parent.editor.filename)))
         self.pylintProc.setReadChannel(QProcess.StandardOutput)
-#PYLINT:C:Line too long 
 
         self.connect(self.pylintProc, SIGNAL('finished()'), self.handleStdout)
         self.connect(self.pylintProc, SIGNAL('readyReadStandardOutput()'), self.handleStdout)
@@ -57,6 +103,10 @@ class PyLint_Plugin(Plugin, QObject):
         """
         Private slot to handle the readyReadStdout signal of the pylint process.
         """
+        self.win = PyLint_Result()
+        self.win.show()
+        self.win.setAttribute(Qt.WA_Maemo5ShowProgressIndicator,True)
+        resultList = []
         while self.pylintProc and self.pylintProc.canReadLine():
             result = self.pylintProc.readLine()
             if result != None:        
@@ -69,29 +119,17 @@ class PyLint_Plugin(Plugin, QObject):
                     if pos<0:
                         break
                     line = int(regex.cap(2))
-                    block = self.parent.editor.document().findBlockByLineNumber((line-2)+inserted_line)
-                    if not (block.text().startsWith('#PYLINT:')):                    
-                        block = self.parent.editor.document().findBlockByLineNumber((line-1)+inserted_line)
-                        cursor = self.parent.editor.textCursor() 
-                        cursor.setPosition(block.position())
-                        
-                        #Hilgight background
-#PYLINT:C:Line too long 
-#                        _color = QColor()
-#                        _color.setNamedColor('red')
-#PYLINT:C:Line too long 
-#                        _color.lighter(160)
-#                        _selection = QTextEdit.ExtraSelection()
-#                        _selection.format.setBackground(_color)
-#                        _selection.format.setProperty(QTextFormat.FullWidthSelection, True)       
-#                        _selection.cursor = cursor
-#                        _selection.cursor.clearSelection()
-#                        self.parent.extraSelections().append(_selection)                        
-                        cursor.insertText("#PYLINT:"+regex.cap(1)+':'+regex.cap(3)+'\n')
-                        inserted_line=inserted_line+1
-            
+                    resultList.append((regex.cap(1),regex.cap(2),regex.cap(3)))
                     pos = pos + regex.matchedLength()
 
+        self.win.connect(self.win.listView,SIGNAL('doubleClicked(const QModelIndex&)'),self.gotoLine)
+        self.win.setResult(resultList)
+        self.win.setAttribute(Qt.WA_Maemo5ShowProgressIndicator,False)
+        
+    def gotoLine(self,index):
+        line = int(self.win.listModel._items[index.row()][1])
+        self.parent.do_gotoLine(line)
+        
     def handleStderr(self):
         """
         Private slot to handle the readyReadStderr signal of the pylint process.

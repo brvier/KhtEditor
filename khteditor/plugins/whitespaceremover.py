@@ -4,16 +4,16 @@ from plugins_api import Plugin
 import os
 import re
 
-__version__ = '0.1'
 
-class WhiteSpaceRemover_Plugin(Plugin):
+
+class EndWhiteSpaceRemover(Plugin):
     #Unactivate on save. Too slow for n900 use
     capabilities = ['afterKeyPressEvent',]#'beforeFileSave']
+    __version__ = '0.1'
 
     def do_afterKeyPressEvent(self, widget,event):
         if (event.key() == Qt.Key_Return) or (event.key() == Qt.Key_Enter):
             # delete whitespace at end of the previous line
-            print 'Whitespaceremover after called'
             cursor = widget.textCursor()
 
             #Do not strip whitespace if there is a selection

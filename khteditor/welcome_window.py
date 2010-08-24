@@ -149,7 +149,7 @@ class WelcomeWindow(QtGui.QMainWindow):
         self.parent.openRecentFile(button)
         self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
 
-    def setupMenu(self):$
+    def setupMenu(self):
         """
             Initialization of the maemo menu
         """

@@ -20,7 +20,7 @@ class KhtSettings(QMainWindow):
         
     def loadPrefs(self):
         for checkBox in self.plugins_widgets :
-            checkBox.setCheckState(self.settings.value(checkBox.text()).toInt()[0])
+            checkBox.setCheckState(self.settings.value(checkBox.text().split(' ')[0]).toInt()[0])
         if (self.settings.value('FontName').toPyObject()) != None:
             self.fontName.setCurrentFont(self.settings.value('FontName').toPyObject())
         self.fontSize.setValue(self.settings.value("FontSize").toInt()[0])        
@@ -28,7 +28,7 @@ class KhtSettings(QMainWindow):
 
     def savePrefs(self):
         for checkBox in self.plugins_widgets :
-            self.settings.setValue(checkBox.text(),checkBox.checkState())
+            self.settings.setValue(checkBox.text().split(' ')[0],checkBox.checkState())
         self.settings.setValue('FontName',QVariant(self.fontName.currentFont()))
         self.settings.setValue('FontSize',QVariant(self.fontSize.value()))
         self.settings.setValue('WrapLine',self.wrapLine.checkState())
@@ -69,7 +69,7 @@ class KhtSettings(QMainWindow):
 #        plugins = plugins_api.discover_plugin_in_paths()
         self.plugins_widgets = []
         for plugin in find_plugins():
-            aCheckBox = QCheckBox(plugin.__name__)
+            aCheckBox = QCheckBox(plugin.__name__+' '+plugin.__version__)
             self.plugins_widgets.append(aCheckBox)
             self._main_layout.addWidget(aCheckBox,gridIndex,0)
             gridIndex += 1

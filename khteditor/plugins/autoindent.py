@@ -3,11 +3,12 @@ from PyQt4.QtCore import Qt
 from plugins_api import Plugin
 import re
 
-__version__ = '0.1'
 
-class AutoIndent_Plugin(Plugin):
+
+class AutoIndent(Plugin):
     capabilities = ['afterKeyPressEvent']
-
+    __version__ = '0.1'
+    
     def do_afterKeyPressEvent(self, widget,event):
         if (event.key() == Qt.Key_Return) or (event.key() == Qt.Key_Enter):
             # copy whitespace from the beginning of the previous line
