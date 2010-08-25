@@ -206,14 +206,21 @@ class Window(QtGui.QMainWindow):
         #Return None if language not yet implemented natively in KhtEditor
         if (language != None):
             exec 'from syntax.'+language+'_highlighter import Highlighter'
+            self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
+            QtGui.QApplication.processEvents()
             self.highlighter = Highlighter(self.editor.document())
+            print 'test'
+            self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
         else:
             self.loadGenericHighlighter(filename)
 
     def loadGenericHighlighter(self,filename):
         import highlighter
         #self.language = self.detectLanguage(filename)
+        self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
+        QtGui.QApplication.processEvents()
         self.highlighter = highlighter.Highlighter(self.editor.document(),str(filename))
+        self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
     
     def detectLanguage(self,filename):
         if (filename.endsWith('.py')) or (filename.endsWith('.py')):

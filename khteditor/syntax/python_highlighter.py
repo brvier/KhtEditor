@@ -244,13 +244,10 @@ class Highlighter(QtGui.QSyntaxHighlighter):
             _format.setFontItalic(True)
 
         return _format
-
-    def rehighlight(self):
-        pass
         
     def highlightBlock(self, text):
         """Apply syntax highlighting to the given block of text.
-        """
+        """        
         # Do other syntax formatting
         for expression, nth, format in self.rules:
             index = expression.indexIn(text, 0)
@@ -268,7 +265,8 @@ class Highlighter(QtGui.QSyntaxHighlighter):
             in_multiline = self.match_multiline(text, *self.tri_single)
             in_multiline = self.match_multiline(text, *self.tri_double)
             
-        #QtGui.QApplication.processEvents()
+        #QtGui.QApplication.flush()
+        QtGui.QApplication.processEvents(QtCore.QEventLoop.ExcludeUserInputEvents)
 
     def match_multiline(self, text, delimiter, in_state, style):
         """Do highlighting of multi-line strings. ``delimiter`` should be a
