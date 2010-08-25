@@ -179,6 +179,7 @@ class Window(QtGui.QMainWindow):
             self.editor.load()
 #            QtCore.QTimer.singleShot(100, self.editor.load)
             self.setWindowTitle(QtCore.QFileInfo(self.editor.filename).fileName())
+            self.loadHighlighter(filename)
         except (IOError, OSError), e:
             QtGui.QMessageBox.warning(self, "KhtEditor -- Load Error",
                     "Failed to load %s: %s" % (filename, e))
@@ -193,11 +194,33 @@ class Window(QtGui.QMainWindow):
         self.editor.setFont(font)
         #self.editor_frame = editor_frame.Frame(self.editor)
         self.setupToolBar()
-        from syntax.python_highlighter import Highlighter
-        self.highlighter = Highlighter(self.editor.document())
+#        self.language = self.detectLanguage()
+#        self.loadHilighter()
         self.connect(self.editor.document(),
             QtCore.SIGNAL('modificationChanged(bool)'),self.do_documentChanged)
 
+    def loadHighlighter(self,filename):
+        language = self.detectLanguage(filename)
+        #Return None if language not yet implemented natively in KhtEditor
+        if (language != None):
+            exec 'from syntax.'+language+'_highlighter import Highlighter'
+            self.highlighter = Highlighter(self.editor.document())
+        else:
+            self.loadGenericHighlighter(filename)
+
+    def loadGenericHighlighter(self,filename):
+        import highlighter
+        #self.language = self.detectLanguage(filename)
+        self.highlighter = highlighter.Highlighter(self.editor.document(),str(filename))
+    
+    def detectLanguage(self,filename):
+        if (filename.endsWith('.py')) or (filename.endsWith('.py')):
+            return 'python'
+        else:
+            return None
+            
+        return language
+        
     def setupToolBar(self):
         self.toolbar = self.addToolBar('Toolbar')
 

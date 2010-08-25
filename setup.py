@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 #KhtEditor Setup File
+import khteditor
 
 from distutils.core import setup
 
 setup(name='KhtEditor',
-      version='0.0.2',
+      version=khteditor.__version__,
       license='GNU GPLv3',
       description='A source code editor designed for Maemo and Meego devices, support Scripts and Plugins.',
       author='Benoît HERVIER',

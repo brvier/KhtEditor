@@ -11,6 +11,7 @@
 ##
 import pypackager
 import os
+import khteditor
 
 if __name__ == "__main__":
     try:
@@ -19,14 +20,14 @@ if __name__ == "__main__":
         pass
 
     p=pypackager.PyPackager("khteditor")
-    p.version='0.0.1'
+    p.version=khteditor.__version__
     p.buildversion='1'
     p.display_name='KhtEditor'
     p.description="KhtEditor is a source code editor specially designed for devices running Maemo and Meego Handset."
     p.author="Benoît HERVIER"
     p.maintainer="Khertan"
     p.email="khertan@khertan.net"
-    p.depends = "python2.5-qt4-gui,python2.5-qt4-core, python2.5-qt4-maemo5"
+    p.depends = "python2.5-qt4-gui,python2.5-qt4-core, python2.5-qt4-maemo5, python-pygments"
     p.suggests = "pylint"
     p.section="user/development"
     p.arch="armel"

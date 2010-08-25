@@ -8,6 +8,7 @@ from PyQt4.QtCore import Qt
 from plugins_api import init_plugin_system, filter_plugins_by_capability
 from recent_files import RecentFiles
 
+
 class KhtTextEdit(QtGui.QTextEdit):
     """ Widget which handle all specifities of implemented in the editor"""
         
@@ -49,7 +50,7 @@ class KhtTextEdit(QtGui.QTextEdit):
         except:
             fontname = 'Monospace'
         #Set Font
-        self.setCurrentFont(QtGui.QFont(fontname,fontsize))
+        self.document().setDefaultFont(QtGui.QFont(fontname,fontsize))
         
 
         #Remove auto capitalization
