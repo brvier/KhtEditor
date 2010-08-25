@@ -210,6 +210,7 @@ class Window(QtGui.QMainWindow):
             QtGui.QApplication.processEvents()
             self.highlighter = Highlighter(self.editor.document())
             print 'test'
+            QtGui.QApplication.processEvents()
             self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
         else:
             self.loadGenericHighlighter(filename)
@@ -220,6 +221,7 @@ class Window(QtGui.QMainWindow):
         self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
         QtGui.QApplication.processEvents()
         self.highlighter = highlighter.Highlighter(self.editor.document(),str(filename))
+        QtGui.QApplication.processEvents()
         self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
     
     def detectLanguage(self,filename):

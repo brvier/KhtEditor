@@ -261,12 +261,13 @@ class Highlighter(QtGui.QSyntaxHighlighter):
 
             self.setCurrentBlockState(0)
             
-            # Do multi-line strings
-            in_multiline = self.match_multiline(text, *self.tri_single)
-            in_multiline = self.match_multiline(text, *self.tri_double)
+        # Do multi-line strings
+        in_multiline = self.match_multiline(text, *self.tri_single)
+        in_multiline = self.match_multiline(text, *self.tri_double)
             
         #QtGui.QApplication.flush()
-        QtGui.QApplication.processEvents(QtCore.QEventLoop.ExcludeUserInputEvents)
+        #QtGui.QApplication.processEvents(QtCore.QEventLoop.ExcludeUserInputEvents)
+        #QtGui.QApplication.sendPostedEvents()
 
     def match_multiline(self, text, delimiter, in_state, style):
         """Do highlighting of multi-line strings. ``delimiter`` should be a
