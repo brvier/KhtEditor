@@ -3,7 +3,7 @@
 
 """KhtEditor a source code editor by Khertan : Welcome Window"""
 
-VERSION = '0.0.2'
+__version__ = '0.0.3'
 
 import os
 import sys
@@ -18,7 +18,7 @@ import settings
 class KhtEditor:
     def __init__(self):
       self.window_list = []
-      self.version = VERSION
+      self.version = __version__
 
       self.app = QtGui.QApplication(sys.argv)
       self.app.setOrganizationName("Khertan Software")
@@ -109,9 +109,9 @@ class KhtEditor:
             Create a new editor window and open selected file
         """
         editor_win=editor_window.Window(self)
+        editor_win.show()
         filename = editor_win.openFile(self.last_know_path)
         if not filename.isEmpty():
-          editor_win.show()
           self.window_list.append(editor_win)
           RecentFiles().append(filename)
           self.last_know_path=QtCore.QString(os.path.dirname(str(filename)))
@@ -125,8 +125,8 @@ class KhtEditor:
         
         editor_win=editor_window.Window(self)
         self.window_list.append(editor_win)
-        editor_win.loadFile(path.valueText())
         editor_win.show()
+        editor_win.loadFile(path.valueText())
         RecentFiles().append(path.valueText())
         self.last_know_path=QtCore.QString(os.path.dirname(str(path))) 
             

@@ -108,7 +108,7 @@ class KhtTextEdit(QtGui.QTextEdit):
 
             filehandle = QtCore.QFile(self.filename)
             if not filehandle.open(QtCore.QIODevice.WriteOnly):
-                raise IOError, unicode(filehandle.errorString())                
+                raise IOError, unicode(filehandle.errorString())
             stream = QtCore.QTextStream(filehandle)
             stream.setCodec("UTF-8")
             stream << self.toPlainText()
@@ -182,6 +182,7 @@ class KhtTextEdit(QtGui.QTextEdit):
                 raise IOError, unicode(filehandle.errorString())
             stream = QtCore.QTextStream(filehandle)
             stream.setCodec("UTF-8")
+            QtGui.QApplication.processEvents()
             self.setPlainText(stream.readAll())
             self.document().setModified(False)
             self.setWindowTitle(QtCore.QFileInfo(self.filename).fileName())

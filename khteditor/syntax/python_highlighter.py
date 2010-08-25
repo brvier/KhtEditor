@@ -245,6 +245,9 @@ class Highlighter(QtGui.QSyntaxHighlighter):
 
         return _format
 
+    def rehighlight(self):
+        pass
+        
     def highlightBlock(self, text):
         """Apply syntax highlighting to the given block of text.
         """
@@ -256,16 +259,16 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                 # We actually want the index of the nth match
                 index = expression.pos(nth)
                 length = expression.cap(nth).length()
-                self.setFormat(index, length, format)
+                self.setFormat(index, length, format)                
                 index = expression.indexIn(text, index + length)
 
             self.setCurrentBlockState(0)
             
-            QtGui.QApplication.processEvents()
-
             # Do multi-line strings
             in_multiline = self.match_multiline(text, *self.tri_single)
             in_multiline = self.match_multiline(text, *self.tri_double)
+            
+        #QtGui.QApplication.processEvents()
 
     def match_multiline(self, text, delimiter, in_state, style):
         """Do highlighting of multi-line strings. ``delimiter`` should be a

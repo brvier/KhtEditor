@@ -179,6 +179,7 @@ class Window(QtGui.QMainWindow):
             self.editor.load()
 #            QtCore.QTimer.singleShot(100, self.editor.load)
             self.setWindowTitle(QtCore.QFileInfo(self.editor.filename).fileName())
+#            QtCore.QTimer.singleShot(100, self.loadHighlighter)
             self.loadHighlighter(filename)
         except (IOError, OSError), e:
             QtGui.QMessageBox.warning(self, "KhtEditor -- Load Error",
@@ -199,7 +200,8 @@ class Window(QtGui.QMainWindow):
         self.connect(self.editor.document(),
             QtCore.SIGNAL('modificationChanged(bool)'),self.do_documentChanged)
 
-    def loadHighlighter(self,filename):
+    def loadHighlighter(self,filename=None):
+        filename = self.editor.filename
         language = self.detectLanguage(filename)
         #Return None if language not yet implemented natively in KhtEditor
         if (language != None):
