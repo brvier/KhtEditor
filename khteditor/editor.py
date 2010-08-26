@@ -373,8 +373,11 @@ class KhtTextEdit(QtGui.QTextEdit):
     def gotoLine(self, line):
             print 'goto line:'+str(line)
             cursor = self.textCursor()
-            block = self.document().findBlockByLineNumber(line)
+            block = self.document().findBlockByLineNumber(line-1)
             cursor.setPosition(block.position())
+            self.setTextCursor(cursor)
+            self.ensureCursorVisible()
+            self.parent().activateWindow()
             
             
     def comment(self):

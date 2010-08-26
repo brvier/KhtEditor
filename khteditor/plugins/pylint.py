@@ -47,7 +47,7 @@ class PyLint_ResultModel(QAbstractListModel):
             text = self._items[index.row()][0]+':L'+self._items[index.row()][1]+' : '+self._items[index.row()][2]
             return QVariant(text)
         else:
-           return QVariant()
+            return QVariant()
            
 class PyLint_Result(QMainWindow):
     def __init__(self,parent=None):
