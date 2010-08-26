@@ -3,7 +3,7 @@
 
 """KhtEditor a source code editor by Khertan : Welcome Window"""
 
-__version__ = '0.0.3'
+__version__ = '0.0.4'
 
 import os
 import sys
@@ -68,7 +68,7 @@ class KhtEditor:
         aboutLayout = QtGui.QVBoxLayout(awidget)
         
         aboutIcon = QtGui.QLabel()
-        aboutIcon.setPixmap(QtGui.QPixmap(khteditor.__path__[0],'icons','khteditor.png').scaledToHeight(128))
+        aboutIcon.setPixmap(QtGui.QPixmap(khteditor.__path__[0],'icons','khteditor.png').scaledToHeight(140))
         aboutIcon.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
         aboutIcon.resize(140,140)
         aboutLayout.addWidget(aboutIcon)

@@ -10,8 +10,6 @@ import re
 import os.path
 import sys
 
-
-
 class PyLint_ResultModel(QAbstractListModel):
     """ListModel : A simple list : Start_At,TweetId, Users Screen_name, Tweet Text, Profile Image"""
 
@@ -31,9 +29,8 @@ class PyLint_ResultModel(QAbstractListModel):
                     if len(mlist[0])==3:
                         self._items = mlist
                         QObject.emit(self, SIGNAL("dataChanged(const QModelIndex&, const QModelIndex &)"), self.createIndex(0,0), self.createIndex(0,len(self._items)))
-        except:
-            KhweeteurNotification().info('Wrong cache format. Reinit cache.')
-            print 'Wrong cache format'
+        except StandardError,e:
+            print e 
             
     def data(self, index, role = Qt.DisplayRole):
         if role == Qt.DisplayRole:
@@ -61,7 +58,7 @@ class PyLint_Result(QMainWindow):
         
 class PyLint(Plugin, QObject):
     capabilities = ['toolbarHook']
-    __version__ = '0.1'
+    __version__ = '0.2'
     thread = None
     
     def do_toolbarHook(self,parent):
@@ -76,7 +73,7 @@ class PyLint(Plugin, QObject):
             
         icon = QIcon(os.path.join(sys.path[0],'icons/tb_pylint.png'))
         print 'test'
-        self.parent.tb_pylint = QAction(icon, 'PyLint', self.parent)          
+        self.parent.tb_pylint = QAction('PyLint', self.parent)          
         self.connect(self.parent.tb_pylint, SIGNAL('triggered()'), self.do_pylint)
         self.parent.toolbar.addAction(self.parent.tb_pylint)
         

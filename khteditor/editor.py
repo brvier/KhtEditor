@@ -73,19 +73,25 @@ class KhtTextEdit(QtGui.QTextEdit):
                 plg = plugin()
                 plg.do_afterKeyPressEvent(self,event)
 
-    def closeEvent(self):
+    def closeEvent(self,event):
         """Catch the close event and ask to save if document is modified"""
-        if self.document().isModified() and \
-           QtGui.QMessageBox.question(self,
-                   "Text Editor - Unsaved Changes",
-                   "Save unsaved changes in %s?" % self.filename,
-                   QtGui.QMessageBox.Yes|QtGui.QMessageBox.No) == \
-                QtGui.QMessageBox.Yes:
+        answer = self.document().isModified() and \
+        QtGui.QMessageBox.question(self,
+               "Text Editor - Unsaved Changes",
+               "Save unsaved changes in %s?" % self.filename,
+               QtGui.QMessageBox.Yes|QtGui.QMessageBox.No|QtGui.QMessageBox.Close)
+        if answer == QtGui.QMessageBox.Yes:
             try:
                 self.save()
+                event.accept()
             except (IOError, OSError), ioError:
                 QtGui.QMessageBox.warning(self, "Text Editor -- Save Error",
                         "Failed to save %s: %s" % (self.filename, ioError))
+                event.ignore()
+        elif answer == QtGui.QMessageBox.Close:
+            return event.ignore()
+        else:
+            return event.accept()
 
     def save(self):
         """Hum ... just save ..."""

@@ -347,8 +347,8 @@ class Window(QtGui.QMainWindow):
         self.lineCount.setText("L.%d C.%d" % (cursor.blockNumber()+1,
                                             cursor.columnNumber()+1))
 
-    def closeEvent(self,widget,*args):
-        self.editor.closeEvent()
+    def closeEvent(self,event):
+        self.editor.closeEvent(event)
 
     def do_fullscreen(self):
         if self.isFullScreen():
