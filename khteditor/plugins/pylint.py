@@ -32,6 +32,16 @@ class PyLint_ResultModel(QAbstractListModel):
         except StandardError,e:
             print e 
             
+    def appendData(self,mlist):
+        try:
+            if len(mlist)>0:
+                if type(mlist[0])==tuple:
+                    if len(mlist[0])==3:
+                        self._items = self._items + mlist
+                        QObject.emit(self, SIGNAL("dataChanged(const QModelIndex&, const QModelIndex &)"), self.createIndex(0,0), self.createIndex(0,len(self._items)))
+        except StandardError,e:
+            print e 
+            
     def data(self, index, role = Qt.DisplayRole):
         if role == Qt.DisplayRole:
             text = self._items[index.row()][0]+':L'+self._items[index.row()][1]+' : '+self._items[index.row()][2]
@@ -55,6 +65,9 @@ class PyLint_Result(QMainWindow):
         
     def setResult(self,results):
         self.listModel.setData(results)
+        
+    def appendResult(self,results):
+        self.listModel.appendData(results)
         
 class PyLint(Plugin, QObject):
     capabilities = ['toolbarHook']
@@ -81,7 +94,7 @@ class PyLint(Plugin, QObject):
         print 'do_pylint'
 
         #ask for save if unsaved
-        self.parent.editor.closeEvent()
+#        self.parent.editor.closeEvent()
 
         self.pylintProc = QProcess()
 
@@ -89,20 +102,27 @@ class PyLint(Plugin, QObject):
         self.pylintProc.setWorkingDirectory(os.path.dirname(str(self.parent.editor.filename)))
         self.pylintProc.setReadChannel(QProcess.StandardOutput)
 
-        self.connect(self.pylintProc, SIGNAL('finished()'), self.handleStdout)
+        self.connect(self.pylintProc, SIGNAL('finished()'), self.finished)
         self.connect(self.pylintProc, SIGNAL('readyReadStandardOutput()'), self.handleStdout)
         self.connect(self.pylintProc, SIGNAL('readyReadStandardError()'), self.handleStderr)
         if (self.pylintProc.start("pylint", [self.parent.editor.filename,])):
             print 'Cannot start process'
+
+        self.win = PyLint_Result()
+        self.win.setWindowTitle("PyLint Results :" + self.parent.editor.filename)
+        self.win.show()
+        self.win.setAttribute(Qt.WA_Maemo5ShowProgressIndicator,True)
+        self.win.connect(self.win.listView,SIGNAL('doubleClicked(const QModelIndex&)'),self.gotoLine)
+
         self.pylintProc.waitForStarted()
+        
+    def finished(self):
+        self.win.setAttribute(Qt.WA_Maemo5ShowProgressIndicator,False)
         
     def handleStdout(self):
         """
         Private slot to handle the readyReadStdout signal of the pylint process.
         """
-        self.win = PyLint_Result()
-        self.win.show()
-        self.win.setAttribute(Qt.WA_Maemo5ShowProgressIndicator,True)
         resultList = []
         while self.pylintProc and self.pylintProc.canReadLine():
             result = self.pylintProc.readLine()
@@ -118,10 +138,8 @@ class PyLint(Plugin, QObject):
                     line = int(regex.cap(2))
                     resultList.append((regex.cap(1),regex.cap(2),regex.cap(3)))
                     pos = pos + regex.matchedLength()
-
-        self.win.connect(self.win.listView,SIGNAL('doubleClicked(const QModelIndex&)'),self.gotoLine)
-        self.win.setResult(resultList)
-        self.win.setAttribute(Qt.WA_Maemo5ShowProgressIndicator,False)
+                    
+        self.win.appendResult(resultList)
         
     def gotoLine(self,index):
         line = int(self.win.listModel._items[index.row()][1])

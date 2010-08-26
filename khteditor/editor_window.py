@@ -315,6 +315,7 @@ class Window(QtGui.QMainWindow):
         self.parent.about(self)
 
     def do_gotoLine(self, line):
+        print 'goto line:'+str(line)
         self.editor.gotoLine(line)
 
     def do_find(self):

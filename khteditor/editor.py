@@ -371,9 +371,11 @@ class KhtTextEdit(QtGui.QTextEdit):
             cursor.insertText(line)
         
     def gotoLine(self, line):
+            print 'goto line:'+str(line)
             cursor = self.textCursor()
             block = self.document().findBlockByLineNumber(line)
             cursor.setPosition(block.position())
+            
             
     def comment(self):
         """Comment the current line or selection"""
