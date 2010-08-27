@@ -18,7 +18,6 @@ from PyQt4.QtCore import Qt, \
                          QVariant \
 
 from PyQt4.QtGui import QAction, \
-                        QIcon, \
                         QMainWindow, \
                         QListView \
                         
@@ -32,68 +31,72 @@ except:
 import os.path
 import sys
 
-class PyLint_ResultModel(QAbstractListModel):
-    """ ListModel : The lint result model"""
+class ResultModel(QAbstractListModel):
+    """ list_model : The lint result model"""
 
-    def __init__(self, mlist=[]):
+    def __init__(self, mlist):        
         QAbstractListModel.__init__(self)
 
         # Cache the passed data list as a class member.
-        self._items = mlist
+        self.items = mlist
 
     def rowCount(self, parent = QModelIndex()):
-        return len(self._items)
+        """ Row count from Qlist_model """
+        return len(self.items)
         
-    def setData(self,mlist):
+    def set_data(self, mlist):
+        """ Set data from a tuple in the model """
         try:
             if len(mlist[0])==3:
-                self._items = mlist
+                self.items = mlist
                 QObject.emit(self, \
-                    SIGNAL("dataChanged(const QModelIndex&, const QModelIndex &)"), \
-                    self.createIndex(0,0),\
-                    self.createIndex(0,len(self._items)))
-        except StandardError,e:
-            print e 
+                    SIGNAL("dataChanged(const QModelIndex&, const QModelIndex &)"), self.createIndex(0,0), self.createIndex(0,len(self.items))) # pylint: disable=C0301
+        except StandardError:
+            pass
             
-    def appendData(self,mlist):
+    def append_data(self, mlist):
+        """ Append data from a tuple in the model """
         try:
             if len(mlist[0])==3:
-                self._items = self._items + mlist
+                self.items = self.items + mlist
                 QObject.emit(self, \
-                    SIGNAL("dataChanged(const QModelIndex&, const QModelIndex &)"), \
-                    self.createIndex(0,0), \
-                    self.createIndex(0,len(self._items)))
-        except StandardError,e:
-            print e 
+                    SIGNAL("dataChanged(const QModelIndex&, const QModelIndex &)"), self.createIndex(0,0), self.createIndex(0,len(self.items))) # pylint: disable=C0301
+        except StandardError:
+            pass
             
     def data(self, index, role = Qt.DisplayRole):
+        """ Get data in the model """
         if role == Qt.DisplayRole:
-            text = self._items[index.row()][0] \
-                + ':L' + self._items[index.row()][1] \
-                + ' : ' + self._items[index.row()][2]
+            text = self.items[index.row()][0] \
+                + ':L' + self.items[index.row()][1] \
+                + ' : ' + self.items[index.row()][2]
             return QVariant(text)
         else:
             return QVariant()
            
-class PyLint_Result(QMainWindow):
-    def __init__(self,parent=None):
-        QMainWindow.__init__(self,parent)
+class ResultWin(QMainWindow):
+    """ Window use to display pylint results """
+    
+    def __init__(self, parent=None):
+        QMainWindow.__init__(self, parent)
         self.parent = parent
         self.setAttribute(Qt.WA_Maemo5AutoOrientation, True)
         
-        self.listView = QListView()
-        self.listModel = PyLint_ResultModel()
-        self.listView.setViewMode(QListView.ListMode)
-        self.listView.setWordWrap(True)
-        self.listView.setResizeMode(QListView.Adjust)
-        self.listView.setModel(self.listModel)
-        self.setCentralWidget(self.listView)
+        self.list_view = QListView()
+        self.list_model = ResultModel()
+        self.list_view.setViewMode(QListView.ListMode)
+        self.list_view.setWordWrap(True)
+        self.list_view.setResizeMode(QListView.Adjust)
+        self.list_view.setModel(self.list_model)
+        self.setCentralWidget(self.list_view)
         
-    def setResult(self,results):
-        self.listModel.setData(results)
+    def set_results(self, results):
+        """ Set the tuple in the model """
+        self.list_model.set_data(results)
         
-    def appendResult(self,results):
-        self.listModel.appendData(results)
+    def append_results(self, results):
+        """ Append the tuple in the model """
+        self.list_model.append_data(results)
         
 class PyLint(Plugin, QObject):
     """ PyLint Plugin """
@@ -101,7 +104,7 @@ class PyLint(Plugin, QObject):
     __version__ = '0.2'
     thread = None
     
-    def do_toolbarHook(self,parent):
+    def do_toolbarHook(self, parent):
         """ Hook to install the pylint toolbar button"""
         self.parent = parent
         
@@ -109,11 +112,11 @@ class PyLint(Plugin, QObject):
         #deleting our callback methode
         try:
             self.parent.plugins_ref.append(self)
-        except:
-            self.parent.plugins_ref = [self,]
+        except StandardError:            
+            self.parent.plugins_ref = [self, ]
             
-        icon = QIcon(os.path.join(sys.path[0], \
-            'icons/tb_pylint.png'))
+#        icon = QIcon(os.path.join(sys.path[0], \
+#            'icons/tb_pylint.png'))
         print 'test'
         self.parent.tb_pylint = QAction('PyLint', self.parent)          
         self.connect(self.parent.tb_pylint, \
@@ -125,79 +128,77 @@ class PyLint(Plugin, QObject):
         """ Launch the lint process and create the result window """
         print 'do_pylint'
 
-        self.pylintProc = QProcess()
-
-        self.pylintProc.setProcessChannelMode(QProcess.MergedChannels)
-        self.pylintProc.setWorkingDirectory( \
+        self.pylint_pross = QProcess()
+        self.pylint_pross.setProcessChannelMode(QProcess.MergedChannels)
+        self.pylint_pross.setWorkingDirectory( \
             os.path.dirname(str(self.parent.editor.filename)))
-        self.pylintProc.setReadChannel(QProcess.StandardOutput)
+        self.pylint_pross.setReadChannel(QProcess.StandardOutput)
 
-        self.connect(self.pylintProc, \
+        self.connect(self.pylint_pross, \
             SIGNAL('finished(int)'), \
             self.finished)
-        self.connect(self.pylintProc, \
+        self.connect(self.pylint_pross, \
             SIGNAL('readyReadStandardOutput()'), \
-            self.handleStdout)
-        self.connect(self.pylintProc, \
+            self.handle_stdout)
+        self.connect(self.pylint_pross, \
             SIGNAL('readyReadStandardError()'), \
-            self.handleStderr)
-        if (self.pylintProc.start("pylint", \
+            self.handle_stderr)
+        if (self.pylint_pross.start("pylint", \
                 [self.parent.editor.filename,])):
             print 'Cannot start process'
 
-        self.win = PyLint_Result()
+        self.win = ResultWin()
         self.win.setWindowTitle("PyLint Results :" \
-            + self.parent.editor.filename)
+            + os.path.basename(str(self.parent.editor.filename)))
         self.win.show()
-        self.win.setAttribute(Qt.WA_Maemo5ShowProgressIndicator,True)
-        self.win.connect(self.win.listView, \
+        self.win.setAttribute(Qt.WA_Maemo5ShowProgressIndicator, True)
+        self.win.connect(self.win.list_view, \
             SIGNAL('doubleClicked(const QModelIndex&)'), \
-            self.gotoLine)
+            self.goto_line)
 
-        self.pylintProc.waitForStarted()
+        self.pylint_pross.waitForStarted()
         
-    def finished(self,int):
+    def finished(self, _):
         """ Call back called when lint end """
-        self.win.setAttribute(Qt.WA_Maemo5ShowProgressIndicator,False)
+        self.win.setAttribute(Qt.WA_Maemo5ShowProgressIndicator, False)
         
-    def handleStdout(self):
+    def handle_stdout(self):
         """
         Private slot to handle the readyReadStdout
         signal of the pylint process.
         """
-        resultList = []
-        while self.pylintProc and self.pylintProc.canReadLine():
-            result = self.pylintProc.readLine()
+        result_list = []
+        regex = QRegExp('(\w):(.*):.*: (.*)')
+        regex_score = \
+            QRegExp('.*at.(\d.\d*)/10.*')
+        while self.pylint_pross and self.pylint_pross.canReadLine():
+            result = self.pylint_pross.readLine()
             if result != None:
-                print 'DEBUG:',result
+                print 'DEBUG:', result
                 result = QString(result)
-                regex = QRegExp('(\w):(.*):.*: (.*)')
-                regex_score = \
-                    QRegExp('.*at (\d.\d*)/10.*')
                 pos = 0
-                inserted_line = 0
                 while True:
-                    pos = regex.indexIn(result,pos)
-                    if pos<0:
-                        if regex_score.indexIn(result,0)>=0:
+                    pos = regex.indexIn(result, pos)
+                    if pos < 0:
+                        if regex_score.indexIn(result, 0) >= 0:
                             self.win.setWindowTitle( \
                                 "PyLint Results :" \
-                                + str(regex.cap(1))
-                                + self.parent.editor.filename)
+                                + str(regex_score.cap(1)) \
+                                + ':'                                
+                                + os.path.basename(str(self.parent.editor.filename)))
                         break
-                    line = int(regex.cap(2))
-                    resultList.append((regex.cap(1),regex.cap(2),regex.cap(3)))
+                    result_list.append((regex.cap(1), regex.cap(2), regex.cap(3)))
                     pos = pos + regex.matchedLength()
                     
-        if len(resultList)>0:
-            self.win.appendResult(resultList)
+        if len(result_list)>0:
+            self.win.append_results(result_list)
         
-    def gotoLine(self,index):
+    def goto_line(self, index):
         """ Callback called when a lint result is double clicked """
-        line = int(self.win.listModel._items[index.row()][1])
-        self.parent.do_gotoLine(line)
+        line = int(self.win.list_model.items[index.row()][1])
+        self.parent.do_goto_line(line)
         
-    def handleStderr(self):
+    def handle_stderr(self):
         """
         Private slot to handle the readyReadStderr
         signal of the pylint process. Currently not
