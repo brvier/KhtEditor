@@ -234,7 +234,7 @@ class Window(QtGui.QMainWindow):
         if (filename.endsWith('.py')) or (filename.endsWith('.pyw')):
             return 'python'
         elif (filename.endsWith('.cpp')) or (filename.endsWith('.h')):
-            return 'python'
+            return 'cpp'
         else:
             return None
             

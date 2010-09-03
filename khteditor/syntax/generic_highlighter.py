@@ -123,7 +123,7 @@ class XMLSyntaxParser(ContentHandler):
 
     def end_keywordlist(self):
         rules = [(r'\b%s\b' % w, 0, STYLES[self.__style]) for w in self.__keywords]
-        self._grammar.append([(QRegExp(pat), index, fmt) for (pat, index, fmt) in rules])
+        self._grammar += ([(QRegExp(pat), index, fmt) for (pat, index, fmt) in rules])
         del self.__keywords
         del self.__style
         del self.__flags
@@ -275,7 +275,7 @@ class Highlighter(QSyntaxHighlighter):
 #
         syntax = XMLSyntaxParser(language)
         self.rules = syntax._grammar
-        self.multilines_comment = syntax._comment
+        self.multilines_comment = syntax._comments
         print 'test2'
         # Build a QRegExp for each pattern
 #        self.rules = [(QtCore.QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
@@ -285,6 +285,7 @@ class Highlighter(QSyntaxHighlighter):
         """        
         print 'test'
         # Do other syntax formatting
+        print self.rules
         for expression, nth, format in self.rules:
             index = expression.indexIn(text, 0)
 
