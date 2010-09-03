@@ -259,11 +259,11 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                 self.setFormat(index, length, format)                
                 index = expression.indexIn(text, index + length)
 
-            self.setCurrentBlockState(0)
+        self.setCurrentBlockState(0)
             
         # Do multi-line strings
-        in_multiline = self.match_multiline(text, *self.tri_single)
-        in_multiline = self.match_multiline(text, *self.tri_double)
+        self.match_multiline(text, *self.tri_single)
+        self.match_multiline(text, *self.tri_double)
             
         #QtGui.QApplication.flush()
         #QtGui.QApplication.processEvents(QtCore.QEventLoop.ExcludeUserInputEvents)

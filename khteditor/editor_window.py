@@ -204,28 +204,36 @@ class Window(QtGui.QMainWindow):
         filename = self.editor.filename
         language = self.detectLanguage(filename)
         #Return None if language not yet implemented natively in KhtEditor
-        if (language != None):
-            exec 'from syntax.'+language+'_highlighter import Highlighter'
+        if language == 'python':
+            from syntax.python_highlighter import Highlighter
             self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
             QtGui.QApplication.processEvents()
             self.highlighter = Highlighter(self.editor.document())
-            print 'test'
             QtGui.QApplication.processEvents()
             self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
+        elif language == 'cpp':
+            from syntax.generic_highlighter import Highlighter
+            self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
+            QtGui.QApplication.processEvents()
+            self.highlighter = Highlighter(self.editor.document(),language)
+            QtGui.QApplication.processEvents()
+            self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)            
         else:
             self.loadGenericHighlighter(filename)
 
     def loadGenericHighlighter(self,filename):
-        import highlighter
+        from syntax import pygment_highlighter
         #self.language = self.detectLanguage(filename)
         self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
         QtGui.QApplication.processEvents()
-        self.highlighter = highlighter.Highlighter(self.editor.document(),str(filename))
+        self.highlighter = pygment_highlighter.Highlighter(self.editor.document(),str(filename))
         QtGui.QApplication.processEvents()
         self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
     
     def detectLanguage(self,filename):
-        if (filename.endsWith('.py')) or (filename.endsWith('.py')):
+        if (filename.endsWith('.py')) or (filename.endsWith('.pyw')):
+            return 'python'
+        elif (filename.endsWith('.cpp')) or (filename.endsWith('.h')):
             return 'python'
         else:
             return None
