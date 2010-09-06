@@ -14,6 +14,46 @@ import commands
 import os
 import khteditor
 
+LANGUAGES = (('.R','R'),
+            ('.ada','ada'),
+            ('.c','c'),
+            ('.changelog','changelog'),
+            ('.cpp','cpp'),
+            ('.csharp','csharp'),
+            ('.desktop','desktop'),
+            ('.css','css'),
+            ('.diff','diff'),
+            ('.fort','fortran'),
+            ('.gtkrc','gtkrc'),
+            ('.haskell','haskell'),
+            ('.html','html'),
+            ('.idl','idl'),
+            ('.ini','ini'),
+            ('.java','java'),
+            ('.js','javascript'),
+            ('.tex','latex'),
+            ('.lua','lua'),
+            ('makefile','makefile'),
+            ('markdown','markdown'),
+            ('.msil','msil'),
+            ('nemerle','nemerle'),
+            ('octave','octave'),
+            ('.pas','pascal'),
+            ('.pl','perl'),
+            ('.php','php'),
+            ('.po','po'),
+            ('.py','python'),
+            ('.rb','ruby'),
+            ('.scheme','scheme'),
+            ('.sh','sh'),
+            ('.tcl','tcl'),
+            ('texinfo','texinfo'),
+            ('.txt','None'),
+            ('.vb','vbnet'),
+            ('verilog','verilog'),
+            ('vhdl','vhdl'),
+            ('.xml','xml'),
+            )
 class FindAndReplaceDlg(QtGui.QDialog):
     """ Find and replace dialog """
     def __init__(self, parent=None):
@@ -211,7 +251,7 @@ class Window(QtGui.QMainWindow):
             self.highlighter = Highlighter(self.editor.document())
             QtGui.QApplication.processEvents()
             self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
-        elif language == 'cpp':
+        elif language != None:
             from syntax.generic_highlighter import Highlighter
             self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
             QtGui.QApplication.processEvents()
@@ -222,7 +262,7 @@ class Window(QtGui.QMainWindow):
             self.loadGenericHighlighter(filename)
 
     def loadGenericHighlighter(self,filename):
-        from syntax import pygment_highlighter
+        from syntax import pygments_highlighter
         #self.language = self.detectLanguage(filename)
         self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
         QtGui.QApplication.processEvents()
@@ -231,12 +271,10 @@ class Window(QtGui.QMainWindow):
         self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
     
     def detectLanguage(self,filename):
-        if (filename.endsWith('.py')) or (filename.endsWith('.pyw')):
-            return 'python'
-        elif (filename.endsWith('.cpp')) or (filename.endsWith('.h')):
-            return 'cpp'
-        else:
-            return None
+        for extension,lang in LANGUAGES:
+            if filename.endsWith(extension.lower()):
+                 return lang
+        return None
             
         return language
         

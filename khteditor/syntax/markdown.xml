@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+
+<syntax>
+    <!-- NEW style definitions... -->
+    <!-- even overwrites default styles like "DEFAULT" -->
+    <style name="DEFAULT">  
+        <property name="font">Sans</property>
+    </style>
+    
+    <style name="emphasis1">
+        <property name="font">Sans Italic</property>
+    </style>
+    
+    <style name="emphasis2">
+        <property name="weight">heavy</property>
+    </style>
+
+    <style name="link">
+        <property name="foreground">#0000FF</property>
+        <property name="underline">single</property>
+    </style>
+
+    <style name="code">
+        <property name="foreground">blue</property>
+    </style>
+    
+    <style name="quoted_text">
+        <property name="foreground">brown</property>
+    </style>
+    
+    <!-- only have 1 heading style name at this time -->
+    <style name="heading">
+        <property name="foreground">dark green</property>
+        <property name="scale">xx_large</property>
+    </style>
+    
+    <style name="bullet_list">
+        <property name="font">monospace</property>
+        <property name="foreground">magenta</property>
+    </style>
+    
+    <style name="numbered_list">
+        <property name="font">monospace</property>
+        <property name="foreground">magenta</property>
+    </style>
+    
+    <!-- normal syntax definitions -->
+    
+    <!-- strong emphasis -->
+    <string style="emphasis2">
+        <starts>\s\*\*\S</starts>
+        <ends>\S\*\*</ends>
+    </string>
+    <string style="emphasis2">
+        <starts>\s\_\_\S</starts>
+        <ends>\S\_\_</ends>
+    </string>
+        
+    <!-- emphasis -->
+    <string style="emphasis1">
+        <starts>\s\*\S</starts>
+        <ends>\S\*</ends>
+    </string>
+    <string style="emphasis1">
+        <starts>\s\_\S</starts>
+        <ends>\S\_</ends>
+    </string>
+
+    <!-- URLs (note the gt and lt signs are ampersand quoted) -->
+    <string style="link">
+        <starts>\&lt;</starts>
+        <ends>\&gt;</ends>
+    </string>
+    
+    <string style="link">
+        <starts>\[</starts>
+        <ends>\]</ends>
+    </string>
+    
+    <!-- code -->
+    <string style="code">
+        <starts>`</starts>
+        <ends>`</ends>
+    </string> 
+    <pattern style="code">^\n(\ \ \ \ .+\n)+$</pattern>
+    <pattern style="code">^\n(\t.+\n)+$</pattern>
+
+    <!-- block quote -->
+    <pattern style="quoted_text">^\&gt;.+$</pattern>
+
+    <!-- headings -->
+    <pattern style="heading">^#+.+$</pattern>
+    <pattern style="heading">^.+\n=+$</pattern>
+    <pattern style="heading">^.+\n-+$</pattern>
+
+    <!-- lists -->
+    <!-- bullet lists -->
+        <pattern style="bullet_list" group="1">^\s*(\+ ).+$</pattern>
+        <pattern style="bullet_list" group="1">^\s*(\* ).+$</pattern>
+        <pattern style="bullet_list" group="1">^\s*(- ).+$</pattern>
+    <!-- numbered lists -->
+        <pattern style="numbered_list" group="1">^\s*(\d+\. ).+$</pattern>
+
+</syntax>

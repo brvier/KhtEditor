@@ -41,6 +41,7 @@ STYLES = {
     'string2': format('green'),
     'comment': format('red'),
     'framework': format('blue'),
+    'function': format('darkBlue'),
     }
 
 class XMLSyntaxParser(ContentHandler):
@@ -152,8 +153,9 @@ class XMLSyntaxParser(ContentHandler):
         self.__end_pattern = ""
 
     def end_string(self):
-        regexp = QRegExp(r'(%s.|%s%s%s)'%(self.__start_pattern,
-                            self.__escape, self.__end_pattern,
+#        '(?:\\'|.*)'        
+        regexp = QRegExp(r'%s(?:%s%s|.*)%s'%(self.__start_pattern,
+                            self.__escape,self.__end_pattern,
                             self.__end_pattern))
         strdef = (regexp,0, STYLES[self.__style])
         self._grammar.append(strdef)
@@ -283,9 +285,7 @@ class Highlighter(QSyntaxHighlighter):
     def highlightBlock(self, text):
         """Apply syntax highlighting to the given block of text.
         """        
-        print 'test'
         # Do other syntax formatting
-        print self.rules
         for expression, nth, format in self.rules:
             index = expression.indexIn(text, 0)
 
@@ -300,6 +300,7 @@ class Highlighter(QSyntaxHighlighter):
             
         # Do multi-line strings
         for index,multilines_comment in enumerate(self.multilines_comment):
+            print 'Enumerate:',index+1
             self.match_multiline(text, multilines_comment[0],multilines_comment[1],index+1,multilines_comment[3])
 
     def match_multiline(self, text, start_delimiter, end_delimiter, in_state, style):
@@ -309,18 +310,19 @@ class Highlighter(QSyntaxHighlighter):
         state changes when inside those strings. Returns True if we're still
         inside a multi-line string when this function is finished.
         """
-        print 'match_multiline called'
         
         # If inside triple-single quot:es, start at 0
         if self.previousBlockState() == in_state:
             start = 0
             add = 0            
+            print 'No multiline:',text
         # Otherwise, look for the delimiter on this line
         else:
             start = start_delimiter.indexIn(text)
             # Move past this match
             add = start_delimiter.matchedLength()
-            print 'start : ', start, ', add : ',add
+            add = 0
+            print 'Multiline:',text
 
         # As long as there's a delimiter match on this line...
         while start >= 0:
@@ -330,11 +332,13 @@ class Highlighter(QSyntaxHighlighter):
             # Ending delimiter on this line?
             if end >= add:
                 length = end - start + add + end_delimiter.matchedLength()
+                print 'Text:',text,', Multiline start : ', start, ', add : ',add, ', end :', end, ', lenght :',length
                 self.setCurrentBlockState(0)
             # No; multi-line string
             else:
                 self.setCurrentBlockState(in_state)
                 length = text.length() - start + add
+                print 'Text: ',text,',No Multiline start : ', start, ', add : ',add, ', end :', end, ', lenght :',length
             # Apply formatting
             self.setFormat(start, length, style)
             # Look for the next match
