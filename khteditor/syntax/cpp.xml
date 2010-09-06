@@ -14,9 +14,9 @@
 
 	<pattern style="comment">//.*$</pattern>
 
-	<string style="comment"><starts>/\*</starts><ends>\*/</ends></string>
+	<multilines style="comment"><starts>/\*</starts><ends>\*/</ends></multilines>
 
-	<string style="comment"><starts>^[ \t]*#[ \t]*if[ \t]*0</starts><ends>[ \t]*#[ \t]*(endif|else)</ends></string>
+	<multilines style="comment"><starts>^[ \t]*#[ \t]*if[ \t]*0</starts><ends>[ \t]*#[ \t]*(endif|else)</ends></multilines>
 
 	<string style="string" escape="\"><starts>"</starts><ends>"</ends></string>
 

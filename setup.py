@@ -3,6 +3,7 @@
 
 #KhtEditor Setup File
 import khteditor
+import imp
 
 from distutils.core import setup
 
@@ -13,12 +14,13 @@ setup(name='KhtEditor',
       author='Benoît HERVIER',
       author_email='khertan@khertan.net',
       url='http://www.khertan.net/khteditor',
+      depend='pygments',
       packages= ['khteditor', 'khteditor/plugins', 'khteditor/syntax'],
-      package_data = {'khteditor': ['icons/*.png']},
+      package_data = {'khteditor': ['icons/*.png'],
+                      'khteditor': ['syntax/*.xml']},
       data_files=[('/usr/share/dbus-1/services', ['khteditor.service']),
                   ('/usr/share/applications/hildon/', ['khteditor.desktop']),
                   ('/usr/share/pixmaps', ['khteditor.png'])],
       scripts=['khteditor_launch.py'],
-
      )
 

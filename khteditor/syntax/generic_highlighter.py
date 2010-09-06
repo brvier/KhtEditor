@@ -31,6 +31,7 @@ def format(color, style=''):
     return _format
 
 STYLES = {
+    'default': format('black'),
     'preprocessor': format('darkMagenta'),
     'keyword': format('darkOrange'),
     'datatype': format('darkMagenta'),
@@ -42,6 +43,8 @@ STYLES = {
     'comment': format('red'),
     'framework': format('blue'),
     'function': format('darkBlue'),
+    'mark1': format('darkOrange'),
+    'mark2': format('red'),
     }
 
 class XMLSyntaxParser(ContentHandler):
@@ -61,6 +64,13 @@ class XMLSyntaxParser(ContentHandler):
             raise Exception("No syntax-file for %s found !"%lang_name)
     
         xml.sax.parse(fname, self)
+
+    def get_style(self,style):
+        try:
+            return STYLES[style]
+        except KeyError, err:
+            print 'Unknow style :',err
+            return STYLES['default']
 
     # Dispatch start/end - document/element and chars
     def startDocument(self):
@@ -102,7 +112,7 @@ class XMLSyntaxParser(ContentHandler):
         regexp = QRegExp(self.__pattern)
         if 'I' in self.__flags:
             regexp.setCaseSensitivity(Qt.CaseInsensitive)
-        rule = (regexp, 0, STYLES[self.__style], )
+        rule = (regexp, 0, self.get_style(self.__style), )
         self._grammar.append(rule)
         del self.__pattern
         del self.__group
@@ -123,7 +133,7 @@ class XMLSyntaxParser(ContentHandler):
         self.__keywords = []
 
     def end_keywordlist(self):
-        rules = [(r'\b%s\b' % w, 0, STYLES[self.__style]) for w in self.__keywords]
+        rules = [(r'\b%s\b' % w, 0, self.get_style(self.__style)) for w in self.__keywords]
         self._grammar += ([(QRegExp(pat), index, fmt) for (pat, index, fmt) in rules])
         del self.__keywords
         del self.__style
@@ -153,17 +163,23 @@ class XMLSyntaxParser(ContentHandler):
         self.__end_pattern = ""
 
     def end_string(self):
-#        '(?:\\'|.*)'        
-        regexp = QRegExp(r'%s(?:%s%s|.*)%s'%(self.__start_pattern,
-                            self.__escape,self.__end_pattern,
-                            self.__end_pattern))
-        strdef = (regexp,0, STYLES[self.__style])
+        #'[^'\\]*(\\.[^'\\]*)*'
+        #regexp = QRegExp('%s[^%s%s]*(%s.[^%s%s]*)*%s'%(self.__start_pattern,self.__start_pattern,self.__escape,self.__escape,self.__end_pattern,self.__escape,self.__end_pattern))
+        #'[^'\\]*(?:\\.[^'\\]*)*'
+        if self.__escape == '\\':
+            self.__escape = '\\\\'
+        regexp = QRegExp("%s[^%s%s]*(?:%s.[^%s%s]*)*%s"%(self.__start_pattern,self.__start_pattern,self.__escape,self.__escape,self.__end_pattern,self.__escape,self.__end_pattern))
+        print regexp
+        # regexp = QRegExp(r'%s[^%s]*%s'%(self.__start_pattern,self.__end_pattern,
+                           #self.__escape,
+                           # self.__end_pattern))
+        strdef = (regexp,0, self.get_style(self.__style))
         self._grammar.append(strdef)
         del self.__style
         del self.__escape
         del self.__start_pattern
         del self.__end_pattern
-
+        
     #handle Multiline def
     def start_multilines(self, attr):
         self.__style = "comment"
@@ -176,7 +192,7 @@ class XMLSyntaxParser(ContentHandler):
         self.__end_pattern = ""
 
     def end_multilines(self):
-        strdef = (QRegExp(self.__start_pattern),QRegExp(self.__end_pattern),0, STYLES[self.__style])
+        strdef = (QRegExp(self.__start_pattern),QRegExp(self.__end_pattern),0, self.get_style(self.__style))
         self._comments.append(strdef)
         del self.__style
         del self.__escape
@@ -245,13 +261,13 @@ class Highlighter(QSyntaxHighlighter):
     def __init__(self, document,language):
         super(Highlighter, self).__init__(document)
 
+        self.rules = []
 
         # Multi-line strings (expression, flag, style)
         # FIXME: The triple-quotes in these two lines will mess up the
         # syntax highlighting from this point onward
 #        self.tri_double = (QtCore.QRegExp(r'''"""(?!')'''), 2, STYLES['string2'])
 
-#        rules = []
 #        rules += [(r'\b%s\b' % w, 0, STYLES['keyword']) for w in Highlighter.keywords]
 #        rules += [(r'\b%s\b' % w, 0, STYLES['preprocessor']) for w in Highlighter.preprocessors]
 #        rules += [(r'\b%s\b' % w, 0, STYLES['special']) for w in Highlighter.specials]
@@ -278,7 +294,7 @@ class Highlighter(QSyntaxHighlighter):
         syntax = XMLSyntaxParser(language)
         self.rules = syntax._grammar
         self.multilines_comment = syntax._comments
-        print 'test2'
+
         # Build a QRegExp for each pattern
 #        self.rules = [(QtCore.QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
                         
@@ -300,7 +316,6 @@ class Highlighter(QSyntaxHighlighter):
             
         # Do multi-line strings
         for index,multilines_comment in enumerate(self.multilines_comment):
-            print 'Enumerate:',index+1
             self.match_multiline(text, multilines_comment[0],multilines_comment[1],index+1,multilines_comment[3])
 
     def match_multiline(self, text, start_delimiter, end_delimiter, in_state, style):
@@ -315,30 +330,30 @@ class Highlighter(QSyntaxHighlighter):
         if self.previousBlockState() == in_state:
             start = 0
             add = 0            
-            print 'No multiline:',text
+            #print 'No multiline:',text
         # Otherwise, look for the delimiter on this line
         else:
             start = start_delimiter.indexIn(text)
             # Move past this match
             add = start_delimiter.matchedLength()
             add = 0
-            print 'Multiline:',text
+            #print 'Multiline:',text
 
         # As long as there's a delimiter match on this line...
         while start >= 0:
             # Look for the ending delimiter
             end = end_delimiter.indexIn(text, start + add)
-            print 'end : ', end
+            #print 'end : ', end
             # Ending delimiter on this line?
             if end >= add:
                 length = end - start + add + end_delimiter.matchedLength()
-                print 'Text:',text,', Multiline start : ', start, ', add : ',add, ', end :', end, ', lenght :',length
+                #print 'Text:',text,', Multiline start : ', start, ', add : ',add, ', end :', end, ', lenght :',length
                 self.setCurrentBlockState(0)
             # No; multi-line string
             else:
                 self.setCurrentBlockState(in_state)
                 length = text.length() - start + add
-                print 'Text: ',text,',No Multiline start : ', start, ', add : ',add, ', end :', end, ', lenght :',length
+                #print 'Text: ',text,',No Multiline start : ', start, ', add : ',add, ', end :', end, ', lenght :',length
             # Apply formatting
             self.setFormat(start, length, style)
             # Look for the next match

@@ -59,7 +59,7 @@ class KhtEditor:
         aboutScrollArea = QtGui.QScrollArea(aboutWin)
         aboutScrollArea.setWidgetResizable(True)
         awidget = QtGui.QWidget(aboutScrollArea)
-        awidget.setMinimumSize(480,600)
+        awidget.setMinimumSize(480,800)
         awidget.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         aboutScrollArea.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         scroller = aboutScrollArea.property("kineticScroller").toPyObject()
@@ -68,7 +68,7 @@ class KhtEditor:
         aboutLayout = QtGui.QVBoxLayout(awidget)
         
         aboutIcon = QtGui.QLabel()
-        aboutIcon.setPixmap(QtGui.QPixmap(khteditor.__path__[0],'icons','khteditor.png').scaledToHeight(140))
+        aboutIcon.setPixmap(QtGui.QPixmap(os.path.join(khteditor.__path__[0],'icons','khteditor.png')).scaledToHeight(140))
         aboutIcon.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
         aboutIcon.resize(140,140)
         aboutLayout.addWidget(aboutIcon)
@@ -84,7 +84,8 @@ class KhtEditor:
                                    <br>achipa on #pyqt
                                    <br>ddoodie on #pyqt
                                    <br>Attila77 on talk.maemo.org
-                                   
+                                   <br>Sebastian Lauwers for help on regex
+                                   <br><br>
                                    </center>''' % self.version)
         aboutLayout.addWidget(aboutLabel)
 
