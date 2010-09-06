@@ -3,7 +3,7 @@
 
 """KhtEditor a source code editor by Khertan : Welcome Window"""
 
-__version__ = '0.0.5'
+__version__ = '0.0.6'
 
 import os
 import sys
@@ -15,6 +15,31 @@ from recent_files import RecentFiles
 import khteditor
 import settings
 
+#Here is the installation of the hook. Each time a untrapped/unmanaged exception will
+#happen my_excepthook will be called.
+def install_excepthook(app_name,app_version):
+
+    APP_NAME = 'KhtEditor'
+    APP_VERSION = __version__
+
+    def write_report(error):
+        import pickle
+        filename = os.path.join(os.path.join(os.path.expanduser("~"),'.khteditor_crash_report'))
+        output = open(filename, 'wb')
+        pickle.dump(error, output)
+        output.close()
+        
+    def my_excepthook(exctype, value, tb):
+        #traceback give us all the errors information message like the method, file line ... everything like
+        #we have in the python interpreter
+        import traceback
+        s = ''.join(traceback.format_exception(exctype, value, tb))
+        print 'Except hook called : %s' % (s)
+        formatted_text = "%s Version %s\nTrace : %s\nComments : " % (APP_NAME, APP_VERSION, s)
+        write_report(formatted_text)
+        
+    sys.excepthook = my_excepthook
+
 class KhtEditor:
     def __init__(self):
       self.window_list = []
@@ -25,8 +50,62 @@ class KhtEditor:
       self.app.setOrganizationDomain("khertan.net")
       self.app.setApplicationName("KhtEditor")
       
+      install_excepthook(self.app.applicationName(),self.version)
+
       self.last_know_path='/home/user/MyDocs'
       self.run()
+
+    def crash_report(self):
+        if os.path.isfile(os.path.join(os.path.join(os.path.expanduser("~"),'.khteditor_crash_report'))):
+            import urllib2
+            import urllib
+            import pickle
+            if ((QtGui.QMessageBox.question(None,
+                "KhtEditor Crash Report",
+                "An error occur on KhtEditor in the previous launch. Report this bug on the bug tracker ?",
+                QtGui.QMessageBox.Yes|QtGui.QMessageBox.Close)) == QtGui.QMessageBox.Yes):
+                url = 'http://khertan.net/report.php' # write ur URL here
+                try:
+                    filename = os.path.join(os.path.join(os.path.expanduser("~"),'.khteditor_crash_report'))
+                    output = open(filename, 'rb')
+                    error = pickle.load(output)
+                    output.close()
+
+                    values = {
+                          'project' : 'khteditor',
+                          'version': __version__,
+                          'description':error,
+                      }    
+        
+                    data = urllib.urlencode(values)
+                    req = urllib2.Request(url, data)
+                    response = urllib2.urlopen(req)
+                    the_page = response.read()
+                except Exception, detail:
+                    print detail
+                    QtGui.QMessageBox.question(None,
+                    "KhtEditor Crash Report",
+                    "An error occur during the report : %s" % detail,
+                    QtGui.QMessageBox.Close)
+                    return False
+
+                if 'Your report have been successfully stored' in the_page:
+                    QtGui.QMessageBox.question(None,
+                    "KhtEditor Crash Report",
+                    "%s" % the_page,
+                    QtGui.QMessageBox.Close)
+                    return True
+                else:
+                    print 'page:',the_page
+                    QtGui.QMessageBox.question(None,
+                    "KhtEditor Crash Report",
+                    "%s" % the_page,
+                    QtGui.QMessageBox.Close)
+                    return False
+            try:
+                os.remove(os.path.join(os.path.join(os.path.expanduser("~"),'.khteditor_crash_report')))
+            except:
+                pass
 
     def run(self):
         """
@@ -35,6 +114,7 @@ class KhtEditor:
         
         window = welcome_window.WelcomeWindow(self)
         window.show()
+        self.crash_report()
 
         for arg in self.app.argv()[1:]:
           path = os.path.abspath(arg)
@@ -51,7 +131,6 @@ class KhtEditor:
         """
             Display the about dialog
         """
-        
         aboutWin = QtGui.QMainWindow(widget)
         aboutWin.setAttribute(Qt.WA_Maemo5StackedWindow, True)
         aboutWin.setAttribute(Qt.WA_Maemo5AutoOrientation, True)
