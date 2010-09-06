@@ -59,7 +59,7 @@ if __name__ == "__main__":
 chmod +x /usr/bin/khteditor_launch.py
 python -m compileall /usr/lib/python2.5/site-packages/khteditor"""
 
-    p.changelog="""Minor bug fix, improve pylint plugin
+    p.changelog="""Fix pylint plugin, optimize hilighters and add several native hilighter.
 """
 
 print p.generate(build_binary=False,build_src=True)
