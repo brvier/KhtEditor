@@ -116,8 +116,8 @@ class KhtEditor:
           self.window_list.append(editor_win)
           RecentFiles().append(filename)
           self.last_know_path=QtCore.QString(os.path.dirname(str(filename)))
-        else:
-          editor_win.destroy()
+#        else:           
+#          editor_win.destroy()
 
     def openRecentFile(self, path=QtCore.QString()):
         """
