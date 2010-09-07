@@ -21,13 +21,13 @@ if __name__ == "__main__":
 
     p=pypackager.PyPackager("khteditor")
     p.version=khteditor.__version__
-    p.buildversion='1'
+    p.buildversion='2'
     p.display_name='KhtEditor'
     p.description="KhtEditor is a source code editor specially designed for devices running Maemo and Meego Handset."
     p.author="Benoît HERVIER"
     p.maintainer="Khertan"
     p.email="khertan@khertan.net"
-    p.depends = "python2.5-qt4-gui,python2.5-qt4-core, python2.5-qt4-maemo5, python-pygments"
+    p.depends = "python2.5-qt4-gui,python2.5-qt4-core, python2.5-qt4-maemo5, python2.5-qt4-common, python-pygments"
     p.suggests = "pylint"
     p.section="user/development"
     p.arch="armel"
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 chmod +x /usr/bin/khteditor_launch.py
 python -m compileall /usr/lib/python2.5/site-packages/khteditor"""
 
-    p.changelog=""" Add automated crash reporter.
+    p.changelog=""" Add automated crash reporter. Fix memoize of last open path folder
 """
 
 print p.generate(build_binary=False,build_src=True)

@@ -22,7 +22,7 @@ from PyQt4.QtGui import QAction, \
                         QListView \
                         
 import PyQt4.QtMaemo5 #Not really unused as it s import to Qt
-import PyQt4.Qt
+
 try:
     from plugins_api import Plugin
 except:
