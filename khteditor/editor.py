@@ -331,13 +331,13 @@ class KhtTextEdit(QtGui.QTextEdit):
         # Use flags for case match
         flags = QtGui.QTextDocument.FindFlags()
         if args[0]==True:
-            flags = flags|QtGui.QTextDocument.FindCaseSensitively
+            flags = flags | QtGui.QTextDocument.FindCaseSensitively
         if args[1]==True:
-            flags = flags|QtGui.QTextDocument.FindWholeWords
+            flags = flags | QtGui.QTextDocument.FindWholeWords
         if args[2]==True:
-            flags = flags|QtGui.QTextDocument.FindBackward
+            flags = flags | QtGui.QTextDocument.FindBackward
 
-        if args[3]:
+        if args[3]==True:
             cursor = self.document().find(QtCore.QRegExp(what),
                                         self.textCursor(), flags)
         else:
