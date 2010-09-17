@@ -309,7 +309,7 @@ class KhtTextEdit(QtGui.QTextEdit):
     
         # Replace
         # self is the QTextEdit
-        if args[3]:
+        if args[3]==True:
             cursor = self.document().find(QtCore.QRegExp(what),
                                     self.textCursor(), flags)                
         else:
@@ -328,6 +328,8 @@ class KhtTextEdit(QtGui.QTextEdit):
         arg[2] -> QtGui.QTextDocument.FindBackward
         arg[3] -> QtGui.QTextDocument.RegEx
         """
+        print 'find called'
+        
         # Use flags for case match
         flags = QtGui.QTextDocument.FindFlags()
         if args[0]==True:
@@ -344,7 +346,7 @@ class KhtTextEdit(QtGui.QTextEdit):
             cursor = self.document().find(what, self.textCursor(), flags)
 
         if not cursor.isNull():
-            self.setTextCursor(cursor)
+            self.setTextCursor(cursor)            
             
     def duplicate(self):
         """Duplicate the current line or selection"""
