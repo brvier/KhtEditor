@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<!--
+       This syntax was manually translated from Kate Syntax XML :
+       http://gitorious.org/kate/kate/blobs/master/part/syntax/data/qml.xml
+    -->
+<syntax>
+	
+	<pattern style="comment">//.*$</pattern>
+	<string style="comment"><starts>/\*</starts><ends>\*/</ends></string>
+
+	<string style="string" escape="\"><starts>"</starts><ends>"</ends></string>
+
+	<string style="preprocessor"><starts>^#[ \t]*(include|pragma)</starts><ends>\n</ends></string>
+
+	<keywordlist style="keyword" flags="">
+      <keyword>State</keyword>
+      <keyword>PropertyChanges</keyword>
+      <keyword>StateGroup</keyword>
+      <keyword>ParentChange</keyword>
+      <keyword>StateChangeScript</keyword>
+      <keyword>AnchorChanges</keyword>
+      <keyword>PropertyAnimation</keyword>
+      <keyword>NumberAnimation</keyword>
+      <keyword>ColorAnimation</keyword>
+      <keyword>SequentialAnimation</keyword>
+      <keyword>ParallelAnimation</keyword>
+      <keyword>PauseAnimation</keyword>
+      <keyword>PropertyAction</keyword>
+      <keyword>ParentAction</keyword>
+      <keyword>ScriptAction</keyword>
+      <keyword>Transition</keyword>
+      <keyword>SpringFollow</keyword>
+      <keyword>EaseFollow</keyword>
+      <keyword>Behavior</keyword>
+      <keyword>Binding</keyword>
+      <keyword>ListModel</keyword>
+      <keyword>ListElement</keyword>
+      <keyword>VisualkeywordModel</keyword>
+      <keyword>XmlListModel</keyword>
+      <keyword>XmlRole</keyword>
+      <keyword>DateTimeFormatter</keyword>
+      <keyword>NumberFormatter</keyword>
+      <keyword>Script</keyword>
+      <keyword>Connection</keyword>
+      <keyword>Component</keyword>
+      <keyword>Timer</keyword>
+      <keyword>QtObject</keyword>
+      <keyword>keyword</keyword>
+      <keyword>Rectangle</keyword>
+      <keyword>Image</keyword>
+      <keyword>BorderImage</keyword>
+      <keyword>Text</keyword>
+      <keyword>TextInput</keyword>
+      <keyword>TextEdit</keyword>
+      <keyword>MouseArea</keyword>
+      <keyword>FocusScope</keyword>
+      <keyword>Flickable</keyword>
+      <keyword>Flipable</keyword>
+      <keyword>WebView</keyword>
+      <keyword>Loader</keyword>
+      <keyword>Repeater</keyword>
+      <keyword>SystemPalette</keyword>
+      <keyword>GraphicsObjectContainer</keyword>
+      <keyword>Layoutkeyword</keyword>
+      <keyword>ListView</keyword>
+      <keyword>GridView</keyword>
+      <keyword>PathView</keyword>
+      <keyword>Path</keyword>
+      <keyword>PathLine</keyword>
+      <keyword>PathQuad</keyword>
+      <keyword>PathCubic</keyword>
+      <keyword>PathAttribute</keyword>
+      <keyword>PathPercent</keyword>
+      <keyword>Column</keyword>
+      <keyword>Row</keyword>
+      <keyword>Grid</keyword>
+      <keyword>Scale</keyword>
+      <keyword>Rotation</keyword>
+      <keyword>Blur</keyword>
+      <keyword>Colorize</keyword>
+      <keyword>DropShadow</keyword>
+      <keyword>Opacity</keyword>
+      <keyword>Particles</keyword>
+      <keyword>ParticleMotionLinear</keyword>
+      <keyword>ParticleMotionGravity</keyword>
+      <keyword>ParticleMotionWander</keyword>
+      <keyword>Gradient</keyword>
+      <keyword>GradientStop</keyword>
+      <keyword>MouseRegion</keyword>
+	</keywordlist>
+
+	<keywordlist style="datatype" flags="">
+      <keyword>string</keyword>
+      <keyword>int</keyword>
+      <keyword>bool</keyword>
+      <keyword>date</keyword>
+      <keyword>color</keyword>
+      <keyword>url</keyword>
+      <keyword>real</keyword>
+      <keyword>double</keyword>
+      <keyword>var</keyword>
+      <keyword>variant</keyword>
+	</keywordlist>
+
+	<pattern style="special">[{}();:,.]</pattern>
+	
+	<pattern style="function">[-~^@/%|=+*!?&amp;&lt;&gt;]</pattern>
+	
+	<pattern style="function">(\[|\])</pattern>
+	
+	<pattern style="number">0[xX][a-fA-F0-9]+</pattern>
+	
+	<pattern style="number">0|[\+-]?[1-9][0-9]*</pattern>
+	
+	<pattern style="number">[\+-]?(0|[1-9][0-9]*)?\.[0-9]+([Ee][\+-]?[1-9][0-9]*)?</pattern>
+	
+	<pattern style="string">\\u[a-fA-F0-9]{4}</pattern>
+</syntax>
