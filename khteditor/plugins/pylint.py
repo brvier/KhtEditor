@@ -34,11 +34,11 @@ import sys
 class ResultModel(QAbstractListModel):
     """ list_model : The lint result model"""
 
-    def __init__(self, mlist):        
+    def __init__(self):        
         QAbstractListModel.__init__(self)
 
         # Cache the passed data list as a class member.
-        self.items = mlist
+        self.items = []
 
     def rowCount(self, parent = QModelIndex()):
         """ Row count from Qlist_model """
@@ -168,7 +168,8 @@ class PyLint(Plugin, QObject):
         signal of the pylint process.
         """
         result_list = []
-        regex = QRegExp('(\w):(.*):.*: (.*)')
+        #regex = QRegExp('(\w)\S*:\S*(\d*):.*: (.*)')
+        regex = QRegExp('(\w)\s*:\s*(\d*):(.*)')
         regex_score = \
             QRegExp('.*at.(\d.\d*)/10.*')
         while self.pylint_pross and self.pylint_pross.canReadLine():
@@ -188,6 +189,7 @@ class PyLint(Plugin, QObject):
                                 + os.path.basename(str(self.parent.editor.filename)))
                         break
                     result_list.append((regex.cap(1), regex.cap(2), regex.cap(3)))
+                    #print 'Append : ',(regex.cap(1), regex.cap(2), regex.cap(3))
                     pos = pos + regex.matchedLength()
                     
         if len(result_list)>0:
@@ -196,7 +198,7 @@ class PyLint(Plugin, QObject):
     def goto_line(self, index):
         """ Callback called when a lint result is double clicked """
         line = int(self.win.list_model.items[index.row()][1])
-        self.parent.do_goto_line(line)
+        self.parent.do_gotoLine(line)
         
     def handle_stderr(self):
         """

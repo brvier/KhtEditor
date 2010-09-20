@@ -115,4 +115,10 @@
 	<pattern style="number">[\+-]?(0|[1-9][0-9]*)?\.[0-9]+([Ee][\+-]?[1-9][0-9]*)?</pattern>
 	
 	<pattern style="string">\\u[a-fA-F0-9]{4}</pattern>
+    
+    <keywordlist style="special" flags="">
+		<keyword>null</keyword>
+		<keyword>true</keyword>
+		<keyword>false</keyword>
+	</keywordlist>
 </syntax>
