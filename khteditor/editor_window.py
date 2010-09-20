@@ -43,6 +43,7 @@ LANGUAGES = (('.R','R'),
             ('.php','php'),
             ('.po','po'),
             ('.py','python'),
+            ('.qml','qml'),
             ('.rb','ruby'),
             ('.scheme','scheme'),
             ('.sh','sh'),
@@ -382,7 +383,14 @@ class Window(QtGui.QMainWindow):
           fileHandle = open('/tmp/khteditor.tmp', 'w')
           fileHandle.write('#!/bin/sh\n')
           fileHandle.write('cd '+os.path.dirname(str(self.editor.filename))+' \n')
-          fileHandle.write("python \'"+self.editor.filename + "\'\n")
+          language = self.detectLanguage(self.editor.filename)
+          #Crappy way to handle that
+          if language == 'python':
+            fileHandle.write("python \'"+self.editor.filename + "\'\n")
+          elif language == 'qml':
+            fileHandle.write("/opt/qt4-maemo5/bin/qmlviewer \'"+self.editor.filename + "\' -fullscreen\n")             
+          else:
+            fileHandle.write(language+" \'"+self.editor.filename + "\' -fullscreen\n")                       
           fileHandle.write('read -p "Press ENTER to continue ..." foo')
           fileHandle.write('\nexit')
           fileHandle.close()
