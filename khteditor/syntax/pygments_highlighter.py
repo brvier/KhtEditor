@@ -72,38 +72,41 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         # Keep the formatter and lexer, initializing them 
         # may be costly.
         self.formatter=QFormatter()
-        self.lexer=get_lexer_for_filename(filename)
+        try:
+            self.lexer=get_lexer_for_filename(filename)
+        except:
+            self.lexer = None
         
     def highlightBlock(self, text):
         """Takes a block, applies format to the document. 
         according to what's in it.
         """
-        
-        # I need to know where in the document we are,
-        # because our formatting info is global to
-        # the document
-        cb = self.currentBlock()
-        p = cb.position()
-
-        # The \n is not really needed, but sometimes  
-        # you are in an empty last block, so your position is
-        # **after** the end of the document.
-        text=unicode(self.document().toPlainText())+'\n'
-        
-        # Yes, re-highlight the whole document.
-        # There **must** be some optimizacion possibilities
-        # but it seems fast enough.
-        highlight(text,self.lexer,self.formatter)
-        
-        # Just apply the formatting to this block.
-        # For titles, it may be necessary to backtrack
-        # and format a couple of blocks **earlier**.
-        for i in range(len(unicode(text))):
-            try:
-                self.setFormat(i,1,self.formatter.data[p+i])                
-            except IndexError:
-                pass
-        
-        # I may need to do something about this being called
-        # too quickly.
-        self.tstamp=time.time() 
+        if self.lexer != None:
+            # I need to know where in the document we are,
+            # because our formatting info is global to
+            # the document
+            cb = self.currentBlock()
+            p = cb.position()
+    
+            # The \n is not really needed, but sometimes  
+            # you are in an empty last block, so your position is
+            # **after** the end of the document.
+            text=unicode(self.document().toPlainText())+'\n'
+            
+            # Yes, re-highlight the whole document.
+            # There **must** be some optimizacion possibilities
+            # but it seems fast enough.
+            highlight(text,self.lexer,self.formatter)
+            
+            # Just apply the formatting to this block.
+            # For titles, it may be necessary to backtrack
+            # and format a couple of blocks **earlier**.
+            for i in range(len(unicode(text))):
+                try:
+                    self.setFormat(i,1,self.formatter.data[p+i])                
+                except IndexError:
+                    pass
+            
+            # I may need to do something about this being called
+            # too quickly.
+            self.tstamp=time.time() 

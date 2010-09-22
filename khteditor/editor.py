@@ -152,7 +152,7 @@ class KhtTextEdit(QtGui.QTextEdit):
             text = self.get_text(position, 'eof')
             i_start_open = 1
             i_start_close = 1
-        else:
+        else:            
             bracemap = {')': '(', ']': '[', '}': '{'}
             text = self.get_text('sob', position)
             i_start_open = len(text)-1
@@ -193,10 +193,18 @@ class KhtTextEdit(QtGui.QTextEdit):
             cursor.setPosition(position)
             cursor.movePosition(QtGui.QTextCursor.NextCharacter,
                                 QtGui.QTextCursor.KeepAnchor)
-            charformat = cursor.charFormat()
+            charformat = cursor.charFormat()            
             pen = QtGui.QPen(Qt.NoPen) if cancel else QtGui.QPen(color)
             charformat.setTextOutline(pen)
-            cursor.setCharFormat(charformat)                            
+            cursor.setCharFormat(charformat)
+        if cancel:
+            charformat = QtGui.QTextCharFormat()
+            cursor.movePosition(QtGui.QTextCursor.NextCharacter,
+                                QtGui.QTextCursor.KeepAnchor)
+            cursor.setCharFormat(charformat)            
+            cursor.clearSelection()
+            self.setCurrentCharFormat(charformat)
+            
     def highlightCurrentLine(self):
         #Hilgight background
         _selection = QtGui.QTextEdit.ExtraSelection()
@@ -208,15 +216,21 @@ class KhtTextEdit(QtGui.QTextEdit):
         extraSelection.append(_selection)
         self.setExtraSelections(extraSelection)
 
+#        cursor = QtGui.QTextCursor(self.document())
+#        charformat = cursor.charFormat()            
+#        charformat.setTextOutline(QtGui.QPen(Qt.NoPen))            
+#        cursor.setCharFormat(charformat)
+        
         #Highlight Braces
         if self.bracepos is not None:
             self.__highlight(self.bracepos, cancel=True)
+            print 'should be canceled'
             self.bracepos = None
-        cursor = self.textCursor()
-        if cursor.position() == 0:
+        cursor = self.textCursor()        
+        if cursor.position() == 0:            
             return
         cursor.movePosition(QtGui.QTextCursor.PreviousCharacter,
-                            QtGui.QTextCursor.KeepAnchor)
+                            QtGui.QTextCursor.KeepAnchor)                           
         text = unicode(cursor.selectedText())
         pos1 = cursor.position()
         if text in (')', ']', '}'):
@@ -522,6 +536,7 @@ class KhtTextEdit(QtGui.QTextEdit):
             # Assuming that input argument was already a position
             return position
         return cursor.position()
+
     def get_text(self, position_from, position_to):
         """
         Return text between *position_from* and *position_to*
@@ -529,9 +544,9 @@ class KhtTextEdit(QtGui.QTextEdit):
         """
         cursor = self.__select_text(position_from, position_to)
         text = cursor.selectedText()
-        if not text.isEmpty():
-            while text.endsWith("\n"):
-                text.chop(1)
-            while text.endsWith(u"\u2029"):
-                text.chop(1)
+#        if not text.isEmpty():
+#            while text.endsWith("\n"):
+#                text.chop(1)
+#            while text.endsWith(u"\u2029"):
+#                text.chop(1)
         return unicode(text)
