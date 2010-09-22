@@ -199,7 +199,8 @@ class Window(QtGui.QMainWindow):
     def saveAsFile(self):
         filename = QtGui.QFileDialog.getSaveFileName(self,
                         "KhtEditor -- Save File As",
-                        self.editor.filename, "Python files (*.py *.pyw)")
+                        self.editor.filename, ["Python files (*.py *.pyw)",
+                                               "Text files (*.txt)"])
         if not filename.isEmpty():
             self.editor.filename = filename
             self.setWindowTitle(QtCore.QFileInfo(filename).fileName())
@@ -267,7 +268,7 @@ class Window(QtGui.QMainWindow):
         #self.language = self.detectLanguage(filename)
         self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
         QtGui.QApplication.processEvents()
-        self.highlighter = pygment_highlighter.Highlighter(self.editor.document(),str(filename))
+        self.highlighter = pygments_highlighter.Highlighter(self.editor.document(),str(filename))
         QtGui.QApplication.processEvents()
         self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
     

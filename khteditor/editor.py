@@ -98,7 +98,10 @@ class KhtTextEdit(QtGui.QTextEdit):
         if self.filename.startsWith("Unnamed"):
             filename = QtGui.QFileDialog.getSaveFileName(self,
                             "Text Editor -- Save File As",
-                            self.filename, "Text files (*.py *.*)")
+                            self.filename, 'Python files (*.py *.pyw);;'  
+                                            + 'Text files (*.txt);;' 
+                                            + 'C Files (*.h *.c);;' 
+                                            + 'Cpp Files (*.h *.cpp)')
             if filename.isEmpty():
                 return
             self.filename = filename
