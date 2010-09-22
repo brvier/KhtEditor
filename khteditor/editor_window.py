@@ -199,12 +199,15 @@ class Window(QtGui.QMainWindow):
     def saveAsFile(self):
         filename = QtGui.QFileDialog.getSaveFileName(self,
                         "KhtEditor -- Save File As",
-                        self.editor.filename, ["Python files (*.py *.pyw)",
-                                               "Text files (*.txt)"])
+                        self.editor.filename, u'Python file(*.py);;'  
+                                            + u'Text file(*.txt);;' 
+                                            + u'C File(*.c);;' 
+                                            + u'C++ File(*.cpp)')
         if not filename.isEmpty():
             self.editor.filename = filename
             self.setWindowTitle(QtCore.QFileInfo(filename).fileName())
             self.fileSave()
+        return filename
 
 
     def openFile(self, path=QtCore.QString()):
