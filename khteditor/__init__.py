@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""KhtEditor a source code editor by Khertan : Welcome Window"""
+"""KhtEditor a source code editor by Khertan : Init"""
 
-__version__ = '0.0.8'
+__version__ = '0.0.9'
 
 import os
 import sys

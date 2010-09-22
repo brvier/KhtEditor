@@ -15,8 +15,11 @@ class KhtTextEdit(QtGui.QTextEdit):
     def __init__(self, parent=None, filename=QtCore.QString('')):
         """Initialization, can accept a filepath as argument"""
         QtGui.QTextEdit.__init__(self, parent)
-        self.connect(self, QtCore.SIGNAL('cursorPositionChanged()'),  self.highlightCurrentLine);
+#        self.connect(self, QtCore.SIGNAL('cursorPositionChanged()'),  self.highlightCurrentLine);
 
+        self.hl_color = QtGui.QColor('lightblue').lighter(120)
+        # Brace matching
+        self.bracepos = None
         #Plugin init move to editor_window.py        
         #initialization init of plugin system
         #Maybe be not the best place to do it ... 
@@ -60,6 +63,11 @@ class KhtTextEdit(QtGui.QTextEdit):
         self.threaded_plugins = []
 
         self.enabled_plugins = parent.enabled_plugins
+
+        #Current Line highlight and Bracket matcher
+        self.cursorPositionChanged.connect(self.highlightCurrentLine)
+ 
+        # Brackets ExtraSelection ...
 
     #PySide Bug : The type of e is QEvent instead of QKeyEvent
     def keyPressEvent(self, event):
@@ -137,12 +145,62 @@ class KhtTextEdit(QtGui.QTextEdit):
 
             if exception is not None:
                 raise exception
-                
+
+    def __find_brace_match(self, position, brace, forward):
+        if forward:
+            bracemap = {'(': ')', '[': ']', '{': '}'}
+            text = self.get_text(position, 'eof')
+            i_start_open = 1
+            i_start_close = 1
+        else:
+            bracemap = {')': '(', ']': '[', '}': '{'}
+            text = self.get_text('sob', position)
+            i_start_open = len(text)-1
+            i_start_close = len(text)-1
+
+        while True:
+            if forward:
+                i_close = text.find(bracemap[brace], i_start_close)
+            else:
+                i_close = text.rfind(bracemap[brace], 0, i_start_close+1)
+            if i_close > -1:
+                if forward:
+                    i_start_close = i_close+1
+                    i_open = text.find(brace, i_start_open, i_close)
+                else:
+                    i_start_close = i_close-1
+                    i_open = text.rfind(brace, i_close, i_start_open+1)
+                if i_open > -1:
+                    if forward:
+                        i_start_open = i_open+1
+                    else:
+                        i_start_open = i_open-1
+                else:
+                    # found matching brace
+                    if forward:
+                        return position+i_close
+                    else:
+                        return position-(len(text)-i_close)
+            else:
+                # no matching brace
+                return
+    
+    def __highlight(self, positions, color=None, cancel=False):
+        cursor = QtGui.QTextCursor(self.document())
+        for position in positions:
+            if position > self.get_position('eof'):
+                return
+            cursor.setPosition(position)
+            cursor.movePosition(QtGui.QTextCursor.NextCharacter,
+                                QtGui.QTextCursor.KeepAnchor)
+            charformat = cursor.charFormat()
+            pen = QtGui.QPen(Qt.NoPen) if cancel else QtGui.QPen(color)
+            charformat.setTextOutline(pen)
+            cursor.setCharFormat(charformat)                            
     def highlightCurrentLine(self):
         #Hilgight background
-        _color = QtGui.QColor('lightblue').lighter(120)
         _selection = QtGui.QTextEdit.ExtraSelection()
-        _selection.format.setBackground(_color)
+        _selection.format.setBackground(self.hl_color)
         _selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, True)        
         _selection.cursor = self.textCursor()
         _selection.cursor.clearSelection()
@@ -150,6 +208,30 @@ class KhtTextEdit(QtGui.QTextEdit):
         extraSelection.append(_selection)
         self.setExtraSelections(extraSelection)
 
+        #Highlight Braces
+        if self.bracepos is not None:
+            self.__highlight(self.bracepos, cancel=True)
+            self.bracepos = None
+        cursor = self.textCursor()
+        if cursor.position() == 0:
+            return
+        cursor.movePosition(QtGui.QTextCursor.PreviousCharacter,
+                            QtGui.QTextCursor.KeepAnchor)
+        text = unicode(cursor.selectedText())
+        pos1 = cursor.position()
+        if text in (')', ']', '}'):
+            pos2 = self.__find_brace_match(pos1, text, forward=False)
+        elif text in ('(', '[', '{'):
+            pos2 = self.__find_brace_match(pos1, text, forward=True)
+        else:
+            return
+        if pos2 is not None:
+            self.bracepos = (pos1, pos2)
+            self.__highlight(self.bracepos, color=Qt.blue)
+        else:
+            self.bracepos = (pos1,)
+            self.__highlight(self.bracepos, color=Qt.red)
+            
 #    def hilighterror(self,type,line,comment):
 #        print type,line,comment
 #        _color = QtGui.QColor()
@@ -412,4 +494,44 @@ class KhtTextEdit(QtGui.QTextEdit):
                 if block.contains(maincursor.selectionEnd()):
                     break
                 block = block.next()
-                
+
+    def __select_text(self, position_from, position_to):
+        position_from = self.get_position(position_from)
+        position_to = self.get_position(position_to)
+        cursor = self.textCursor()
+        cursor.setPosition(position_from)
+        cursor.setPosition(position_to, QtGui.QTextCursor.KeepAnchor)
+        return cursor
+
+        
+    def get_position(self, position):
+        cursor = self.textCursor()
+        if position == 'cursor':
+            pass
+        elif position == 'sob':
+            cursor.movePosition(QtGui.QTextCursor.Start)
+        elif position == 'sol':
+            cursor.movePosition(QtGui.QTextCursor.StartOfBlock)
+        elif position == 'eol':
+            cursor.movePosition(QtGui.QTextCursor.EndOfBlock)
+        elif position == 'eof':
+            cursor.movePosition(QtGui.QTextCursor.End)
+        elif position == 'sof':
+            cursor.movePosition(QtGui.QTextCursor.Start)
+        else:
+            # Assuming that input argument was already a position
+            return position
+        return cursor.position()
+    def get_text(self, position_from, position_to):
+        """
+        Return text between *position_from* and *position_to*
+        Positions may be positions or 'sob','sol', 'eol', 'sof', 'eof' or 'cursor'
+        """
+        cursor = self.__select_text(position_from, position_to)
+        text = cursor.selectedText()
+        if not text.isEmpty():
+            while text.endsWith("\n"):
+                text.chop(1)
+            while text.endsWith(u"\u2029"):
+                text.chop(1)
+        return unicode(text)
