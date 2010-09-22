@@ -262,6 +262,7 @@ class Highlighter(QSyntaxHighlighter):
         super(Highlighter, self).__init__(document)
 
         self.rules = []
+        self.multilines_comment = None
 
         # Multi-line strings (expression, flag, style)
         # FIXME: The triple-quotes in these two lines will mess up the
@@ -315,8 +316,9 @@ class Highlighter(QSyntaxHighlighter):
         self.setCurrentBlockState(0)
             
         # Do multi-line strings
-        for index,multilines_comment in enumerate(self.multilines_comment):
-            self.match_multiline(text, multilines_comment[0],multilines_comment[1],index+1,multilines_comment[3])
+        if self.multilines_comment:
+            for index,multilines_comment in enumerate(self.multilines_comment):
+                self.match_multiline(text, multilines_comment[0],multilines_comment[1],index+1,multilines_comment[3])
 
     def match_multiline(self, text, start_delimiter, end_delimiter, in_state, style):
         """Do highlighting of multi-line strings. ``delimiter`` should be a

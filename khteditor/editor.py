@@ -187,6 +187,7 @@ class KhtTextEdit(QtGui.QTextEdit):
     
     def __highlight(self, positions, color=None, cancel=False):
         cursor = QtGui.QTextCursor(self.document())
+        modified = self.document().isModified()
         for position in positions:
             if position > self.get_position('eof'):
                 return
@@ -204,6 +205,8 @@ class KhtTextEdit(QtGui.QTextEdit):
             cursor.setCharFormat(charformat)            
             cursor.clearSelection()
             self.setCurrentCharFormat(charformat)
+        self.document().setModified(modified)
+
             
     def highlightCurrentLine(self):
         #Hilgight background
@@ -407,14 +410,16 @@ class KhtTextEdit(QtGui.QTextEdit):
         # Beginning of undo block
         pcursor = self.textCursor()
         pcursor.beginEditBlock()
+
+        cursor = self.textCursor()
     
         # Replace
         # self is the QTextEdit
         if args[3]==True:
             cursor = self.document().find(QtCore.QRegExp(what),
-                                    self.textCursor(), flags)                
+                                    cursor, flags)                
         else:
-            cursor = self.document().find(what, self.textCursor(), flags)
+            cursor = self.document().find(what, cursor, flags)
         if not cursor.isNull():
             if cursor.hasSelection():
                 cursor.insertText(new)
@@ -440,11 +445,13 @@ class KhtTextEdit(QtGui.QTextEdit):
         if args[2]==True:
             flags = flags | QtGui.QTextDocument.FindBackward
 
+        cursor = self.textCursor()
         if args[3]==True:
             cursor = self.document().find(QtCore.QRegExp(what),
-                                        self.textCursor(), flags)
+                                       cursor , flags)
         else:
-            cursor = self.document().find(what, self.textCursor(), flags)
+            cursor = self.document().find(what,
+                                       cursor, flags)
 
         if not cursor.isNull():
             self.setTextCursor(cursor)            
