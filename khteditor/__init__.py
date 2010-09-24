@@ -40,6 +40,76 @@ def install_excepthook(app_name,app_version):
         
     sys.excepthook = my_excepthook
 
+class KhtEditorAbout(QtGui.QMainWindow):
+    '''About Window'''
+    def __init__(self, parent=None):
+        QtGui.QMainWindow.__init__(self,parent)
+        self.parent = parent
+
+        self.settings = QtCore.QSettings()
+
+        self.setAttribute(Qt.WA_Maemo5AutoOrientation, True)
+        self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
+        self.setWindowTitle("KhtEditor About")
+
+        aboutScrollArea = QtGui.QScrollArea(self)
+        aboutScrollArea.setWidgetResizable(True)
+        awidget = QtGui.QWidget(aboutScrollArea)
+        awidget.setMinimumSize(480,800)
+        awidget.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        aboutScrollArea.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        #Kinetic scroller is available on Maemo and should be on meego
+        try:
+            scroller = aboutScrollArea.property("kineticScroller").toPyObject()
+            scroller.setEnabled(True)
+        except:
+            pass
+
+        aboutLayout = QtGui.QVBoxLayout(awidget)
+
+        aboutIcon = QtGui.QLabel()
+        aboutIcon.setPixmap(QtGui.QIcon.fromTheme('khteditor').pixmap(128,128))
+        aboutIcon.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
+        aboutIcon.resize(128,128)
+        aboutLayout.addWidget(aboutIcon)
+
+        aboutLabel = QtGui.QLabel('''<center><b>KhtEditor</b> %s
+                                   <br><br>A source code editor designed for ease of use on small screen
+                                   <br>Licenced under GPLv3
+                                   <br>By Beno&icirc;t HERVIER (Khertan) 
+                                   <br><br><br><b>Bugtracker : </b>http://khertan.net/khteditor:bugs
+                                   <br><b>Sources : </b>http://gitorious.org/khteditor                                   
+                                   <br><b>Www : </b>http://khertan.net/khteditor                                   
+                                   <br><br><b>Thanks to :</b>
+                                   <br>achipa on #pyqt
+                                   <br>ddoodie on #pyqt
+                                   <br>Attila77 on talk.maemo.org
+                                   <br>Sebastian Lauwers for help on regex
+                                   <br><br>
+                                   </center>''' % __version__)
+
+        aboutLayout.addWidget(aboutLabel)
+        self.bugtracker_button = QtGui.QPushButton('BugTracker')
+        self.bugtracker_button.clicked.connect(self.open_bugtracker)
+        self.website_button = QtGui.QPushButton('Website')
+        self.website_button.clicked.connect(self.open_website)
+        awidget2 = QtGui.QWidget()
+        buttonLayout = QtGui.QHBoxLayout(awidget2)        
+        buttonLayout.addWidget(self.bugtracker_button)
+        buttonLayout.addWidget(self.website_button)
+        aboutLayout.addWidget(awidget2)
+        
+        awidget.setLayout(aboutLayout)
+        aboutScrollArea.setWidget(awidget)
+        self.setCentralWidget(aboutScrollArea)
+        self.show()        
+        
+    def open_website(self):
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl('http://khertan.net/khteditor'))
+    def open_bugtracker(self):
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl('http://khertan.net/khteditor/bugs'))
+    
+
 class KhtEditor:
     def __init__(self):
       self.window_list = []
@@ -129,53 +199,8 @@ class KhtEditor:
         sys.exit(self.app.exec_())
       
     def about(self,widget):
-        """
-            Display the about dialog
-        """
-        aboutWin = QtGui.QMainWindow(widget)
-        aboutWin.setAttribute(Qt.WA_Maemo5StackedWindow, True)
-        aboutWin.setAttribute(Qt.WA_Maemo5AutoOrientation, True)
-
-        aboutScrollArea = QtGui.QScrollArea(aboutWin)
-        aboutScrollArea.setWidgetResizable(True)
-        awidget = QtGui.QWidget(aboutScrollArea)
-        awidget.setMinimumSize(480,800)
-        awidget.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        aboutScrollArea.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        scroller = aboutScrollArea.property("kineticScroller").toPyObject()
-        scroller.setEnabled(True)
-
-        aboutLayout = QtGui.QVBoxLayout(awidget)
-        
-        aboutIcon = QtGui.QLabel()
-        aboutIcon.setPixmap(QtGui.QPixmap(os.path.join(khteditor.__path__[0],'icons','khteditor.png')).scaledToHeight(140))
-        aboutIcon.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
-        aboutIcon.resize(140,140)
-        aboutLayout.addWidget(aboutIcon)
-        
-        aboutLabel = QtGui.QLabel('''<center><b>KhtEditor</b> %s
-                                   <br><br>A source code editor designed for ease of use on small screen
-                                   <br>Licenced under GPLv3
-                                   <br>By Beno&icirc;t HERVIER (Khertan) 
-                                   <br><br><br><b>Bugtracker : </b>http://khertan.net/khteditor:bugs
-                                   <br><b>Sources : </b>http://gitorious.org/khteditor                                   
-                                   <br><b>Www : </b>http://khertan.net/khteditor                                   
-                                   <br><br><b>Thanks to :</b>
-                                   <br>achipa on #pyqt
-                                   <br>ddoodie on #pyqt
-                                   <br>Attila77 on talk.maemo.org
-                                   <br>Sebastian Lauwers for help on regex
-                                   <br><br>
-                                   </center>''' % self.version)
-        aboutLayout.addWidget(aboutLabel)
-
-        awidget.setLayout(aboutLayout)
-        aboutScrollArea.setWidget(awidget)
-
-        aboutWin.setWindowTitle('About KhtEditor')
-        aboutWin.setCentralWidget(aboutScrollArea)
-        aboutWin.show()
-        
+        self.aboutWin = KhtEditorAbout(widget)       
+                
     def newFile(self):
         """
             Create a new editor window

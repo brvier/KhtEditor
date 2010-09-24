@@ -38,6 +38,7 @@ if __name__ == "__main__":
     p.icon='khteditor.png'
     p["/usr/bin"] = ["khteditor_launch.py",]
     p["/usr/share/dbus-1/services"] = ["khteditor.service",]
+    p["/usr/share/icons/hicolor/128x128/apps"] = ["khteditor.png",]
     p["/usr/share/pixmaps"] = ["khteditor.png",]
     p["/usr/share/applications/hildon"] = ["khteditor.desktop",]
     files = []
@@ -59,7 +60,7 @@ if __name__ == "__main__":
 chmod +x /usr/bin/khteditor_launch.py
 python -m compileall /usr/lib/python2.5/site-packages/khteditor"""
 
-    p.changelog=""" Fix braces mathcing, fix generic highlighter, fix find and replace
+    p.changelog=""" Fix braces matching, fix generic highlighter, fix find and replace
 """
 
 print p.generate(build_binary=False,build_src=True)

@@ -123,7 +123,7 @@ class FindAndReplaceDlg(QtGui.QDialog):
 
 
     def findClicked(self):
-        self.emit(QtCore.SIGNAL("find"), self.findLineEdit.text(),
+        self.emit(QtCore.SIGNAL("find"), unicode(self.findLineEdit.text()),
                 self.caseCheckBox.isChecked(),
                 self.wholeCheckBox.isChecked(),
                 self.backwardsCheckBox.isChecked(),

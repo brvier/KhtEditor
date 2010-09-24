@@ -20,7 +20,9 @@ setup(name='KhtEditor',
                       'khteditor': ['syntax/*.xml']},
       data_files=[('/usr/share/dbus-1/services', ['khteditor.service']),
                   ('/usr/share/applications/hildon/', ['khteditor.desktop']),
-                  ('/usr/share/pixmaps', ['khteditor.png'])],
+                  ('/usr/share/pixmaps', ['khteditor.png']),
+                  ('/usr/share/icons/hicolor/128x128/apps', ['khteditor.png']),
+                  ],
       scripts=['khteditor_launch.py'],
      )
 

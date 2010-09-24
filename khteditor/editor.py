@@ -104,13 +104,6 @@ class KhtTextEdit(QtGui.QTextEdit):
     def save(self):
         """Hum ... just save ..."""
         if self.filename.startsWith("Unnamed"):
-#            filename = QtGui.QFileDialog.getSaveFileName(self,
-#                            "Text Editor -- Save File As",
-#                            self.filename, 'Python files (*.py *.pyw);;'  
-#                                            + 'Text files (*.txt);;' 
-#                                            + 'C Files (*.h *.c);;' 
-#                                            + 'C++ Files (*.h *.cpp)')
-#            if filename.isEmpty():
             filename = self.parent().saveAsFile()  
             if not filename.isEmpty():            
                 return
