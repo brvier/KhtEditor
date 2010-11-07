@@ -95,6 +95,7 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         cr = self.contentsRect()
 #        print s.height(),fr.height(),cr.height(),s.height() + (fr.height() - cr.height() - 1)
         self.setMinimumHeight(max(s.height(), s.height() + (fr.height() - cr.height() - 1)))
+        self.setMinimumWidth(s.width())
 #        print self.viewport().height()
 #        self.setMinimumHeight(self.viewport().height())
 

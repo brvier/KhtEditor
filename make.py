@@ -60,7 +60,7 @@ if __name__ == "__main__":
 chmod +x /usr/bin/khteditor_launch.py
 python -m compileall /usr/lib/python2.5/site-packages/khteditor"""
 
-    p.changelog=""" Fix braces matching, fix generic highlighter, fix find and replace
+    p.changelog=""" Switch to QPlaintextedit, improve brace matching
 """
 
 print p.generate(build_binary=False,build_src=True)
