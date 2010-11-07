@@ -178,14 +178,15 @@ class Window(QtGui.QMainWindow):
         self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
         self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
 
-#        self.area = QtGui.QScrollArea(self)
-#        self.area.setWidget(self.editor)
-#        self.area.setWidgetResizable(True)
-
-#        scroller = self.area.property("kineticScroller").toPyObject()
-#        scroller.setEnabled(True)
-
-        self.setCentralWidget(self.editor)
+        self.area = QtGui.QScrollArea(self)
+        scroller = self.area.property("kineticScroller").toPyObject()
+        scroller.setEnabled(True)
+        self.area.setWidget(self.editor)
+        self.area.setWidgetResizable(True)
+#        self.area.takeWidget()
+        
+#        self.setCentralWidget(self.editor)
+        self.setCentralWidget(self.area)
 
 
     def fileSave(self):

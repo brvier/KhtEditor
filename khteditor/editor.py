@@ -9,12 +9,12 @@ from plugins.plugins_api import init_plugin_system, filter_plugins_by_capability
 from recent_files import RecentFiles
 
 
-class KhtTextEdit(QtGui.QTextEdit):
+class KhtTextEdit(QtGui.QPlainTextEdit):
     """ Widget which handle all specifities of implemented in the editor"""
         
     def __init__(self, parent=None, filename=QtCore.QString('')):
         """Initialization, can accept a filepath as argument"""
-        QtGui.QTextEdit.__init__(self, parent)
+        QtGui.QPlainTextEdit.__init__(self, parent)
 #        self.connect(self, QtCore.SIGNAL('cursorPositionChanged()'),  self.highlightCurrentLine);
 
         self.hl_color = QtGui.QColor('lightblue').lighter(120)
@@ -34,14 +34,28 @@ class KhtTextEdit(QtGui.QTextEdit):
         parent.setWindowTitle(self.filename)
         
         #Maemo Finger Kinetic Scrolling
-        scroller = self.property("kineticScroller").toPyObject()
-        scroller.setEnabled(True)
+#        scroller = self.property("kineticScroller").toPyObject()
+#        print 'Class kineticScrolling',type(scroller),':',dir(scroller)
+#        scroller.reset()
+#        scroller.setEnabled(True)
+#        scroller.setDragInertia(0.85)
+#        scroller.setMinimumVelocity(0)
+#        scroller.setMaximumVelocity(0.5)
+#        scroller.setDecelerationFactor(0.99)
+#        scroller.setFastVelocityFactor(0.99)
+#        scroller.setMode(1)
+#        print scroller.decelerationFactor()
+#        print scroller.fastVelocityFactor()
+#        print scroller.maximumVelocity()
+#        print scroller.minimumVelocity()
+#        print scroller.dragInertia()
+#        self.setWidgetResizable(True)
 
         #Set no wrap
         if (parent.settings.value("WrapLine").toBool()):
-            self.setLineWrapMode(QtGui.QTextEdit.WidgetWidth)            
+            self.setLineWrapMode(QtGui.QPlainTextEdit.WidgetWidth)            
         else:
-            self.setLineWrapMode(QtGui.QTextEdit.NoWrap)
+            self.setLineWrapMode(QtGui.QPlainTextEdit.NoWrap)
 
         #Get Font Size
         fontsize = parent.settings.value("FontSize").toInt()[0]
@@ -66,8 +80,23 @@ class KhtTextEdit(QtGui.QTextEdit):
 
         #Current Line highlight and Bracket matcher
         self.cursorPositionChanged.connect(self.highlightCurrentLine)
- 
+        self.textChanged.connect(self.textEditChanged)
         # Brackets ExtraSelection ...
+
+    def textEditChanged(self):
+        doc = self.document()
+        cursor = self.cursorRect()
+        s = doc.size() #.toSize()
+#        s = doc.documentLayout().documentSize().toSize()
+#        print 's.height:',s.height()
+        s.setHeight((s.height() + 1) * (self.fontMetrics().lineSpacing() + 1))
+#        print 'linespacing : ',self.fontMetrics().lineSpacing()
+        fr = self.frameRect()
+        cr = self.contentsRect()
+#        print s.height(),fr.height(),cr.height(),s.height() + (fr.height() - cr.height() - 1)
+        self.setMinimumHeight(max(s.height(), s.height() + (fr.height() - cr.height() - 1)))
+#        print self.viewport().height()
+#        self.setMinimumHeight(self.viewport().height())
 
     #PySide Bug : The type of e is QEvent instead of QKeyEvent
     def keyPressEvent(self, event):
@@ -76,7 +105,7 @@ class KhtTextEdit(QtGui.QTextEdit):
             for plugin in filter_plugins_by_capability('beforeKeyPressEvent',self.enabled_plugins):
                 plg = plugin()
                 plg.do_beforeKeyPressEvent(self,event)
-            QtGui.QTextEdit.keyPressEvent(self, event)
+            QtGui.QPlainTextEdit.keyPressEvent(self, event)
             for plugin in filter_plugins_by_capability('afterKeyPressEvent',self.enabled_plugins):
                 plg = plugin()
                 plg.do_afterKeyPressEvent(self,event)
@@ -201,7 +230,7 @@ class KhtTextEdit(QtGui.QTextEdit):
         self.document().setModified(modified)
 
             
-    def highlightCurrentLine(self):
+    def highlightCurrentLine(self):            
         #Hilgight background
         _selection = QtGui.QTextEdit.ExtraSelection()
         _selection.format.setBackground(self.hl_color)
@@ -210,7 +239,7 @@ class KhtTextEdit(QtGui.QTextEdit):
         _selection.cursor.clearSelection()
         extraSelection = []
         extraSelection.append(_selection)
-        self.setExtraSelections(extraSelection)
+#        self.setExtraSelections(extraSelection)
 
 #        cursor = QtGui.QTextCursor(self.document())
 #        charformat = cursor.charFormat()            
@@ -219,11 +248,12 @@ class KhtTextEdit(QtGui.QTextEdit):
         
         #Highlight Braces
         if self.bracepos is not None:
-            self.__highlight(self.bracepos, cancel=True)
+#            self.__highlight(self.bracepos, cancel=True)
             print 'should be canceled'
             self.bracepos = None
         cursor = self.textCursor()        
-        if cursor.position() == 0:            
+        if cursor.position() == 0:
+            self.setExtraSelections(extraSelection)
             return
         cursor.movePosition(QtGui.QTextCursor.PreviousCharacter,
                             QtGui.QTextCursor.KeepAnchor)                           
@@ -234,13 +264,38 @@ class KhtTextEdit(QtGui.QTextEdit):
         elif text in ('(', '[', '{'):
             pos2 = self.__find_brace_match(pos1, text, forward=True)
         else:
+            self.setExtraSelections(extraSelection)
             return
         if pos2 is not None:
             self.bracepos = (pos1, pos2)
-            self.__highlight(self.bracepos, color=Qt.blue)
+#            self.__highlight(self.bracepos, color=Qt.blue)
+            print 'Bracket match'
+            _selection = QtGui.QTextEdit.ExtraSelection()
+            _selection.format.setForeground(Qt.white)
+#            _selection.format.setFontWeight(99)
+            _selection.format.setBackground(Qt.blue)
+            _selection.cursor = cursor
+            extraSelection.append(_selection)
+            _selection = QtGui.QTextEdit.ExtraSelection()
+            _selection.format.setForeground(Qt.white)
+            _selection.format.setBackground(Qt.blue)
+            _selection.cursor = self.textCursor()
+            _selection.cursor.setPosition(pos2)
+            _selection.cursor.movePosition(QtGui.QTextCursor.NextCharacter,
+                            QtGui.QTextCursor.KeepAnchor)
+            extraSelection.append(_selection)
         else:
             self.bracepos = (pos1,)
-            self.__highlight(self.bracepos, color=Qt.red)
+#            self.__highlight(self.bracepos, color=Qt.red)
+            _selection = QtGui.QTextEdit.ExtraSelection()
+#            _selection.format.setFontWeight(75)
+            _selection.format.setBackground(Qt.red)
+            _selection.format.setForeground(Qt.white)
+#            _selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, True)        
+            _selection.cursor = cursor
+            extraSelection.append(_selection)
+            
+        self.setExtraSelections(extraSelection)
             
 #    def hilighterror(self,type,line,comment):
 #        print type,line,comment
