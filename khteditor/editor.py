@@ -94,7 +94,8 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         fr = self.frameRect()
         cr = self.contentsRect()
         self.setMinimumHeight(max(s.height(), s.height() + (fr.height() - cr.height() - 1)))
-        self.setMinimumWidth(s.width())
+        print s.width()
+        self.setMinimumWidth(max(s.width(),s.width() + (fr.width()-cr.width()) - 1))
 
     def curPositionChanged(self):
         #Hilight current line
@@ -110,6 +111,7 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         #self.scroller.ensureVisible(pos + cursor.center(), 10 + cursor.width(),
         #                       2 * cursor.height())
 #        pw = self
+        print cursor.center(),cursor.center().x(),cursor.center().y()
         self.scroller.ensureVisible(cursor.center(), 2*cursor.width(), 2*cursor.height())
 #        while (pw):
 #            if (pw.parentWidget()):
