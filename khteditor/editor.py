@@ -159,7 +159,7 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
     def save(self):
         """Hum ... just save ..."""
         if self.filename.startsWith("Unnamed"):
-            filename = self.parent().saveAsFile()  
+            filename = self.parent().parent().parent().saveAsFile()  
             if not filename.isEmpty():            
                 return
             self.filename = filename

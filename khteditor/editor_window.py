@@ -387,17 +387,17 @@ class Window(QtGui.QMainWindow):
         self.fileSave()
 
         if self.editor.filename != None:
-          fileHandle = open('/tmp/khteditor.tmp', 'w')
+          fileHandle = open('/tmp/khteditor.tmp', 'wb')
           fileHandle.write('#!/bin/sh\n')
-          fileHandle.write('cd '+os.path.dirname(str(self.editor.filename))+' \n')
+          fileHandle.write('cd '+os.path.dirname(unicode(self.editor.filename).encode('utf-8'))+' \n')
           language = self.detectLanguage(self.editor.filename)
           #Crappy way to handle that
           if language == 'python':
-            fileHandle.write("python \'"+self.editor.filename + "\'\n")
+            fileHandle.write("python \'"+unicode(self.editor.filename).encode('utf-8') + "\'\n")
           elif language == 'qml':
-            fileHandle.write("/opt/qt4-maemo5/bin/qmlviewer \'"+self.editor.filename + "\' -fullscreen\n")             
+            fileHandle.write("/opt/qt4-maemo5/bin/qmlviewer \'"+unicode(self.editor.filename).encode('utf-8') + "\' -fullscreen\n")             
           else:
-            fileHandle.write(language+" \'"+self.editor.filename + "\' -fullscreen\n")                       
+            fileHandle.write(language+" \'"+unicode(self.editor.filename).encode('utf-8') + "\' -fullscreen\n")                       
           fileHandle.write('read -p "Press ENTER to continue ..." foo')
           fileHandle.write('\nexit')
           fileHandle.close()

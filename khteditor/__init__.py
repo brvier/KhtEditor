@@ -3,7 +3,7 @@
 
 """KhtEditor a source code editor by Khertan : Init"""
 
-__version__ = '0.0.10'
+__version__ = '0.0.11'
 
 import os
 import sys
@@ -191,10 +191,10 @@ class KhtEditor:
           if os.path.isfile(path):
               editor_win=editor_window.Window(self)
               self.window_list.append(editor_win)
-              editor_win.loadFile(QtCore.QString(path))
+              editor_win.loadFile(QtCore.QString(path.decode('UTF-8')))
               editor_win.show()
-              self.last_know_path=QtCore.QString(os.path.dirname(str(path)))
-              RecentFiles().append(QtCore.QString(path))
+              self.last_know_path=QtCore.QString(os.path.dirname(str(path).decode('UTF-8')))
+              RecentFiles().append(QtCore.QString(path.decode('UTF-8')))
 
         sys.exit(self.app.exec_())
       
@@ -220,7 +220,7 @@ class KhtEditor:
         if not filename.isEmpty():
           self.window_list.append(editor_win)
           RecentFiles().append(filename)
-          self.last_know_path=QtCore.QString(os.path.dirname(str(filename)))
+          self.last_know_path=QtCore.QString(os.path.dirname(str(filename).decode('UTF-8')))
 #        else:           
 #          editor_win.destroy()
 
