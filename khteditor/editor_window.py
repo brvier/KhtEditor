@@ -181,6 +181,8 @@ class Window(QtGui.QMainWindow):
         self.area = QtGui.QScrollArea(self)
         scroller = self.area.property("kineticScroller").toPyObject()
         scroller.setEnabled(True)
+        #speed hack
+        self.editor.scroller = scroller
         self.area.setWidget(self.editor)
         self.area.setWidgetResizable(True)
 #        self.area.takeWidget()
@@ -421,4 +423,3 @@ class Window(QtGui.QMainWindow):
             self.setWindowTitle('*'+QtCore.QFileInfo(self.editor.filename).fileName())
         else:
             self.setWindowTitle(QtCore.QFileInfo(self.editor.filename).fileName())
-

@@ -20,6 +20,8 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         self.hl_color = QtGui.QColor('lightblue').lighter(120)
         # Brace matching
         self.bracepos = None
+        # Init scroller
+        scroller = None
         #Plugin init move to editor_window.py        
         #initialization init of plugin system
         #Maybe be not the best place to do it ... 
@@ -79,26 +81,49 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         self.enabled_plugins = parent.enabled_plugins
 
         #Current Line highlight and Bracket matcher
-        self.cursorPositionChanged.connect(self.highlightCurrentLine)
+        self.cursorPositionChanged.connect(self.curPositionChanged)
         self.textChanged.connect(self.textEditChanged)
         # Brackets ExtraSelection ...
 
     def textEditChanged(self):
+        #Resize
         doc = self.document()
         cursor = self.cursorRect()
-        s = doc.size() #.toSize()
-#        s = doc.documentLayout().documentSize().toSize()
-#        print 's.height:',s.height()
+        s = doc.size()
         s.setHeight((s.height() + 1) * (self.fontMetrics().lineSpacing() + 1))
-#        print 'linespacing : ',self.fontMetrics().lineSpacing()
         fr = self.frameRect()
         cr = self.contentsRect()
-#        print s.height(),fr.height(),cr.height(),s.height() + (fr.height() - cr.height() - 1)
         self.setMinimumHeight(max(s.height(), s.height() + (fr.height() - cr.height() - 1)))
         self.setMinimumWidth(s.width())
-#        print self.viewport().height()
-#        self.setMinimumHeight(self.viewport().height())
 
+    def curPositionChanged(self):
+        #Hilight current line
+        self.highlightCurrentLine()
+        
+        #Make sure cursor is visible
+        cursor = self.cursorRect()
+        pos = self.pos()
+        #scroller = self.parentWidget().property("kineticScroller").toPyObject() 
+        #pos = self.parent().mapToParent(pos) 
+        #print type(self.parent()), type(self.parentWidget()),type(scroller)
+        #print pos, pos.x(), pos.y(), (pos + cursor.center()).y()
+        #self.scroller.ensureVisible(pos + cursor.center(), 10 + cursor.width(),
+        #                       2 * cursor.height())
+#        pw = self
+        self.scroller.ensureVisible(cursor.center(), 2*cursor.width(), 2*cursor.height())
+#        while (pw):
+#            if (pw.parentWidget()):
+#                area = pw.parentWidget()
+#                print area,area.parentWidget(),area.parent()
+#                if (type(area) == QtGui.QScrollArea ):
+#                    scroller = area.property("kineticScroller").toPyObject()
+#                    if (scroller):
+#                        print pos.x(),pos.y(),cursor.center().x(),cursor.center().y()
+#                        scroller.ensureVisible(cursor.center(), 2*cursor.width(), 2*cursor.height())
+#                    break
+#            pos = pw.mapToParent(pos)
+#            pw = pw.parentWidget()
+#
     #PySide Bug : The type of e is QEvent instead of QKeyEvent
     def keyPressEvent(self, event):
         """Intercept the key event to lets plugin do something if they want"""
