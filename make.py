@@ -60,7 +60,7 @@ if __name__ == "__main__":
 chmod +x /usr/bin/khteditor_launch.py
 python -m compileall /usr/lib/python2.5/site-packages/khteditor"""
 
-    p.changelog=""" Switch to QPlaintextedit, improve brace matching
+    p.changelog=""" Fix to ensure cursor is visible, fix unicode in openfile, recentfile, do_execute, savefile
 """
 
 print p.generate(build_binary=False,build_src=True)

@@ -83,8 +83,8 @@ class WelcomeWindow(QtGui.QMainWindow):
         for index in range(0,self._layout.count()-4):
             recentFileButton = self._layout.itemAt(index+4).widget()
             try:
-                recentFileButton.setText(os.path.basename(str(recentfiles[index])))
-                recentFileButton.setValueText(os.path.abspath(str(recentfiles[index])))         
+                recentFileButton.setText(os.path.basename(unicode(recentfiles[index]).encode('utf-8')).decode('utf-8'))
+                recentFileButton.setValueText(os.path.abspath(unicode(recentfiles[index]).encode('utf-8')).decode('utf-8'))         
             except StandardError, e:
                 recentFileButton.setDisabled(True)
         

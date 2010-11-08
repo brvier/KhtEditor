@@ -234,7 +234,7 @@ class KhtEditor:
         editor_win.show()
         editor_win.loadFile(path.valueText())
         RecentFiles().append(path.valueText())
-        self.last_know_path=QtCore.QString(os.path.dirname(str(path.valueText()))) 
+        self.last_know_path=QtCore.QString(os.path.dirname(unicode(path.valueText()).encode('UTF-8'))) 
             
     def showPrefs(self,win):
         """

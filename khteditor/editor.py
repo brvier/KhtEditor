@@ -12,7 +12,7 @@ from recent_files import RecentFiles
 class KhtTextEdit(QtGui.QPlainTextEdit):
     """ Widget which handle all specifities of implemented in the editor"""
         
-    def __init__(self, parent=None, filename=QtCore.QString('')):
+    def __init__(self, parent=None, filename=QtCore.QString()):
         """Initialization, can accept a filepath as argument"""
         QtGui.QPlainTextEdit.__init__(self, parent)
 #        self.connect(self, QtCore.SIGNAL('cursorPositionChanged()'),  self.highlightCurrentLine);
