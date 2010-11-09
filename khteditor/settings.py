@@ -30,7 +30,6 @@ class KhtSettings(QMainWindow):
     def loadPrefs(self):
         for checkBox in self.plugins_widgets :            
             if self.settings.value(checkBox.text().split(' ')[0])!=None:        
-                print 'DEBUG:loadPrefs:',checkBox.text().split(' ')[0],':',  self.settings.value(checkBox.text().split(' ')[0])
                 checkBox.setCheckState(int(self.settings.value(checkBox.text().split(' ')[0])))
         if self.settings.value('FontName') :
             self.fontName.setCurrentFont(self.settings.value('FontName'))
@@ -41,14 +40,12 @@ class KhtSettings(QMainWindow):
 
     def savePrefs(self):
         for checkBox in self.plugins_widgets :
-            print 'DEBUG:savePrefs:', checkBox.text().split(' ')[0], ':', checkBox.checkState()
             self.settings.setValue(checkBox.text().split(' ')[0],checkBox.checkState())
         self.settings.setValue('FontName',self.fontName.currentFont())
         self.settings.setValue('FontSize',self.fontSize.value())
         self.settings.setValue('WrapLine',self.wrapLine.checkState())
             
     def closeEvent(self,widget,*args):
-        print "save Prefs"
         self.savePrefs()
                      
     def setupGUI(self):
@@ -83,8 +80,7 @@ class KhtSettings(QMainWindow):
         gridIndex += 1
         
         init_plugin_system()
-#        plugins = 
-#        plugins = plugins_api.discover_plugin_in_paths()
+
         self.plugins_widgets = []
         for plugin in find_plugins():
             aCheckBox = QCheckBox(plugin.__name__+' '+plugin.__version__)
@@ -102,7 +98,6 @@ class KhtSettings(QMainWindow):
         self.aWidget.setLayout(self._main_layout)
         self.setCentralWidget(self.scrollArea)
 
-#        self.setCentralWidget(self.aWidget)
         
 if __name__ == '__main__':
     import sys

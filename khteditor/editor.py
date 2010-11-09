@@ -85,7 +85,6 @@ class KhtTextEdit( QPlainTextEdit):
         fr = self.frameRect()
         cr = self.contentsRect()
         self.setMinimumHeight(max(s.height(), s.height() + (fr.height() - cr.height() - 1)))
-        print s.width(),s.width() + (fr.width()-cr.width()) - 1
         self.setMinimumWidth(max(s.width(),s.width() + (fr.width()-cr.width()) - 1))
 
     def ensureVisible(self,pos,xmargin,ymargin):
@@ -116,32 +115,11 @@ class KhtTextEdit( QPlainTextEdit):
         self.highlightCurrentLine()
         
         #Make sure cursor is visible
-#        cursor = 
-#        pos = self.pos()
-        #scroller = self.parentWidget().property("kineticScroller").toPyObject() 
-        #pos = self.parent().mapToParent(pos) 
-        #print type(self.parent()), type(self.parentWidget()),type(scroller)
-        #print pos, pos.x(), pos.y(), (pos + cursor.center()).y()
-        #self.scroller.ensureVisible(pos + cursor.center(), 10 + cursor.width(),
-        #                       2 * cursor.height())
-#        pw = self
+
         cursor = self.cursorRect()
         pos = cursor.center()
-#        print cursor.center(),cursor.center().x(),cursor.center().y()
         self.area.ensureVisible(pos.x(),pos.y(), 2*cursor.width()+20, 2*cursor.height())
-#        while (pw):
-#            if (pw.parentWidget()):
-#                area = pw.parentWidget()
-#                print area,area.parentWidget(),area.parent()
-#                if (type(area) ==  QScrollArea ):
-#                    scroller = area.property("kineticScroller").toPyObject()
-#                    if (scroller):
-#                        print pos.x(),pos.y(),cursor.center().x(),cursor.center().y()
-#                        scroller.ensureVisible(cursor.center(), 2*cursor.width(), 2*cursor.height())
-#                    break
-#            pos = pw.mapToParent(pos)
-#            pw = pw.parentWidget()
-#
+
     #PySide Bug : The type of e is QEvent instead of QKeyEvent
     def keyPressEvent(self, event):
         """Intercept the key event to lets plugin do something if they want"""
@@ -340,40 +318,7 @@ class KhtTextEdit( QPlainTextEdit):
             extraSelection.append(_selection)
             
         self.setExtraSelections(extraSelection)
-            
-#    def hilighterror(self,type,line,comment):
-#        print type,line,comment
-#        _color =  QColor()
-#        _color.setNamedColor('red')
-#        _format =  QTextCharFormat()
-#        _format.setBackground(_color)
-#        _format.setFontItalic(True)
-
-        #Hilgight background
-#        _color =  QColor()
-#        _color.setNamedColor('red')
-#        _color.lighter(160)
-#        _selection =  QTextEdit.ExtraSelection()
-#        _selection.format.setBackground(_color)
-#        _selection.format.setProperty( QTextFormat.FullWidthSelection, true)
-#        
-#        _selection.cursor = textCursor()
-#        block = self.document().findBlockByLineNumber(line-1)        
-#        _selection.cursor.cursor.setPosition(block.position())
-#        _selection.cursor.clearSelection()
-#        self.extraSelections.append(_selection)
-#
-#Version text add
-#        block = self.document().findBlockByLineNumber(line-1)
-#        if not (block.text().startsWith('FIXME:')):
-#            block = self.document().findBlockByLineNumber(line)
-#            cursor = self.textCursor() 
-#            cursor.setPosition(block.position())
-#            cursor.insertText("FIXME:"+type+':'+str(line)+':'+comment+'\n')
-                        
-#        block.setUnderlineColor(_color)       
-#        block.setFontItalic(True)
-        
+                    
     def load(self):
         """Load ?"""
         exception = None

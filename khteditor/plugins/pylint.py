@@ -182,7 +182,6 @@ class PyLint(Plugin, QObject):
         while self.pylint_pross and self.pylint_pross.canReadLine():
             result = self.pylint_pross.readLine()
             if result != None:
-                print 'DEBUG:', result
                 pos = 0
                 while True:
                     pos = regex.indexIn(result, pos)
