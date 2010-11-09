@@ -9,15 +9,15 @@ from plugins.plugins_api import init_plugin_system, filter_plugins_by_capability
 from recent_files import RecentFiles
 
 
-class KhtTextEdit(QtGui.QPlainTextEdit):
+class KhtTextEdit( QPlainTextEdit):
     """ Widget which handle all specifities of implemented in the editor"""
         
     def __init__(self, parent=None, filename=None):
         """Initialization, can accept a filepath as argument"""
-        QtGui.QPlainTextEdit.__init__(self, parent)
-#        self.connect(self, QtCore.SIGNAL('cursorPositionChanged()'),  self.highlightCurrentLine);
+         QPlainTextEdit.__init__(self, parent)
+#        self.connect(self,  SIGNAL('cursorPositionChanged()'),  self.highlightCurrentLine);
 
-        self.hl_color = QtGui.QColor('lightblue').lighter(120)
+        self.hl_color =  QColor('lightblue').lighter(120)
         
         # Brace matching
         self.bracepos = None
@@ -41,9 +41,9 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         
         #Set no wrap
         if (bool(parent.settings.value("WrapLine"))):
-            self.setLineWrapMode(QtGui.QPlainTextEdit.NoWrap)                        
+            self.setLineWrapMode( QPlainTextEdit.NoWrap)                        
         else:
-            self.setLineWrapMode(QtGui.QPlainTextEdit.WidgetWidth)
+            self.setLineWrapMode( QPlainTextEdit.WidgetWidth)
 
         #Get Font Size
         try:
@@ -59,7 +59,7 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         except:
             fontname = 'Monospace'
         #Set Font
-        self.document().setDefaultFont(QtGui.QFont(fontname,fontsize))
+        self.document().setDefaultFont( QFont(fontname,fontsize))
         
 
         #Remove auto capitalization
@@ -90,10 +90,10 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
     def ensureVisible(self,pos,xmargin,ymargin):
 
         visible = self.area.viewport().size()        
-        currentPos = QtCore.QPoint(self.area.horizontalScrollBar().value(),
+        currentPos =  QPoint(self.area.horizontalScrollBar().value(),
                       self.area.verticalScrollBar().value())
-        posRect = QtCore.QRect(pos.x()-xmargin, pos.y()-ymargin,2*xmargin,2*ymargin)
-        visibleRect = QtCore.QRect(currentPos, visible)
+        posRect =  QRect(pos.x()-xmargin, pos.y()-ymargin,2*xmargin,2*ymargin)
+        visibleRect =  QRect(currentPos, visible)
 
         if (visibleRect.contains(posRect)):
             return
@@ -132,7 +132,7 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
 #            if (pw.parentWidget()):
 #                area = pw.parentWidget()
 #                print area,area.parentWidget(),area.parent()
-#                if (type(area) == QtGui.QScrollArea ):
+#                if (type(area) ==  QScrollArea ):
 #                    scroller = area.property("kineticScroller").toPyObject()
 #                    if (scroller):
 #                        print pos.x(),pos.y(),cursor.center().x(),cursor.center().y()
@@ -144,11 +144,11 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
     #PySide Bug : The type of e is QEvent instead of QKeyEvent
     def keyPressEvent(self, event):
         """Intercept the key event to lets plugin do something if they want"""
-        if event.type() == QtCore.QEvent.KeyPress:
+        if event.type() ==  QEvent.KeyPress:
             for plugin in filter_plugins_by_capability('beforeKeyPressEvent',self.enabled_plugins):
                 plg = plugin()
                 plg.do_beforeKeyPressEvent(self,event)
-            QtGui.QPlainTextEdit.keyPressEvent(self, event)
+             QPlainTextEdit.keyPressEvent(self, event)
             for plugin in filter_plugins_by_capability('afterKeyPressEvent',self.enabled_plugins):
                 plg = plugin()
                 plg.do_afterKeyPressEvent(self,event)
@@ -156,19 +156,19 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
     def closeEvent(self,event):
         """Catch the close event and ask to save if document is modified"""
         answer = self.document().isModified() and \
-        QtGui.QMessageBox.question(self,
+         QMessageBox.question(self,
                "Text Editor - Unsaved Changes",
                "Save unsaved changes in %s?" % self.filename,
-               QtGui.QMessageBox.Yes|QtGui.QMessageBox.No|QtGui.QMessageBox.Close)
-        if answer == QtGui.QMessageBox.Yes:
+                QMessageBox.Yes| QMessageBox.No| QMessageBox.Close)
+        if answer ==  QMessageBox.Yes:
             try:
                 self.save()
                 event.accept()
             except (IOError, OSError), ioError:
-                QtGui.QMessageBox.warning(self, "Text Editor -- Save Error",
+                 QMessageBox.warning(self, "Text Editor -- Save Error",
                         "Failed to save %s: %s" % (self.filename, ioError))
                 event.ignore()
-        elif answer == QtGui.QMessageBox.Close:
+        elif answer ==  QMessageBox.Close:
             return event.ignore()
         else:
             return event.accept()
@@ -180,7 +180,7 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
             if not (filename == ''):            
                 return
             self.filename = filename
-        self.setWindowTitle(QtCore.QFileInfo(self.filename).fileName())
+        self.setWindowTitle( QFileInfo(self.filename).fileName())
         exception = None
         filehandle = None
         try:
@@ -190,10 +190,10 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
                 self.threaded_plugins.append(plg)
                 plg.do_beforeFileSave(self)
 
-            filehandle = QtCore.QFile(self.filename)
-            if not filehandle.open(QtCore.QIODevice.WriteOnly):
+            filehandle =  QFile(self.filename)
+            if not filehandle.open( QIODevice.WriteOnly):
                 raise IOError, unicode(filehandle.errorString())
-            stream = QtCore.QTextStream(filehandle)
+            stream =  QTextStream(filehandle)
             stream.setCodec("UTF-8")
             stream << self.toPlainText()
             self.document().setModified(False)
@@ -251,22 +251,22 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
                 return
     
     def __highlight(self, positions, color=None, cancel=False):
-        cursor = QtGui.QTextCursor(self.document())
+        cursor =  QTextCursor(self.document())
         modified = self.document().isModified()
         for position in positions:
             if position > self.get_position('eof'):
                 return
             cursor.setPosition(position)
-            cursor.movePosition(QtGui.QTextCursor.NextCharacter,
-                                QtGui.QTextCursor.KeepAnchor)
+            cursor.movePosition( QTextCursor.NextCharacter,
+                                 QTextCursor.KeepAnchor)
             charformat = cursor.charFormat()            
-            pen = QtGui.QPen(Qt.NoPen) if cancel else QtGui.QPen(color)
+            pen =  QPen(Qt.NoPen) if cancel else  QPen(color)
             charformat.setTextOutline(pen)
             cursor.setCharFormat(charformat)
         if cancel:
-            charformat = QtGui.QTextCharFormat()
-            cursor.movePosition(QtGui.QTextCursor.NextCharacter,
-                                QtGui.QTextCursor.KeepAnchor)
+            charformat =  QTextCharFormat()
+            cursor.movePosition( QTextCursor.NextCharacter,
+                                 QTextCursor.KeepAnchor)
             cursor.setCharFormat(charformat)            
             cursor.clearSelection()
             self.setCurrentCharFormat(charformat)
@@ -275,18 +275,18 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
             
     def highlightCurrentLine(self):            
         #Hilgight background
-        _selection = QtGui.QTextEdit.ExtraSelection()
+        _selection =  QTextEdit.ExtraSelection()
         _selection.format.setBackground(self.hl_color)
-        _selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, True)        
+        _selection.format.setProperty( QTextFormat.FullWidthSelection, True)        
         _selection.cursor = self.textCursor()
         _selection.cursor.clearSelection()
         extraSelection = []
         extraSelection.append(_selection)
 #        self.setExtraSelections(extraSelection)
 
-#        cursor = QtGui.QTextCursor(self.document())
+#        cursor =  QTextCursor(self.document())
 #        charformat = cursor.charFormat()            
-#        charformat.setTextOutline(QtGui.QPen(Qt.NoPen))            
+#        charformat.setTextOutline( QPen(Qt.NoPen))            
 #        cursor.setCharFormat(charformat)
         
         #Highlight Braces
@@ -298,8 +298,8 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         if cursor.position() == 0:
             self.setExtraSelections(extraSelection)
             return
-        cursor.movePosition(QtGui.QTextCursor.PreviousCharacter,
-                            QtGui.QTextCursor.KeepAnchor)                           
+        cursor.movePosition( QTextCursor.PreviousCharacter,
+                             QTextCursor.KeepAnchor)                           
         text = unicode(cursor.selectedText())
         pos1 = cursor.position()
         if text in (')', ']', '}'):
@@ -313,28 +313,28 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
             self.bracepos = (pos1, pos2)
 #            self.__highlight(self.bracepos, color=Qt.blue)
             print 'Bracket match'
-            _selection = QtGui.QTextEdit.ExtraSelection()
+            _selection =  QTextEdit.ExtraSelection()
             _selection.format.setForeground(Qt.white)
 #            _selection.format.setFontWeight(99)
             _selection.format.setBackground(Qt.blue)
             _selection.cursor = cursor
             extraSelection.append(_selection)
-            _selection = QtGui.QTextEdit.ExtraSelection()
+            _selection =  QTextEdit.ExtraSelection()
             _selection.format.setForeground(Qt.white)
             _selection.format.setBackground(Qt.blue)
             _selection.cursor = self.textCursor()
             _selection.cursor.setPosition(pos2)
-            _selection.cursor.movePosition(QtGui.QTextCursor.NextCharacter,
-                            QtGui.QTextCursor.KeepAnchor)
+            _selection.cursor.movePosition( QTextCursor.NextCharacter,
+                             QTextCursor.KeepAnchor)
             extraSelection.append(_selection)
         else:
             self.bracepos = (pos1,)
 #            self.__highlight(self.bracepos, color=Qt.red)
-            _selection = QtGui.QTextEdit.ExtraSelection()
+            _selection =  QTextEdit.ExtraSelection()
 #            _selection.format.setFontWeight(75)
             _selection.format.setBackground(Qt.red)
             _selection.format.setForeground(Qt.white)
-#            _selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, True)        
+#            _selection.format.setProperty( QTextFormat.FullWidthSelection, True)        
             _selection.cursor = cursor
             extraSelection.append(_selection)
             
@@ -342,19 +342,19 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
             
 #    def hilighterror(self,type,line,comment):
 #        print type,line,comment
-#        _color = QtGui.QColor()
+#        _color =  QColor()
 #        _color.setNamedColor('red')
-#        _format = QtGui.QTextCharFormat()
+#        _format =  QTextCharFormat()
 #        _format.setBackground(_color)
 #        _format.setFontItalic(True)
 
         #Hilgight background
-#        _color = QtGui.QColor()
+#        _color =  QColor()
 #        _color.setNamedColor('red')
 #        _color.lighter(160)
-#        _selection = QtGui.QTextEdit.ExtraSelection()
+#        _selection =  QTextEdit.ExtraSelection()
 #        _selection.format.setBackground(_color)
-#        _selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, true)
+#        _selection.format.setProperty( QTextFormat.FullWidthSelection, true)
 #        
 #        _selection.cursor = textCursor()
 #        block = self.document().findBlockByLineNumber(line-1)        
@@ -378,15 +378,15 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         exception = None
         filehandle = None
         try:
-            filehandle = QtCore.QFile(self.filename)
-            if not filehandle.open(QtCore.QIODevice.ReadOnly):
+            filehandle =  QFile(self.filename)
+            if not filehandle.open( QIODevice.ReadOnly):
                 raise IOError, unicode(filehandle.errorString())
-            stream = QtCore.QTextStream(filehandle)
+            stream =  QTextStream(filehandle)
             stream.setCodec("UTF-8")
-            QtGui.QApplication.processEvents()
+             QApplication.processEvents()
             self.setPlainText(stream.readAll())
             self.document().setModified(False)
-            self.setWindowTitle(QtCore.QFileInfo(self.filename).fileName())
+            self.setWindowTitle( QFileInfo(self.filename).fileName())
         except (IOError, OSError), error:
             exception = error
         finally:
@@ -403,7 +403,7 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         """UnIndent the current selection or line"""
         maincursor = self.textCursor()
         if not maincursor.hasSelection():
-            maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
+            maincursor.movePosition( QTextCursor.StartOfBlock)
             line = str(self.document().findBlockByNumber(maincursor\
                                       .blockNumber()).text())
             whitespace = re.match(r"(\s{0,4})", line).group(1)
@@ -426,7 +426,7 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         """Indent the current selection or line"""
         maincursor = self.textCursor()
         if not maincursor.hasSelection():
-            maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
+            maincursor.movePosition( QTextCursor.StartOfBlock)
             maincursor.insertText("    ")
         else:
             block = self.document().findBlock(maincursor.selectionStart())
@@ -440,19 +440,19 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
 
     def replace_all(self, what, new, *args):
         """Replace all occurence of a search
-        arg[0] -> QtGui.QTextDocument.FindCaseSensitively
-        arg[1] -> QtGui.QTextDocument.FindWholeWords
-        arg[2] -> QtGui.QTextDocument.FindBackward
-        arg[3] -> QtGui.QTextDocument.RegEx
+        arg[0] ->  QTextDocument.FindCaseSensitively
+        arg[1] ->  QTextDocument.FindWholeWords
+        arg[2] ->  QTextDocument.FindBackward
+        arg[3] ->  QTextDocument.RegEx
         """
         # Use flags for case match
-        flags = QtGui.QTextDocument.FindFlags()
+        flags =  QTextDocument.FindFlags()
         if args[0]:
-            flags = flags|QtGui.QTextDocument.FindCaseSensitively
+            flags = flags| QTextDocument.FindCaseSensitively
         if args[1]:
-            flags = flags|QtGui.QTextDocument.FindWholeWords
+            flags = flags| QTextDocument.FindWholeWords
         if args[2]:
-            flags = flags|QtGui.QTextDocument.FindBackward
+            flags = flags| QTextDocument.FindBackward
 
         # Beginning of undo block
         pcursor = self.textCursor()
@@ -466,7 +466,7 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         while True:
             # self is the QTextEdit
             if args[3]:
-                cursor=self.document().find(QtCore.QRegExp(what),
+                cursor=self.document().find( QRegExp(what),
                                        cursor,flags)                
             else:
                 cursor=self.document().find(what,cursor,flags)
@@ -484,19 +484,19 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         
     def replace(self, what, new, *args):
         """Replace the first occurence of a search
-        arg[0] -> QtGui.QTextDocument.FindCaseSensitively
-        arg[1] -> QtGui.QTextDocument.FindWholeWords
-        arg[2] -> QtGui.QTextDocument.FindBackward
-        arg[3] -> QtGui.QTextDocument.RegEx
+        arg[0] ->  QTextDocument.FindCaseSensitively
+        arg[1] ->  QTextDocument.FindWholeWords
+        arg[2] ->  QTextDocument.FindBackward
+        arg[3] ->  QTextDocument.RegEx
         """
         # Use flags for case match
-        flags = QtGui.QTextDocument.FindFlags()
+        flags =  QTextDocument.FindFlags()
         if args[0]:
-            flags = flags|QtGui.QTextDocument.FindCaseSensitively
+            flags = flags| QTextDocument.FindCaseSensitively
         if args[1]:
-            flags = flags|QtGui.QTextDocument.FindWholeWords
+            flags = flags| QTextDocument.FindWholeWords
         if args[2]:
-            flags = flags|QtGui.QTextDocument.FindBackward
+            flags = flags| QTextDocument.FindBackward
 
         # Beginning of undo block
         pcursor = self.textCursor()
@@ -507,7 +507,7 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         # Replace
         # self is the QTextEdit
         if args[3]==True:
-            cursor = self.document().find(QtCore.QRegExp(what),
+            cursor = self.document().find( QRegExp(what),
                                     cursor, flags)                
         else:
             cursor = self.document().find(what, cursor, flags)
@@ -520,25 +520,25 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         
     def find(self, what, *args):
         """Perform a search
-        arg[0] -> QtGui.QTextDocument.FindCaseSensitively
-        arg[1] -> QtGui.QTextDocument.FindWholeWords
-        arg[2] -> QtGui.QTextDocument.FindBackward
-        arg[3] -> QtGui.QTextDocument.RegEx
+        arg[0] ->  QTextDocument.FindCaseSensitively
+        arg[1] ->  QTextDocument.FindWholeWords
+        arg[2] ->  QTextDocument.FindBackward
+        arg[3] ->  QTextDocument.RegEx
         """
         print 'find called'
         
         # Use flags for case match
-        flags = QtGui.QTextDocument.FindFlags()
+        flags =  QTextDocument.FindFlags()
         if args[0]==True:
-            flags = flags | QtGui.QTextDocument.FindCaseSensitively
+            flags = flags |  QTextDocument.FindCaseSensitively
         if args[1]==True:
-            flags = flags | QtGui.QTextDocument.FindWholeWords
+            flags = flags |  QTextDocument.FindWholeWords
         if args[2]==True:
-            flags = flags | QtGui.QTextDocument.FindBackward
+            flags = flags |  QTextDocument.FindBackward
 
         cursor = self.textCursor()
         if args[3]==True:
-            cursor = self.document().find(QtCore.QRegExp(what),
+            cursor = self.document().find( QRegExp(what),
                                        cursor , flags)
         else:
             cursor = self.document().find(what,
@@ -551,10 +551,10 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         """Duplicate the current line or selection"""
         maincursor = self.textCursor()
         if not maincursor.hasSelection():
-            maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
+            maincursor.movePosition( QTextCursor.StartOfBlock)
             line = str(self.document().\
                  findBlockByNumber(maincursor.blockNumber()).text())
-            maincursor.movePosition(QtGui.QTextCursor.EndOfBlock)
+            maincursor.movePosition( QTextCursor.EndOfBlock)
             maincursor.insertText('\n'+line)
         else:
             block = self.document().findBlock(maincursor.selectionStart())
@@ -568,7 +568,7 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
                 if block.contains(maincursor.selectionEnd()):
                     break
                 block = block.next()
-            cursor.movePosition(QtGui.QTextCursor.EndOfBlock)
+            cursor.movePosition( QTextCursor.EndOfBlock)
             cursor.insertText(line)
         
     def gotoLine(self, line):
@@ -585,7 +585,7 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         """Comment the current line or selection"""
         maincursor = self.textCursor()
         if not maincursor.hasSelection():
-            maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
+            maincursor.movePosition( QTextCursor.StartOfBlock)
             line = str(self.document().\
                  findBlockByNumber(maincursor.blockNumber()).text())
             if line.startswith('#'):
@@ -612,7 +612,7 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         position_to = self.get_position(position_to)
         cursor = self.textCursor()
         cursor.setPosition(position_from)
-        cursor.setPosition(position_to, QtGui.QTextCursor.KeepAnchor)
+        cursor.setPosition(position_to,  QTextCursor.KeepAnchor)
         return cursor
 
         
@@ -621,15 +621,15 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         if position == 'cursor':
             pass
         elif position == 'sob':
-            cursor.movePosition(QtGui.QTextCursor.Start)
+            cursor.movePosition( QTextCursor.Start)
         elif position == 'sol':
-            cursor.movePosition(QtGui.QTextCursor.StartOfBlock)
+            cursor.movePosition( QTextCursor.StartOfBlock)
         elif position == 'eol':
-            cursor.movePosition(QtGui.QTextCursor.EndOfBlock)
+            cursor.movePosition( QTextCursor.EndOfBlock)
         elif position == 'eof':
-            cursor.movePosition(QtGui.QTextCursor.End)
+            cursor.movePosition( QTextCursor.End)
         elif position == 'sof':
-            cursor.movePosition(QtGui.QTextCursor.Start)
+            cursor.movePosition( QTextCursor.Start)
         else:
             # Assuming that input argument was already a position
             return position

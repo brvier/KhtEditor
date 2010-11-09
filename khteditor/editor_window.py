@@ -54,39 +54,39 @@ LANGUAGES = (('.R','R'),
             ('vhdl','vhdl'),
             ('.xml','xml'),
             )
-class FindAndReplaceDlg(QtGui.QDialog):
+class FindAndReplaceDlg( QDialog):
     """ Find and replace dialog """
     def __init__(self, parent=None):
         super(FindAndReplaceDlg, self).__init__(parent)
 
-        findLabel = QtGui.QLabel("Find &what:")
-        self.findLineEdit = QtGui.QLineEdit()
+        findLabel =  QLabel("Find &what:")
+        self.findLineEdit =  QLineEdit()
         #Remove auto capitalization
         self.findLineEdit.setInputMethodHints(Qt.ImhNoAutoUppercase)
         findLabel.setBuddy(self.findLineEdit)
-        replaceLabel = QtGui.QLabel("Replace w&ith:")
-        self.replaceLineEdit = QtGui.QLineEdit()
+        replaceLabel =  QLabel("Replace w&ith:")
+        self.replaceLineEdit =  QLineEdit()
         #Remove auto capitalization
         self.replaceLineEdit.setInputMethodHints(Qt.ImhNoAutoUppercase)
         replaceLabel.setBuddy(self.replaceLineEdit)
-        self.caseCheckBox = QtGui.QCheckBox("&Case sensitive")
-        self.wholeCheckBox = QtGui.QCheckBox("Wh&ole words")
-        moreFrame = QtGui.QFrame()
-        moreFrame.setFrameStyle(QtGui.QFrame.StyledPanel|QtGui.QFrame.Sunken)
-        self.backwardsCheckBox = QtGui.QCheckBox("Search &Backwards")
-        self.regexCheckBox = QtGui.QCheckBox("Regular E&xpression")
-        line = QtGui.QFrame()
-        line.setFrameStyle(QtGui.QFrame.VLine|QtGui.QFrame.Sunken)
-        self.findButton = QtGui.QPushButton("&Find")
-        self.replaceButton = QtGui.QPushButton("&Replace")
-        self.replaceAllButton = QtGui.QPushButton("&ReplaceAll")
+        self.caseCheckBox =  QCheckBox("&Case sensitive")
+        self.wholeCheckBox =  QCheckBox("Wh&ole words")
+        moreFrame =  QFrame()
+        moreFrame.setFrameStyle( QFrame.StyledPanel| QFrame.Sunken)
+        self.backwardsCheckBox =  QCheckBox("Search &Backwards")
+        self.regexCheckBox =  QCheckBox("Regular E&xpression")
+        line =  QFrame()
+        line.setFrameStyle( QFrame.VLine| QFrame.Sunken)
+        self.findButton =  QPushButton("&Find")
+        self.replaceButton =  QPushButton("&Replace")
+        self.replaceAllButton =  QPushButton("&ReplaceAll")
 
         self.findButton.setFocusPolicy(Qt.NoFocus)
         self.replaceButton.setFocusPolicy(Qt.NoFocus)
         self.replaceAllButton.setFocusPolicy(Qt.NoFocus)
 
-        gridLayout = QtGui.QGridLayout()
-        leftLayout = QtGui.QVBoxLayout()
+        gridLayout =  QGridLayout()
+        leftLayout =  QVBoxLayout()
         gridLayout.addWidget(findLabel, 0, 0)
         gridLayout.addWidget(self.findLineEdit, 0, 1)
         gridLayout.addWidget(replaceLabel, 1, 0)
@@ -96,33 +96,33 @@ class FindAndReplaceDlg(QtGui.QDialog):
         gridLayout.addWidget(self.backwardsCheckBox, 3, 0)
         gridLayout.addWidget(self.regexCheckBox, 3,1)
         leftLayout.addLayout(gridLayout)
-        buttonLayout = QtGui.QVBoxLayout()
+        buttonLayout =  QVBoxLayout()
         buttonLayout.addWidget(self.findButton)
         buttonLayout.addWidget(self.replaceButton)
         buttonLayout.addWidget(self.replaceAllButton)
         buttonLayout.addStretch()
-        mainLayout = QtGui.QHBoxLayout()
+        mainLayout =  QHBoxLayout()
         mainLayout.addLayout(leftLayout)
         mainLayout.addWidget(line)
         mainLayout.addLayout(buttonLayout)
         self.setLayout(mainLayout)
 
-        mainLayout.setSizeConstraint(QtGui.QLayout.SetFixedSize)
+        mainLayout.setSizeConstraint( QLayout.SetFixedSize)
 
-        self.connect(self.findLineEdit, QtCore.SIGNAL("textEdited(QString)"),
+        self.connect(self.findLineEdit,  SIGNAL("textEdited(QString)"),
                      self.updateUi)
-        self.connect(self.findButton, QtCore.SIGNAL("clicked()"),
+        self.connect(self.findButton,  SIGNAL("clicked()"),
                      self.findClicked)
-        self.connect(self.replaceButton, QtCore.SIGNAL("clicked()"),
+        self.connect(self.replaceButton,  SIGNAL("clicked()"),
                      self.replaceClicked)
-        self.connect(self.replaceAllButton, QtCore.SIGNAL("clicked()"),
+        self.connect(self.replaceAllButton,  SIGNAL("clicked()"),
                      self.replaceAllClicked)
         self.updateUi()
         self.setWindowTitle("Find and Replace")
 
 
     def findClicked(self):
-        self.emit(QtCore.SIGNAL("find"), unicode(self.findLineEdit.text()),
+        self.emit( SIGNAL("find"), unicode(self.findLineEdit.text()),
                 self.caseCheckBox.isChecked(),
                 self.wholeCheckBox.isChecked(),
                 self.backwardsCheckBox.isChecked(),
@@ -131,7 +131,7 @@ class FindAndReplaceDlg(QtGui.QDialog):
 
 
     def replaceClicked(self):
-        self.emit(QtCore.SIGNAL("replace"), self.findLineEdit.text(),
+        self.emit( SIGNAL("replace"), self.findLineEdit.text(),
                 self.replaceLineEdit.text(),
                 self.caseCheckBox.isChecked(),
                 self.wholeCheckBox.isChecked(),
@@ -140,7 +140,7 @@ class FindAndReplaceDlg(QtGui.QDialog):
         self.hide()
 
     def replaceAllClicked(self):
-        self.emit(QtCore.SIGNAL("replaceAll"), self.findLineEdit.text(),
+        self.emit( SIGNAL("replaceAll"), self.findLineEdit.text(),
                 self.replaceLineEdit.text(),
                 self.caseCheckBox.isChecked(),
                 self.wholeCheckBox.isChecked(),
@@ -154,17 +154,17 @@ class FindAndReplaceDlg(QtGui.QDialog):
         self.replaceButton.setEnabled(enable)
         self.replaceAllButton.setEnabled(enable)
 
-class Window(QtGui.QMainWindow):    
+class Window( QMainWindow):    
     def __init__(self, parent):
         global isMAEMO
-        QtGui.QMainWindow.__init__(self,None)
+         QMainWindow.__init__(self,None)
         self.parent = parent
 
         #Initialization of the plugin system
         init_plugin_system()
             
         #Got the enabled plugin
-        self.settings = QtCore.QSettings()
+        self.settings =  QSettings()
         self.enabled_plugins = []
         for plugin in find_plugins():
             if bool(self.settings.value(plugin.__name__)):
@@ -176,7 +176,7 @@ class Window(QtGui.QMainWindow):
         self.setupEditor()
 
         try:
-            self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
+            self.setAttribute( Qt.WA_Maemo5AutoOrientation, True)
             self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
             isMAEMO = True
         except:
@@ -186,7 +186,7 @@ class Window(QtGui.QMainWindow):
         if not isMAEMO:
             self.resize(800, 600)
             
-        self.area = QtGui.QScrollArea(self)
+        self.area =  QScrollArea(self)
         try:
             scroller = self.area.property("kineticScroller") #.toPyObject()
             scroller.setEnabled(True)
@@ -208,12 +208,12 @@ class Window(QtGui.QMainWindow):
         try:
             self.editor.save()
         except (IOError, OSError), e:
-            QtGui.QMessageBox.warning(self, "KhtEditor -- Save Error",
+             QMessageBox.warning(self, "KhtEditor -- Save Error",
                     "Failed to save %s: %s" % (self.filename, e))
 
 
     def saveAsFile(self):
-        filename = QtGui.QFileDialog.getSaveFileName(self,
+        filename =  QFileDialog.getSaveFileName(self,
                         "KhtEditor -- Save File As",
                         self.editor.filename, u'Python file(*.py);;'  
                                             + u'Text file(*.txt);;' 
@@ -221,13 +221,13 @@ class Window(QtGui.QMainWindow):
                                             + u'C++ File(*.cpp)')
         if not (filename == ''):
             self.editor.filename = filename
-            self.setWindowTitle(QtCore.QFileInfo(filename).fileName())
+            self.setWindowTitle( QFileInfo(filename).fileName())
             self.fileSave()
         return filename
 
 
     def openFile(self, path=''):
-        filename = QtGui.QFileDialog.getOpenFileName(self,
+        filename =  QFileDialog.getOpenFileName(self,
                             "KhtEditor -- Open File",path)
         if not (filename == ''):
             self.loadFile(filename)
@@ -238,16 +238,16 @@ class Window(QtGui.QMainWindow):
         self.editor.filename = filename
         try:
             self.editor.load()
-#            QtCore.QTimer.singleShot(100, self.editor.load)
-            self.setWindowTitle(QtCore.QFileInfo(self.editor.filename).fileName())
-#            QtCore.QTimer.singleShot(100, self.loadHighlighter)
+#             QTimer.singleShot(100, self.editor.load)
+            self.setWindowTitle( QFileInfo(self.editor.filename).fileName())
+#             QTimer.singleShot(100, self.loadHighlighter)
             self.loadHighlighter(filename)
         except (IOError, OSError), e:
-            QtGui.QMessageBox.warning(self, "KhtEditor -- Load Error",
+             QMessageBox.warning(self, "KhtEditor -- Load Error",
                     "Failed to load %s: %s" % (filename, e))
 
     def setupEditor(self):
-        font = QtGui.QFont()
+        font =  QFont()
         font.setFamily("Courier")
         font.setFixedPitch(True)
         font.setPointSize(12)
@@ -259,7 +259,7 @@ class Window(QtGui.QMainWindow):
 #        self.language = self.detectLanguage()
 #        self.loadHilighter()
         self.connect(self.editor.document(),
-            QtCore.SIGNAL('modificationChanged(bool)'),self.do_documentChanged)
+             SIGNAL('modificationChanged(bool)'),self.do_documentChanged)
 
     def loadHighlighter(self,filename=None):
         global isMAEMO
@@ -269,36 +269,36 @@ class Window(QtGui.QMainWindow):
         if language == 'python':
             from syntax.python_highlighter import Highlighter
             if isMAEMO:
-                self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
-            QtGui.QApplication.processEvents()
+                self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
+             QApplication.processEvents()
             self.highlighter = Highlighter(self.editor.document())
-            QtGui.QApplication.processEvents()
+             QApplication.processEvents()
             if isMAEMO:
-                self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
+                self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)
         elif language != None:
             from syntax.generic_highlighter import Highlighter
             if isMAEMO:
-                self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
-            QtGui.QApplication.processEvents()
+                self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
+             QApplication.processEvents()
             self.highlighter = Highlighter(self.editor.document(),language)
-            QtGui.QApplication.processEvents()
+             QApplication.processEvents()
             if isMAEMO:
-                self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)            
+                self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)            
         else:
             if isMAEMO:
-                self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
+                self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
             self.loadGenericHighlighter(filename)
             if isMAEMO:
-                self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)            
+                self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)            
 
     def loadGenericHighlighter(self,filename):
         from syntax import pygments_highlighter
         #self.language = self.detectLanguage(filename)
-        self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
-        QtGui.QApplication.processEvents()
+        self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
+         QApplication.processEvents()
         self.highlighter = pygments_highlighter.Highlighter(self.editor.document(),str(filename))
-        QtGui.QApplication.processEvents()
-        self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
+         QApplication.processEvents()
+        self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)
     
     def detectLanguage(self,filename):
         for extension,lang in LANGUAGES:
@@ -311,57 +311,57 @@ class Window(QtGui.QMainWindow):
     def setupToolBar(self):
         self.toolbar = self.addToolBar('Toolbar')
 
-        commentIcon = QtGui.QIcon.fromTheme("general_tag")
+        commentIcon =  QIcon.fromTheme("general_tag")
         prefix = os.path.join(os.path.dirname(__file__),'icons')
-        indentIcon = QtGui.QIcon(os.path.join(prefix,'tb_indent.png'))
+        indentIcon =  QIcon(os.path.join(prefix,'tb_indent.png'))
 
-        unindentIcon = QtGui.QIcon(os.path.join(prefix,'tb_unindent.png'))
-        saveIcon = QtGui.QIcon.fromTheme("notes_save")
-        fullscreenIcon = QtGui.QIcon.fromTheme("general_fullsize")
-        executeIcon = QtGui.QIcon.fromTheme("general_forward")
-        findIcon = QtGui.QIcon.fromTheme("general_search")
+        unindentIcon =  QIcon(os.path.join(prefix,'tb_unindent.png'))
+        saveIcon =  QIcon.fromTheme("notes_save")
+        fullscreenIcon =  QIcon.fromTheme("general_fullsize")
+        executeIcon =  QIcon.fromTheme("general_forward")
+        findIcon =  QIcon.fromTheme("general_search")
 
-        self.lineCount = QtGui.QLabel('L.1 C.1')
+        self.lineCount =  QLabel('L.1 C.1')
         self.toolbar.addWidget(self.lineCount)
         self.connect(self.editor,
-                QtCore.SIGNAL('cursorPositionChanged()'),self.lineCountUpdate)
-        self.tb_comment = QtGui.QAction(commentIcon, 'Comment', self)
-        self.connect(self.tb_comment, QtCore.SIGNAL('triggered()'), self.editor.comment)
+                 SIGNAL('cursorPositionChanged()'),self.lineCountUpdate)
+        self.tb_comment =  QAction(commentIcon, 'Comment', self)
+        self.connect(self.tb_comment,  SIGNAL('triggered()'), self.editor.comment)
         self.toolbar.addAction(self.tb_comment)
-        self.tb_indent = QtGui.QAction(indentIcon, 'Indent', self)
+        self.tb_indent =  QAction(indentIcon, 'Indent', self)
         self.tb_indent.setShortcut('Ctrl+I')
-        self.connect(self.tb_indent, QtCore.SIGNAL('triggered()'), self.editor.indent)
+        self.connect(self.tb_indent,  SIGNAL('triggered()'), self.editor.indent)
         self.toolbar.addAction(self.tb_indent)
-        self.tb_unindent = QtGui.QAction(unindentIcon, 'Unindent', self)
+        self.tb_unindent =  QAction(unindentIcon, 'Unindent', self)
         self.tb_unindent.setShortcut('Ctrl+U')
-        self.connect(self.tb_unindent, QtCore.SIGNAL('triggered()'), self.editor.unindent)
+        self.connect(self.tb_unindent,  SIGNAL('triggered()'), self.editor.unindent)
         self.toolbar.addAction(self.tb_unindent)
-        self.tb_find = QtGui.QAction(findIcon, 'Find', self)
+        self.tb_find =  QAction(findIcon, 'Find', self)
         self.tb_find.setShortcut('Ctrl+F')
-        self.connect(self.tb_find, QtCore.SIGNAL('triggered()'), self.do_find)
+        self.connect(self.tb_find,  SIGNAL('triggered()'), self.do_find)
         self.toolbar.addAction(self.tb_find)
-        self.tb_save = QtGui.QAction(saveIcon, 'Save', self)
+        self.tb_save =  QAction(saveIcon, 'Save', self)
         self.tb_save.setShortcut('Ctrl+S')
-        self.connect(self.tb_save, QtCore.SIGNAL('triggered()'), self.fileSave)
+        self.connect(self.tb_save,  SIGNAL('triggered()'), self.fileSave)
         self.toolbar.addAction(self.tb_save)
-        self.tb_execute = QtGui.QAction(executeIcon, 'Execute', self)
+        self.tb_execute =  QAction(executeIcon, 'Execute', self)
         self.tb_execute.setShortcut('Ctrl+E')
-        self.connect(self.tb_execute, QtCore.SIGNAL('triggered()'), self.do_execute)
+        self.connect(self.tb_execute,  SIGNAL('triggered()'), self.do_execute)
         self.toolbar.addAction(self.tb_execute)
-        self.tb_fullscreen = QtGui.QAction(fullscreenIcon, 'Fullscreen', self)
-        self.connect(self.tb_fullscreen, QtCore.SIGNAL('triggered()'), self.do_fullscreen)
+        self.tb_fullscreen =  QAction(fullscreenIcon, 'Fullscreen', self)
+        self.connect(self.tb_fullscreen,  SIGNAL('triggered()'), self.do_fullscreen)
         self.toolbar.addAction(self.tb_fullscreen)
 
         #Actions not in toolbar
-        self.tb_duplicate = QtGui.QAction('Duplicate', self)
+        self.tb_duplicate =  QAction('Duplicate', self)
         self.tb_duplicate.setShortcut('Ctrl+D')
         self.connect(self.tb_duplicate,
-             QtCore.SIGNAL('triggered()'), self.editor.duplicate)
+              SIGNAL('triggered()'), self.editor.duplicate)
         self.addAction(self.tb_duplicate)
-        self.tb_findagain = QtGui.QAction('Find Again', self)
+        self.tb_findagain =  QAction('Find Again', self)
         self.tb_findagain.setShortcut('Ctrl+G')
         self.connect(self.tb_findagain,
-             QtCore.SIGNAL('triggered()'), self.findAndReplace.findClicked)
+              SIGNAL('triggered()'), self.findAndReplace.findClicked)
         self.addAction(self.tb_findagain)
 
         #Hook for plugins to add buttons :
@@ -371,18 +371,18 @@ class Window(QtGui.QMainWindow):
             plg.do_toolbarHook(self)
 
     def setupFileMenu(self):
-        fileMenu = QtGui.QMenu(self.tr("&File"), self)
+        fileMenu =  QMenu(self.tr("&File"), self)
         self.menuBar().addMenu(fileMenu)
 
         fileMenu.addAction(self.tr("New..."), self.parent.newFile,
-                QtGui.QKeySequence(self.tr("Ctrl+N", "New")))
+                 QKeySequence(self.tr("Ctrl+N", "New")))
         fileMenu.addAction(self.tr("Open..."), self.parent.openFile,
-                QtGui.QKeySequence(self.tr("Ctrl+O", "Open")))
+                 QKeySequence(self.tr("Ctrl+O", "Open")))
         fileMenu.addAction(self.tr("Save As"), self.saveAsFile,
-                QtGui.QKeySequence(self.tr("Ctrl+Maj+S", "Save As")))
+                 QKeySequence(self.tr("Ctrl+Maj+S", "Save As")))
 
     def setupHelpMenu(self):
-        helpMenu = QtGui.QMenu(self.tr("&Help"), self)
+        helpMenu =  QMenu(self.tr("&Help"), self)
         self.menuBar().addMenu(helpMenu)
 
         helpMenu.addAction(self.tr("&About"), self.do_about)
@@ -396,11 +396,11 @@ class Window(QtGui.QMainWindow):
 
     def do_find(self):
         self.findAndReplace.connect(self.findAndReplace,
-                         QtCore.SIGNAL("find"), self.editor.find)
+                          SIGNAL("find"), self.editor.find)
         self.findAndReplace.connect(self.findAndReplace,
-                         QtCore.SIGNAL("replace"), self.editor.replace)
+                          SIGNAL("replace"), self.editor.replace)
         self.findAndReplace.connect(self.findAndReplace,
-                         QtCore.SIGNAL("replaceAll"), self.editor.replace_all)
+                          SIGNAL("replaceAll"), self.editor.replace_all)
         self.findAndReplace.show()
 
     def do_execute(self):
@@ -444,6 +444,6 @@ class Window(QtGui.QMainWindow):
 
     def do_documentChanged(self,changed):
         if changed == True:
-            self.setWindowTitle('*'+QtCore.QFileInfo(self.editor.filename).fileName())
+            self.setWindowTitle('*'+ QFileInfo(self.editor.filename).fileName())
         else:
-            self.setWindowTitle(QtCore.QFileInfo(self.editor.filename).fileName())
+            self.setWindowTitle( QFileInfo(self.editor.filename).fileName())

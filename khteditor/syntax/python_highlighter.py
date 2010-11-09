@@ -6,7 +6,7 @@ import sys
 import re
 from PyQt4 import QtCore, QtGui
 
-class Highlighter(QtGui.QSyntaxHighlighter):
+class Highlighter( QSyntaxHighlighter):
 
     preprocessors = ['import',
         'from',
@@ -198,8 +198,8 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         # Multi-line strings (expression, flag, style)
         # FIXME: The triple-quotes in these two lines will mess up the
         # syntax highlighting from this point onward
-        self.tri_double = (QtCore.QRegExp(r'''"""(?!')'''), 2, STYLES['string2'])
-        self.tri_single = (QtCore.QRegExp(r"""'''(?!")"""), 1, STYLES['string2'])
+        self.tri_double = ( QRegExp(r'''"""(?!')'''), 2, STYLES['string2'])
+        self.tri_single = ( QRegExp(r"""'''(?!")"""), 1, STYLES['string2'])
 
         rules = []
         rules += [(r'\b%s\b' % w, 0, STYLES['keyword']) for w in Highlighter.keywords]
@@ -226,17 +226,17 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         ]
 
         # Build a QRegExp for each pattern
-        self.rules = [(QtCore.QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
+        self.rules = [( QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
         self.rules[-2][0].setMinimal(True)
         self.rules[-3][0].setMinimal(True)
                 
     def format(self,color, style=''):
         """Return a QTextCharFormat with the given attributes.
         """
-        _color = QtGui.QColor()
+        _color =  QColor()
         _color.setNamedColor(color)
 
-        _format = QtGui.QTextCharFormat()
+        _format =  QTextCharFormat()
         _format.setForeground(_color)
         if 'bold' in style:
             _format.setFontWeight(QFont.Bold)
@@ -265,9 +265,9 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         self.match_multiline(text, *self.tri_single)
         self.match_multiline(text, *self.tri_double)
             
-        #QtGui.QApplication.flush()
-        #QtGui.QApplication.processEvents(QtCore.QEventLoop.ExcludeUserInputEvents)
-        #QtGui.QApplication.sendPostedEvents()
+        # QApplication.flush()
+        # QApplication.processEvents( QEventLoop.ExcludeUserInputEvents)
+        # QApplication.sendPostedEvents()
 
     def match_multiline(self, text, delimiter, in_state, style):
         """Do highlighting of multi-line strings. ``delimiter`` should be a

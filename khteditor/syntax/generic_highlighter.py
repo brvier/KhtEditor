@@ -267,7 +267,7 @@ class Highlighter(QSyntaxHighlighter):
         # Multi-line strings (expression, flag, style)
         # FIXME: The triple-quotes in these two lines will mess up the
         # syntax highlighting from this point onward
-#        self.tri_double = (QtCore.QRegExp(r'''"""(?!')'''), 2, STYLES['string2'])
+#        self.tri_double = ( QRegExp(r'''"""(?!')'''), 2, STYLES['string2'])
 
 #        rules += [(r'\b%s\b' % w, 0, STYLES['keyword']) for w in Highlighter.keywords]
 #        rules += [(r'\b%s\b' % w, 0, STYLES['preprocessor']) for w in Highlighter.preprocessors]
@@ -297,7 +297,7 @@ class Highlighter(QSyntaxHighlighter):
         self.multilines_comment = syntax._comments
 
         # Build a QRegExp for each pattern
-#        self.rules = [(QtCore.QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
+#        self.rules = [( QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
                         
     def highlightBlock(self, text):
         """Apply syntax highlighting to the given block of text.

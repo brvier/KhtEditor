@@ -39,13 +39,13 @@ class Curry:
             delkwtmp["__max_args__"]
         return self.func(*funcArgs, **kwtmp)
 
-class WelcomeWindow(QtGui.QMainWindow):
+class WelcomeWindow( QMainWindow):
     """
         The welcome window
     """
     
     def __init__(self, parent=None):
-        QtGui.QMainWindow.__init__(self,None)
+         QMainWindow.__init__(self,None)
         self.parent = parent
 
         #Resize window if not maemo
@@ -59,7 +59,7 @@ class WelcomeWindow(QtGui.QMainWindow):
         
         #This is for the case we aren't on Maemo
         if isMAEMO:
-            self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
+            self.setAttribute( Qt.WA_Maemo5AutoOrientation, True)
             self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
         self.setWindowTitle("KhtEditor")
 
@@ -100,13 +100,13 @@ class WelcomeWindow(QtGui.QMainWindow):
             GUI Initialization
         """
         
-        self.scrollArea = QtGui.QScrollArea(self)
+        self.scrollArea =  QScrollArea(self)
         self.scrollArea.setWidgetResizable(True)
-        awidget = QtGui.QWidget(self.scrollArea)
+        awidget =  QWidget(self.scrollArea)
         if isMAEMO:
             awidget.setMinimumSize(480,1000)
-        awidget.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        self.scrollArea.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        awidget.setSizePolicy(  QSizePolicy.Expanding,  QSizePolicy.Expanding)
+        self.scrollArea.setSizePolicy(  QSizePolicy.Expanding,  QSizePolicy.Expanding)
    
         #Kinetic scroller is available on Maemo and should be on meego
         try:
@@ -115,32 +115,32 @@ class WelcomeWindow(QtGui.QMainWindow):
         except:
             pass
             
-        self._layout = QtGui.QVBoxLayout(awidget)
+        self._layout =  QVBoxLayout(awidget)
         
-        self.icon = QtGui.QLabel()
+        self.icon =  QLabel()
 #        print os.path.abspath(os.path.dirname(sys.argv[0]))
 #        print sys.path
 #        print os.path.dirname(__file__)  
-        self.icon.setPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(__file__) ,'icons','khteditor.png')).scaledToHeight(64))
+        self.icon.setPixmap( QPixmap(os.path.join(os.path.dirname(__file__) ,'icons','khteditor.png')).scaledToHeight(64))
         self.icon.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
         self.icon.resize(70,70)
         
-        self.label = QtGui.QLabel("KhtEditor Version "+self.parent.version)
+        self.label =  QLabel("KhtEditor Version "+self.parent.version)
         self.label.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
 
         self._layout.addWidget(self.icon)
         self._layout.addWidget(self.label)
 
-        self._layout_button = QtGui.QHBoxLayout()        
-        self.new_button = QtGui.QPushButton("New")
-        self.connect(self.new_button, QtCore.SIGNAL('clicked()'),self.parent.newFile)
-        self.open_button = QtGui.QPushButton("Open")
-        self.connect(self.open_button, QtCore.SIGNAL('clicked()'),self.parent.openFile)
+        self._layout_button =  QHBoxLayout()        
+        self.new_button =  QPushButton("New")
+        self.connect(self.new_button,  SIGNAL('clicked()'),self.parent.newFile)
+        self.open_button =  QPushButton("Open")
+        self.connect(self.open_button,  SIGNAL('clicked()'),self.parent.openFile)
         self._layout_button.addWidget(self.new_button)
         self._layout_button.addWidget(self.open_button)
         self._layout.addLayout(self._layout_button)
 
-        label = QtGui.QLabel("Recent Files")
+        label =  QLabel("Recent Files")
         label.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
 
         self._layout.addWidget(label)
@@ -153,8 +153,8 @@ class WelcomeWindow(QtGui.QMainWindow):
             if isMAEMO:
                 recentFileButton = QtMaemo5.QMaemo5ValueButton()
             else:
-                recentFileButton = QtGui.QPushButton()
-            self.connect(recentFileButton, QtCore.SIGNAL('clicked()'), Curry(self.openRecentFile,recentFileButton))
+                recentFileButton =  QPushButton()
+            self.connect(recentFileButton,  SIGNAL('clicked()'), Curry(self.openRecentFile,recentFileButton))
             self._layout.addWidget(recentFileButton)
 
     def openRecentFile(self,button):
@@ -163,23 +163,23 @@ class WelcomeWindow(QtGui.QMainWindow):
         """
         
         if isMAEMO:
-            self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
+            self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
         self.parent.openRecentFile(button)
         if isMAEMO:
-            self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
+            self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)
 
     def setupMenu(self):
         """
             Initialization of the maemo menu
         """
         
-        fileMenu = QtGui.QMenu(self.tr("&Menu"), self)
+        fileMenu =  QMenu(self.tr("&Menu"), self)
         self.menuBar().addMenu(fileMenu)
 
         fileMenu.addAction(self.tr("&New..."), self.parent.newFile,
-                QtGui.QKeySequence(self.tr("Ctrl+N", "New")))
+                 QKeySequence(self.tr("Ctrl+N", "New")))
         fileMenu.addAction(self.tr("&Open..."), self.parent.openFile,
-                QtGui.QKeySequence(self.tr("Ctrl+O", "Open")))
+                 QKeySequence(self.tr("Ctrl+O", "Open")))
         fileMenu.addAction(self.tr("&Preferences..."), self.showPrefs)
         fileMenu.addAction(self.tr("&About"), self.do_about)
         

@@ -17,7 +17,7 @@ def hex2QColor(c):
     r=int(c[0:2],16)
     g=int(c[2:4],16)
     b=int(c[4:6],16)
-    return QtGui.QColor(r,g,b)
+    return  QColor(r,g,b)
     
 
 
@@ -34,14 +34,14 @@ class QFormatter(Formatter):
         
         self.styles={}
         for token, style in self.style:
-            qtf=QtGui.QTextCharFormat()
+            qtf= QTextCharFormat()
 
             if style['color']:
                 qtf.setForeground(hex2QColor(style['color'])) 
             if style['bgcolor']:
                 qtf.setBackground(hex2QColor(style['bgcolor'])) 
             if style['bold']:
-                qtf.setFontWeight(QtGui.QFont.Bold)
+                qtf.setFontWeight( QFont.Bold)
             if style['italic']:
                 qtf.setFontItalic(True)
             if style['underline']:
@@ -63,10 +63,10 @@ class QFormatter(Formatter):
             self.data.extend([self.styles[t],]*l)
 
 
-class Highlighter(QtGui.QSyntaxHighlighter):
+class Highlighter( QSyntaxHighlighter):
 
     def __init__(self, parent, filename):
-        QtGui.QSyntaxHighlighter.__init__(self, parent)
+         QSyntaxHighlighter.__init__(self, parent)
         self.tstamp=time.time()
         
         # Keep the formatter and lexer, initializing them 
