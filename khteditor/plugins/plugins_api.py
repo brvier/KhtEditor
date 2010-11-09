@@ -1,10 +1,9 @@
 import sys
 import os
 import glob
-import khteditor
 #from PyQt4.QtCore import QSettings
 
-PATHS = [os.path.join(khteditor.__path__[0],'plugins'),os.path.join(os.path.expanduser("~"),'.khteditor','plugins'),os.path.join(os.path.abspath(sys.path[0]),'plugins')]
+PATHS = [os.path.join(os.path.dirname(__file__) ), os.path.join(os.path.dirname(sys.argv[0]),'plugins'),os.path.join(os.path.expanduser("~"),'.khteditor','plugins'),os.path.join(os.path.abspath(sys.path[0]),'plugins')]
 
 class Plugin(object):
     capabilities = []
@@ -42,7 +41,10 @@ def get_plugins_by_capability(capability):
 def load_plugins(plugins):
     for plugin in plugins:
         print 'Load plugin:',plugin 
-        print __import__('khteditor.plugins.'+plugin, None, None, [''])
+        try:
+            print __import__('khteditor.plugins.'+plugin, None, None, [''])
+        except:
+            print __import__('plugins.'+plugin, None, None, [''])
 
 def discover_plugin_in_paths():
     plugins = []

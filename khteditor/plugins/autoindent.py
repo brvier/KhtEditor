@@ -14,9 +14,9 @@ class AutoIndent(Plugin):
             # copy whitespace from the beginning of the previous line
             cursor = widget.textCursor()
             block = widget.document().findBlockByNumber(cursor.blockNumber()-1)
-            whitespace = re.match(r"(\s*)", str(block.text().toUtf8())).group(1)
-            print type(block.text().toUtf8()),dir(block.text().toUtf8())
-            if block.text().toUtf8().right(1) == ':':
+            whitespace = re.match(r"(\s*)", unicode(block.text())).group(1)
+            print type(block.text()),dir(block.text())
+            if block.text().right(1) == ':':
                 whitespace = whitespace + '    '
             cursor = widget.textCursor()
             format = cursor.blockFormat()

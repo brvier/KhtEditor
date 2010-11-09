@@ -12,7 +12,6 @@ import editor
 from subprocess import *
 import commands
 import os
-import khteditor
 
 LANGUAGES = (('.R','R'),
             ('.ada','ada'),
@@ -150,24 +149,25 @@ class FindAndReplaceDlg(QtGui.QDialog):
         self.hide()
 
     def updateUi(self):
-        enable = not self.findLineEdit.text().isEmpty()
+        enable = not (self.findLineEdit.text() == '')
         self.findButton.setEnabled(enable)
         self.replaceButton.setEnabled(enable)
         self.replaceAllButton.setEnabled(enable)
 
-class Window(QtGui.QMainWindow):
+class Window(QtGui.QMainWindow):    
     def __init__(self, parent):
+        global isMAEMO
         QtGui.QMainWindow.__init__(self,None)
         self.parent = parent
 
         #Initialization of the plugin system
         init_plugin_system()
-
+            
         #Got the enabled plugin
         self.settings = QtCore.QSettings()
         self.enabled_plugins = []
         for plugin in find_plugins():
-            if self.settings.value(plugin.__name__).toBool():
+            if bool(self.settings.value(plugin.__name__)):
                 self.enabled_plugins.append(plugin)      
 
         self.findAndReplace = FindAndReplaceDlg()
@@ -175,14 +175,27 @@ class Window(QtGui.QMainWindow):
         self.setupHelpMenu()
         self.setupEditor()
 
-        self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
-        self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
+        try:
+            self.setAttribute(QtCore.Qt.WA_Maemo5AutoOrientation, True)
+            self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
+            isMAEMO = True
+        except:
+            isMAEMO = False
 
+        #Resize window if not maemo
+        if not isMAEMO:
+            self.resize(800, 600)
+            
         self.area = QtGui.QScrollArea(self)
-        scroller = self.area.property("kineticScroller").toPyObject()
-        scroller.setEnabled(True)
+        try:
+            scroller = self.area.property("kineticScroller") #.toPyObject()
+            scroller.setEnabled(True)
+        except:
+            scroller = None
+            
         #speed hack
         self.editor.scroller = scroller
+        self.editor.area = self.area
         self.area.setWidget(self.editor)
         self.area.setWidgetResizable(True)
 #        self.area.takeWidget()
@@ -206,17 +219,17 @@ class Window(QtGui.QMainWindow):
                                             + u'Text file(*.txt);;' 
                                             + u'C File(*.c);;' 
                                             + u'C++ File(*.cpp)')
-        if not filename.isEmpty():
+        if not (filename == ''):
             self.editor.filename = filename
             self.setWindowTitle(QtCore.QFileInfo(filename).fileName())
             self.fileSave()
         return filename
 
 
-    def openFile(self, path=QtCore.QString()):
+    def openFile(self, path=''):
         filename = QtGui.QFileDialog.getOpenFileName(self,
                             "KhtEditor -- Open File",path)
-        if not filename.isEmpty():
+        if not (filename == ''):
             self.loadFile(filename)
         return filename
 
@@ -249,25 +262,34 @@ class Window(QtGui.QMainWindow):
             QtCore.SIGNAL('modificationChanged(bool)'),self.do_documentChanged)
 
     def loadHighlighter(self,filename=None):
+        global isMAEMO
         filename = self.editor.filename
         language = self.detectLanguage(filename)
         #Return None if language not yet implemented natively in KhtEditor
         if language == 'python':
             from syntax.python_highlighter import Highlighter
-            self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
+            if isMAEMO:
+                self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
             QtGui.QApplication.processEvents()
             self.highlighter = Highlighter(self.editor.document())
             QtGui.QApplication.processEvents()
-            self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
+            if isMAEMO:
+                self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
         elif language != None:
             from syntax.generic_highlighter import Highlighter
-            self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
+            if isMAEMO:
+                self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
             QtGui.QApplication.processEvents()
             self.highlighter = Highlighter(self.editor.document(),language)
             QtGui.QApplication.processEvents()
-            self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)            
+            if isMAEMO:
+                self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)            
         else:
+            if isMAEMO:
+                self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
             self.loadGenericHighlighter(filename)
+            if isMAEMO:
+                self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)            
 
     def loadGenericHighlighter(self,filename):
         from syntax import pygments_highlighter
@@ -280,7 +302,7 @@ class Window(QtGui.QMainWindow):
     
     def detectLanguage(self,filename):
         for extension,lang in LANGUAGES:
-            if filename.endsWith(extension.lower()):
+            if filename.endswith(extension.lower()):
                  return lang
         return None
             
@@ -290,7 +312,7 @@ class Window(QtGui.QMainWindow):
         self.toolbar = self.addToolBar('Toolbar')
 
         commentIcon = QtGui.QIcon.fromTheme("general_tag")
-        prefix = os.path.join(khteditor.__path__[0],'icons')
+        prefix = os.path.join(os.path.dirname(__file__),'icons')
         indentIcon = QtGui.QIcon(os.path.join(prefix,'tb_indent.png'))
 
         unindentIcon = QtGui.QIcon(os.path.join(prefix,'tb_unindent.png'))
@@ -396,8 +418,10 @@ class Window(QtGui.QMainWindow):
             fileHandle.write("python \'"+unicode(self.editor.filename).encode('utf-8') + "\'\n")
           elif language == 'qml':
             fileHandle.write("/opt/qt4-maemo5/bin/qmlviewer \'"+unicode(self.editor.filename).encode('utf-8') + "\' -fullscreen\n")             
+          elif language != None:
+            fileHandle.write(language+" \'"+unicode(self.editor.filename).encode('utf-8') + "\' \n")
           else:
-            fileHandle.write(language+" \'"+unicode(self.editor.filename).encode('utf-8') + "\' -fullscreen\n")                       
+            fileHandle.write("\'"+unicode(self.editor.filename).encode('utf-8') + "\' \n")
           fileHandle.write('read -p "Press ENTER to continue ..." foo')
           fileHandle.write('\nexit')
           fileHandle.close()

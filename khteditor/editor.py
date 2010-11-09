@@ -12,55 +12,45 @@ from recent_files import RecentFiles
 class KhtTextEdit(QtGui.QPlainTextEdit):
     """ Widget which handle all specifities of implemented in the editor"""
         
-    def __init__(self, parent=None, filename=QtCore.QString()):
+    def __init__(self, parent=None, filename=None):
         """Initialization, can accept a filepath as argument"""
         QtGui.QPlainTextEdit.__init__(self, parent)
 #        self.connect(self, QtCore.SIGNAL('cursorPositionChanged()'),  self.highlightCurrentLine);
 
         self.hl_color = QtGui.QColor('lightblue').lighter(120)
+        
         # Brace matching
         self.bracepos = None
-        # Init scroller
+        
+        # Init scroller and area which are tricky hack to speed scrolling
         scroller = None
-        #Plugin init move to editor_window.py        
+        area = None
+        
+        #Plugin init moved to editor_window.py        
         #initialization init of plugin system
         #Maybe be not the best place to do it ... 
         #init_plugin_system({'plugin_path': '/home/opt/khteditor/plugins',
         #                    'plugins': ['autoindent']})
-                            
+        
         #If we have a filename
         self.filename = filename
-        if self.filename.isEmpty():
-            self.filename = QtCore.QString("Unnamed.txt")
+        if (self.filename == None) or (self.filename == ''):
+            self.filename = u'Unnamed.txt'
         self.document().setModified(False)
         parent.setWindowTitle(self.filename)
         
-        #Maemo Finger Kinetic Scrolling
-#        scroller = self.property("kineticScroller").toPyObject()
-#        print 'Class kineticScrolling',type(scroller),':',dir(scroller)
-#        scroller.reset()
-#        scroller.setEnabled(True)
-#        scroller.setDragInertia(0.85)
-#        scroller.setMinimumVelocity(0)
-#        scroller.setMaximumVelocity(0.5)
-#        scroller.setDecelerationFactor(0.99)
-#        scroller.setFastVelocityFactor(0.99)
-#        scroller.setMode(1)
-#        print scroller.decelerationFactor()
-#        print scroller.fastVelocityFactor()
-#        print scroller.maximumVelocity()
-#        print scroller.minimumVelocity()
-#        print scroller.dragInertia()
-#        self.setWidgetResizable(True)
-
         #Set no wrap
-        if (parent.settings.value("WrapLine").toBool()):
-            self.setLineWrapMode(QtGui.QPlainTextEdit.WidgetWidth)            
+        if (bool(parent.settings.value("WrapLine"))):
+            self.setLineWrapMode(QtGui.QPlainTextEdit.NoWrap)                        
         else:
-            self.setLineWrapMode(QtGui.QPlainTextEdit.NoWrap)
+            self.setLineWrapMode(QtGui.QPlainTextEdit.WidgetWidth)
 
         #Get Font Size
-        fontsize = parent.settings.value("FontSize").toInt()[0]
+        try:
+            fontsize = int(parent.settings.value("FontSize"))
+        except:
+            fontsize = 11
+            
         if fontsize==0:
             fontsize=11
         #Get Font
@@ -94,16 +84,39 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         fr = self.frameRect()
         cr = self.contentsRect()
         self.setMinimumHeight(max(s.height(), s.height() + (fr.height() - cr.height() - 1)))
-        print s.width()
+        print s.width(),s.width() + (fr.width()-cr.width()) - 1
         self.setMinimumWidth(max(s.width(),s.width() + (fr.width()-cr.width()) - 1))
+
+    def ensureVisible(self,pos,xmargin,ymargin):
+
+        visible = self.area.viewport().size()        
+        currentPos = QtCore.QPoint(self.area.horizontalScrollBar().value(),
+                      self.area.verticalScrollBar().value())
+        posRect = QtCore.QRect(pos.x()-xmargin, pos.y()-ymargin,2*xmargin,2*ymargin)
+        visibleRect = QtCore.QRect(currentPos, visible)
+
+        if (visibleRect.contains(posRect)):
+            return
+
+        newPos = currentPos
+        if (posRect.top() < visibleRect.top()):
+            newPos.setY(posRect.top())
+        elif (posRect.bottom() > visibleRect.bottom()):
+            newPos.setY(posRect.bottom() - visible.height())
+        if (posRect.left() < visibleRect.left()):
+            newPos.setX(posRect.left())
+        elif (posRect.right() > visibleRect.right()):
+            newPos.setX(posRect.right() - visible.width())
+        self.scroller.scrollTo(newPos)
+
 
     def curPositionChanged(self):
         #Hilight current line
         self.highlightCurrentLine()
         
         #Make sure cursor is visible
-        cursor = self.cursorRect()
-        pos = self.pos()
+#        cursor = 
+#        pos = self.pos()
         #scroller = self.parentWidget().property("kineticScroller").toPyObject() 
         #pos = self.parent().mapToParent(pos) 
         #print type(self.parent()), type(self.parentWidget()),type(scroller)
@@ -111,8 +124,10 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         #self.scroller.ensureVisible(pos + cursor.center(), 10 + cursor.width(),
         #                       2 * cursor.height())
 #        pw = self
-        print cursor.center(),cursor.center().x(),cursor.center().y()
-        self.scroller.ensureVisible(cursor.center(), 2*cursor.width(), 2*cursor.height())
+        cursor = self.cursorRect()
+        pos = cursor.center()
+#        print cursor.center(),cursor.center().x(),cursor.center().y()
+        self.area.ensureVisible(pos.x(),pos.y(), 2*cursor.width()+20, 2*cursor.height())
 #        while (pw):
 #            if (pw.parentWidget()):
 #                area = pw.parentWidget()
@@ -160,9 +175,9 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
 
     def save(self):
         """Hum ... just save ..."""
-        if self.filename.startsWith("Unnamed"):
+        if self.filename.startswith("Unnamed"):
             filename = self.parent().parent().parent().saveAsFile()  
-            if not filename.isEmpty():            
+            if not (filename == ''):            
                 return
             self.filename = filename
         self.setWindowTitle(QtCore.QFileInfo(self.filename).fileName())
@@ -390,7 +405,7 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         if not maincursor.hasSelection():
             maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
             line = str(self.document().findBlockByNumber(maincursor\
-                                      .blockNumber()).text().toUtf8())
+                                      .blockNumber()).text())
             whitespace = re.match(r"(\s{0,4})", line).group(1)
             for i in range(len(whitespace)): #@UnusedVariable
                 maincursor.deleteChar()
@@ -398,7 +413,7 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
             block = self.document().findBlock(maincursor.selectionStart())
             while True:
                 whitespace = re.match(r"(\s{0,4})",
-                                str(block.text().toUtf8())).group(1)
+                                str(block.text())).group(1)
                 cursor = self.textCursor() 
                 cursor.setPosition(block.position())
                 for i in range(len(whitespace)): #@UnusedVariable
@@ -538,12 +553,12 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         if not maincursor.hasSelection():
             maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
             line = str(self.document().\
-                 findBlockByNumber(maincursor.blockNumber()).text().toUtf8())
+                 findBlockByNumber(maincursor.blockNumber()).text())
             maincursor.movePosition(QtGui.QTextCursor.EndOfBlock)
             maincursor.insertText('\n'+line)
         else:
             block = self.document().findBlock(maincursor.selectionStart())
-            line = QtCore.QString()
+            line = u''
             while True:
                 cursor = self.textCursor()                                     
                 cursor.setPosition(block.position())
@@ -572,7 +587,7 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         if not maincursor.hasSelection():
             maincursor.movePosition(QtGui.QTextCursor.StartOfBlock)
             line = str(self.document().\
-                 findBlockByNumber(maincursor.blockNumber()).text().toUtf8())
+                 findBlockByNumber(maincursor.blockNumber()).text())
             if line.startswith('#'):
                 maincursor.deleteChar()
             else:
@@ -583,7 +598,7 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
                 cursor = self.textCursor()                                     
                 cursor.setPosition(block.position())
 
-                if str(block.text().toUtf8()).startswith('#'):
+                if str(block.text()).startswith('#'):
                     cursor.deleteChar()
                 else:
                     cursor.insertText("#")
@@ -627,9 +642,5 @@ class KhtTextEdit(QtGui.QPlainTextEdit):
         """
         cursor = self.__select_text(position_from, position_to)
         text = cursor.selectedText()
-#        if not text.isEmpty():
-#            while text.endsWith("\n"):
-#                text.chop(1)
-#            while text.endsWith(u"\u2029"):
-#                text.chop(1)
+
         return unicode(text)

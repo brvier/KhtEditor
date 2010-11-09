@@ -12,7 +12,6 @@ except:
 from PyQt4.QtCore import Qt
 from recent_files import RecentFiles
 import sys
-import khteditor
 
 class Curry:
     """keep a reference to all curried instances or they are immediately garbage collected"""
@@ -49,6 +48,10 @@ class WelcomeWindow(QtGui.QMainWindow):
         QtGui.QMainWindow.__init__(self,None)
         self.parent = parent
 
+        #Resize window if not maemo
+        if not isMAEMO:
+            self.resize(800, 600)
+            
         self.setupMenu()
         self.setupMain()
 
@@ -83,8 +86,11 @@ class WelcomeWindow(QtGui.QMainWindow):
         for index in range(0,self._layout.count()-4):
             recentFileButton = self._layout.itemAt(index+4).widget()
             try:
-                recentFileButton.setText(os.path.basename(unicode(recentfiles[index]).encode('utf-8')).decode('utf-8'))
-                recentFileButton.setValueText(os.path.abspath(unicode(recentfiles[index]).encode('utf-8')).decode('utf-8'))         
+                if isMAEMO:
+                    recentFileButton.setText(os.path.basename(unicode(recentfiles[index]).encode('utf-8')).decode('utf-8'))
+                    recentFileButton.setValueText(os.path.abspath(unicode(recentfiles[index]).encode('utf-8')).decode('utf-8'))         
+                else:
+                    recentFileButton.setText(os.path.abspath(unicode(recentfiles[index]).encode('utf-8')).decode('utf-8')) 
             except StandardError, e:
                 recentFileButton.setDisabled(True)
         
@@ -97,17 +103,25 @@ class WelcomeWindow(QtGui.QMainWindow):
         self.scrollArea = QtGui.QScrollArea(self)
         self.scrollArea.setWidgetResizable(True)
         awidget = QtGui.QWidget(self.scrollArea)
-        awidget.setMinimumSize(480,1000)
+        if isMAEMO:
+            awidget.setMinimumSize(480,1000)
         awidget.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         self.scrollArea.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
    
-        scroller = self.scrollArea.property("kineticScroller").toPyObject()
-        scroller.setEnabled(True)
-
+        #Kinetic scroller is available on Maemo and should be on meego
+        try:
+            scroller = aboutScrollArea.property("kineticScroller") #.toPyObject()
+            scroller.setEnabled(True)
+        except:
+            pass
+            
         self._layout = QtGui.QVBoxLayout(awidget)
         
         self.icon = QtGui.QLabel()
-        self.icon.setPixmap(QtGui.QPixmap(os.path.join(khteditor.__path__[0],'icons','khteditor.png')).scaledToHeight(64))
+#        print os.path.abspath(os.path.dirname(sys.argv[0]))
+#        print sys.path
+#        print os.path.dirname(__file__)  
+        self.icon.setPixmap(QtGui.QPixmap(os.path.join(os.path.dirname(__file__) ,'icons','khteditor.png')).scaledToHeight(64))
         self.icon.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
         self.icon.resize(70,70)
         
@@ -136,7 +150,10 @@ class WelcomeWindow(QtGui.QMainWindow):
         self.scrollArea.setWidget(awidget)
         recentfiles = RecentFiles().get()
         for index in range(10):
-            recentFileButton = QtMaemo5.QMaemo5ValueButton()
+            if isMAEMO:
+                recentFileButton = QtMaemo5.QMaemo5ValueButton()
+            else:
+                recentFileButton = QtGui.QPushButton()
             self.connect(recentFileButton, QtCore.SIGNAL('clicked()'), Curry(self.openRecentFile,recentFileButton))
             self._layout.addWidget(recentFileButton)
 
@@ -145,9 +162,11 @@ class WelcomeWindow(QtGui.QMainWindow):
             Call back which open a recent file
         """
         
-        self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
+        if isMAEMO:
+            self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,True)
         self.parent.openRecentFile(button)
-        self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
+        if isMAEMO:
+            self.setAttribute(QtCore.Qt.WA_Maemo5ShowProgressIndicator,False)
 
     def setupMenu(self):
         """

@@ -11,18 +11,20 @@ from PyQt4.QtCore import Qt, \
                          QProcess, \
                          QRegExp, \
                          SIGNAL, \
-                         QString, \
                          QObject, \
                          QAbstractListModel, \
-                         QModelIndex, \
-                         QVariant \
+                         QModelIndex
 
 from PyQt4.QtGui import QAction, \
                         QMainWindow, \
-                        QListView \
+                        QListView 
                         
-import PyQt4.QtMaemo5 #Not really unused as it s import to Qt
-
+try:                        
+    import PyQt4.QtMaemo5 #Not really unused as it s import to Qt
+    isMAEMO = True
+except:
+    isMAEMO = False
+    
 try:
     from plugins_api import Plugin
 except:
@@ -70,9 +72,9 @@ class ResultModel(QAbstractListModel):
             text = self.items[index.row()][0] \
                 + ':L' + self.items[index.row()][1] \
                 + ' : ' + self.items[index.row()][2]
-            return QVariant(text)
+            return text
         else:
-            return QVariant()
+            return None
            
 class ResultWin(QMainWindow):
     """ Window use to display pylint results """
@@ -80,8 +82,10 @@ class ResultWin(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         self.parent = parent
-        self.setAttribute(Qt.WA_Maemo5AutoOrientation, True)
-        
+        try:
+            self.setAttribute(Qt.WA_Maemo5AutoOrientation, True)
+        except:
+            pass
         self.list_view = QListView()
         self.list_model = ResultModel()
         self.list_view.setViewMode(QListView.ListMode)
@@ -151,7 +155,9 @@ class PyLint(Plugin, QObject):
         self.win.setWindowTitle("PyLint Results :" \
             + os.path.basename(str(self.parent.editor.filename)))
         self.win.show()
-        self.win.setAttribute(Qt.WA_Maemo5ShowProgressIndicator, True)
+        if isMAEMO:
+            self.win.setAttribute(Qt.WA_Maemo5ShowProgressIndicator, True)
+            
         self.win.connect(self.win.list_view, \
             SIGNAL('doubleClicked(const QModelIndex&)'), \
             self.goto_line)
@@ -160,8 +166,9 @@ class PyLint(Plugin, QObject):
         
     def finished(self, _):
         """ Call back called when lint end """
-        self.win.setAttribute(Qt.WA_Maemo5ShowProgressIndicator, False)
-        
+        if isMAEMO:
+            self.win.setAttribute(Qt.WA_Maemo5ShowProgressIndicator, False)
+            
     def handle_stdout(self):
         """
         Private slot to handle the readyReadStdout
@@ -176,7 +183,6 @@ class PyLint(Plugin, QObject):
             result = self.pylint_pross.readLine()
             if result != None:
                 print 'DEBUG:', result
-                result = QString(result)
                 pos = 0
                 while True:
                     pos = regex.indexIn(result, pos)

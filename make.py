@@ -60,8 +60,7 @@ if __name__ == "__main__":
 chmod +x /usr/bin/khteditor_launch.py
 python -m compileall /usr/lib/python2.5/site-packages/khteditor"""
 
-    p.changelog=""" Fix to ensure cursor is visible, fix unicode in openfile, recentfile, do_execute, savefile
-"""
+    p.changelog=""" Fix to ensure cursor is visible"""
 
 print p.generate(build_binary=False,build_src=True)
 #print p.generate(build_binary=True,build_src=True)

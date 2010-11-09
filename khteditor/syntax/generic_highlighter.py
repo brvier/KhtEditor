@@ -309,7 +309,7 @@ class Highlighter(QSyntaxHighlighter):
             while index >= 0:
                 # We actually want the index of the nth match
                 index = expression.pos(nth)
-                length = expression.cap(nth).length()
+                length = len(expression.cap(nth))
                 self.setFormat(index, length, format)                
                 index = expression.indexIn(text, index + length)
 
@@ -354,7 +354,7 @@ class Highlighter(QSyntaxHighlighter):
             # No; multi-line string
             else:
                 self.setCurrentBlockState(in_state)
-                length = text.length() - start + add
+                length = len(text) - start + add
                 #print 'Text: ',text,',No Multiline start : ', start, ', add : ',add, ', end :', end, ', lenght :',length
             # Apply formatting
             self.setFormat(start, length, style)

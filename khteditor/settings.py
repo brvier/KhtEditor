@@ -6,37 +6,54 @@ import sys
 
 class KhtSettings(QMainWindow):
     def __init__(self, parent=None):
+        global isMAEMO
         QMainWindow.__init__(self,parent)
         self.parent = parent
 
-        self.setAttribute(Qt.WA_Maemo5AutoOrientation, True)
-        self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
+        try:
+            self.setAttribute(Qt.WA_Maemo5AutoOrientation, True)
+            self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
+            isMAEMO = True
+        except:
+            isMAEMO = False
         self.setWindowTitle("KhtEditor Prefs")
 
+        #Resize window if not maemo
+        if not isMAEMO:
+            self.resize(800, 600)
+            
         self.settings = QSettings()
         
         self.setupGUI()
         self.loadPrefs()
         
     def loadPrefs(self):
-        for checkBox in self.plugins_widgets :
-            checkBox.setCheckState(self.settings.value(checkBox.text().split(' ')[0]).toInt()[0])
-        if (self.settings.value('FontName').toPyObject()) != None:
-            self.fontName.setCurrentFont(self.settings.value('FontName').toPyObject())
-        self.fontSize.setValue(self.settings.value("FontSize").toInt()[0])        
-        self.wrapLine.setCheckState(self.settings.value('WrapLine').toInt()[0])
+        for checkBox in self.plugins_widgets :            
+            if self.settings.value(checkBox.text().split(' ')[0])!=None:        
+                print 'DEBUG:loadPrefs:',checkBox.text().split(' ')[0],':',  self.settings.value(checkBox.text().split(' ')[0])
+                checkBox.setCheckState(int(self.settings.value(checkBox.text().split(' ')[0])))
+        if self.settings.value('FontName') :
+            self.fontName.setCurrentFont(self.settings.value('FontName'))
+        if self.settings.value("FontSize"):
+            self.fontSize.setValue(int(self.settings.value("FontSize")))    
+        if self.settings.value('WrapLine'):        
+            self.wrapLine.setCheckState(int(self.settings.value('WrapLine')))
 
     def savePrefs(self):
         for checkBox in self.plugins_widgets :
+            print 'DEBUG:savePrefs:', checkBox.text().split(' ')[0], ':', checkBox.checkState()
             self.settings.setValue(checkBox.text().split(' ')[0],checkBox.checkState())
-        self.settings.setValue('FontName',QVariant(self.fontName.currentFont()))
-        self.settings.setValue('FontSize',QVariant(self.fontSize.value()))
+        self.settings.setValue('FontName',self.fontName.currentFont())
+        self.settings.setValue('FontSize',self.fontSize.value())
         self.settings.setValue('WrapLine',self.wrapLine.checkState())
             
     def closeEvent(self,widget,*args):
+        print "save Prefs"
         self.savePrefs()
                      
     def setupGUI(self):
+        global isMAEMO
+        
         self.scrollArea = QScrollArea(self)
         self.scrollArea.setWidgetResizable(True)
 
@@ -46,8 +63,9 @@ class KhtSettings(QMainWindow):
         self.aWidget.setSizePolicy( QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.scrollArea.setSizePolicy( QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.scrollArea.setWidget(self.aWidget)
-        scroller = self.scrollArea.property("kineticScroller").toPyObject()
-        scroller.setEnabled(True)
+        if isMAEMO:
+            scroller = self.scrollArea.property("kineticScroller") #.toPyObject()
+            scroller.setEnabled(True)
 
         gridIndex = 0
 

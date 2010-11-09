@@ -3,7 +3,11 @@
 
 """KhtEditor a source code editor by Khertan : Init"""
 
-__version__ = '0.0.11'
+import sip
+sip.setapi('QString', 2)
+sip.setapi('QVariant', 2)
+
+__version__ = '0.0.13'
 
 import os
 import sys
@@ -12,13 +16,13 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import Qt
 import editor_window
 from recent_files import RecentFiles
-import khteditor
+
 import settings
 
 #Here is the installation of the hook. Each time a untrapped/unmanaged exception will
 #happen my_excepthook will be called.
 def install_excepthook(app_name,app_version):
-
+    '''Install exception hook for the bug reporter'''
     APP_NAME = 'KhtEditor'
     APP_VERSION = __version__
 
@@ -48,9 +52,17 @@ class KhtEditorAbout(QtGui.QMainWindow):
 
         self.settings = QtCore.QSettings()
 
-        self.setAttribute(Qt.WA_Maemo5AutoOrientation, True)
-        self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
+        try:
+            self.setAttribute(Qt.WA_Maemo5AutoOrientation, True)
+            self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
+            isMAEMO = True
+        except:
+            isMAEMO = False
         self.setWindowTitle("KhtEditor About")
+        
+        #Resize window if not maemo
+        if not isMAEMO:
+            self.resize(800, 600)        
 
         aboutScrollArea = QtGui.QScrollArea(self)
         aboutScrollArea.setWidgetResizable(True)
@@ -60,7 +72,7 @@ class KhtEditorAbout(QtGui.QMainWindow):
         aboutScrollArea.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
         #Kinetic scroller is available on Maemo and should be on meego
         try:
-            scroller = aboutScrollArea.property("kineticScroller").toPyObject()
+            scroller = aboutScrollArea.property("kineticScroller") #.toPyObject()
             scroller.setEnabled(True)
         except:
             pass
@@ -112,18 +124,18 @@ class KhtEditorAbout(QtGui.QMainWindow):
 
 class KhtEditor:
     def __init__(self):
-      self.window_list = []
-      self.version = __version__
+        self.window_list = []
+        self.version = __version__
 
-      self.app = QtGui.QApplication(sys.argv)
-      self.app.setOrganizationName("Khertan Software")
-      self.app.setOrganizationDomain("khertan.net")
-      self.app.setApplicationName("KhtEditor")
-      
-      install_excepthook(self.app.applicationName(),self.version)
+        self.app = QtGui.QApplication(sys.argv)
+        self.app.setOrganizationName("Khertan Software")
+        self.app.setOrganizationDomain("khertan.net")
+        self.app.setApplicationName("KhtEditor")
 
-      self.last_know_path='/home/user/MyDocs'
-      self.run()
+        install_excepthook(self.app.applicationName(),self.version)
+
+        self.last_know_path='/home/user/MyDocs'
+        self.run()
 
     def crash_report(self):
         if os.path.isfile(os.path.join(os.path.join(os.path.expanduser("~"),'.khteditor_crash_report'))):
@@ -181,20 +193,20 @@ class KhtEditor:
         """
             Run method
         """
-        
+
         window = welcome_window.WelcomeWindow(self)
         window.show()
         self.crash_report()
 
         for arg in self.app.argv()[1:]:
-          path = os.path.abspath(arg)
-          if os.path.isfile(path):
-              editor_win=editor_window.Window(self)
-              self.window_list.append(editor_win)
-              editor_win.loadFile(QtCore.QString(path.decode('UTF-8')))
-              editor_win.show()
-              self.last_know_path=QtCore.QString(os.path.dirname(str(path).decode('UTF-8')))
-              RecentFiles().append(QtCore.QString(path.decode('UTF-8')))
+            path = os.path.abspath(arg)
+            if os.path.isfile(unicode(path)):
+                editor_win=editor_window.Window(self)
+                self.window_list.append(editor_win)
+                editor_win.loadFile(unicode(path))
+                editor_win.show()
+                self.last_know_path=os.path.dirname(unicode(path))
+                RecentFiles().append(unicode(path))
 
         sys.exit(self.app.exec_())
       
@@ -210,31 +222,36 @@ class KhtEditor:
         editor_win.show()
         self.window_list.append(editor_win)
 
-    def openFile(self, path=QtCore.QString()):
+    def openFile(self):
         """
             Create a new editor window and open selected file
         """
         editor_win=editor_window.Window(self)
         editor_win.show()
         filename = editor_win.openFile(self.last_know_path)
-        if not filename.isEmpty():
-          self.window_list.append(editor_win)
-          RecentFiles().append(filename)
-          self.last_know_path=QtCore.QString(os.path.dirname(str(filename).decode('UTF-8')))
+        if not (filename == ''):
+            self.window_list.append(editor_win)
+            RecentFiles().append(filename)
+            self.last_know_path=os.path.dirname(unicode(filename))
 #        else:           
 #          editor_win.destroy()
 
-    def openRecentFile(self, path=QtCore.QString()):
+    def openRecentFile(self, path):
         """
             Create a new editor window and open a recent file
         """
-        
         editor_win=editor_window.Window(self)
         self.window_list.append(editor_win)
         editor_win.show()
-        editor_win.loadFile(path.valueText())
-        RecentFiles().append(path.valueText())
-        self.last_know_path=QtCore.QString(os.path.dirname(unicode(path.valueText()).encode('UTF-8'))) 
+        try:
+            editor_win.loadFile(path.valueText())
+            RecentFiles().append(path.valueText())
+            self.last_know_path=os.path.dirname(unicode(path.valueText()))
+        except:
+            editor_win.loadFile(path.text())
+            RecentFiles().append(path.text())
+            self.last_know_path=os.path.dirname(unicode(path.text()))
+        
             
     def showPrefs(self,win):
         """
