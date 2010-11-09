@@ -4,7 +4,8 @@
 
 import sys
 import re
-from PyQt4 import QtCore, QtGui
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 from PyQt4.QtCore import Qt
 from plugins.plugins_api import init_plugin_system, filter_plugins_by_capability, find_plugins, Plugin
 import editor
@@ -157,7 +158,7 @@ class FindAndReplaceDlg( QDialog):
 class Window( QMainWindow):    
     def __init__(self, parent):
         global isMAEMO
-         QMainWindow.__init__(self,None)
+        QMainWindow.__init__(self,None)
         self.parent = parent
 
         #Initialization of the plugin system
@@ -270,18 +271,18 @@ class Window( QMainWindow):
             from syntax.python_highlighter import Highlighter
             if isMAEMO:
                 self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
-             QApplication.processEvents()
+            QApplication.processEvents()
             self.highlighter = Highlighter(self.editor.document())
-             QApplication.processEvents()
+            QApplication.processEvents()
             if isMAEMO:
                 self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)
         elif language != None:
             from syntax.generic_highlighter import Highlighter
             if isMAEMO:
                 self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
-             QApplication.processEvents()
+            QApplication.processEvents()
             self.highlighter = Highlighter(self.editor.document(),language)
-             QApplication.processEvents()
+            QApplication.processEvents()
             if isMAEMO:
                 self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)            
         else:
@@ -295,9 +296,9 @@ class Window( QMainWindow):
         from syntax import pygments_highlighter
         #self.language = self.detectLanguage(filename)
         self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
-         QApplication.processEvents()
+        QApplication.processEvents()
         self.highlighter = pygments_highlighter.Highlighter(self.editor.document(),str(filename))
-         QApplication.processEvents()
+        QApplication.processEvents()
         self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)
     
     def detectLanguage(self,filename):

@@ -4,7 +4,8 @@
 
 import sys
 import re
-from PyQt4 import QtCore, QtGui
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 
 class Highlighter( QSyntaxHighlighter):
 

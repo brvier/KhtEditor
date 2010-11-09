@@ -3,7 +3,8 @@
 """KhtEditor a source code editor by Khertan : Welcome Window"""
 
 import os
-from PyQt4 import QtCore, QtGui
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 try:
     from PyQt4 import QtMaemo5
     isMAEMO = True
@@ -45,7 +46,7 @@ class WelcomeWindow( QMainWindow):
     """
     
     def __init__(self, parent=None):
-         QMainWindow.__init__(self,None)
+        QMainWindow.__init__(self,None)
         self.parent = parent
 
         #Resize window if not maemo

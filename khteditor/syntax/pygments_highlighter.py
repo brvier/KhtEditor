@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
 import re
-from PyQt4 import QtCore, QtGui
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 from pygments import highlight
 from pygments.lexers import *
 from pygments.formatter import Formatter
@@ -66,7 +67,7 @@ class QFormatter(Formatter):
 class Highlighter( QSyntaxHighlighter):
 
     def __init__(self, parent, filename):
-         QSyntaxHighlighter.__init__(self, parent)
+        QSyntaxHighlighter.__init__(self, parent)
         self.tstamp=time.time()
         
         # Keep the formatter and lexer, initializing them 

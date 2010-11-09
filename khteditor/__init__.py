@@ -45,13 +45,13 @@ def install_excepthook(app_name,app_version):
         
     sys.excepthook = my_excepthook
 
-class KhtEditorAbout(QtGui.QMainWindow):
+class KhtEditorAbout( QMainWindow):
     '''About Window'''
     def __init__(self, parent=None):
-        QtGui.QMainWindow.__init__(self,parent)
+        QMainWindow.__init__(self,parent)
         self.parent = parent
 
-        self.settings = QtCore.QSettings()
+        self.settings =  QSettings()
 
         try:
             self.setAttribute(Qt.WA_Maemo5AutoOrientation, True)
@@ -65,12 +65,12 @@ class KhtEditorAbout(QtGui.QMainWindow):
         if not isMAEMO:
             self.resize(800, 600)        
 
-        aboutScrollArea = QtGui.QScrollArea(self)
+        aboutScrollArea =  QScrollArea(self)
         aboutScrollArea.setWidgetResizable(True)
-        awidget = QtGui.QWidget(aboutScrollArea)
+        awidget =  QWidget(aboutScrollArea)
         awidget.setMinimumSize(480,800)
-        awidget.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
-        aboutScrollArea.setSizePolicy( QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+        awidget.setSizePolicy(  QSizePolicy.Expanding,  QSizePolicy.Expanding)
+        aboutScrollArea.setSizePolicy(  QSizePolicy.Expanding,  QSizePolicy.Expanding)
         #Kinetic scroller is available on Maemo and should be on meego
         try:
             scroller = aboutScrollArea.property("kineticScroller") #.toPyObject()
@@ -78,15 +78,15 @@ class KhtEditorAbout(QtGui.QMainWindow):
         except:
             pass
 
-        aboutLayout = QtGui.QVBoxLayout(awidget)
+        aboutLayout =  QVBoxLayout(awidget)
 
-        aboutIcon = QtGui.QLabel()
-        aboutIcon.setPixmap(QtGui.QIcon.fromTheme('khteditor').pixmap(128,128))
+        aboutIcon =  QLabel()
+        aboutIcon.setPixmap( QIcon.fromTheme('khteditor').pixmap(128,128))
         aboutIcon.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
         aboutIcon.resize(128,128)
         aboutLayout.addWidget(aboutIcon)
 
-        aboutLabel = QtGui.QLabel('''<center><b>KhtEditor</b> %s
+        aboutLabel =  QLabel('''<center><b>KhtEditor</b> %s
                                    <br><br>A source code editor designed for ease of use on small screen
                                    <br>Licenced under GPLv3
                                    <br>By Beno&icirc;t HERVIER (Khertan) 
@@ -102,12 +102,12 @@ class KhtEditorAbout(QtGui.QMainWindow):
                                    </center>''' % __version__)
 
         aboutLayout.addWidget(aboutLabel)
-        self.bugtracker_button = QtGui.QPushButton('BugTracker')
+        self.bugtracker_button =  QPushButton('BugTracker')
         self.bugtracker_button.clicked.connect(self.open_bugtracker)
-        self.website_button = QtGui.QPushButton('Website')
+        self.website_button =  QPushButton('Website')
         self.website_button.clicked.connect(self.open_website)
-        awidget2 = QtGui.QWidget()
-        buttonLayout = QtGui.QHBoxLayout(awidget2)        
+        awidget2 =  QWidget()
+        buttonLayout =  QHBoxLayout(awidget2)        
         buttonLayout.addWidget(self.bugtracker_button)
         buttonLayout.addWidget(self.website_button)
         aboutLayout.addWidget(awidget2)
@@ -118,9 +118,9 @@ class KhtEditorAbout(QtGui.QMainWindow):
         self.show()        
         
     def open_website(self):
-        QtGui.QDesktopServices.openUrl(QtCore.QUrl('http://khertan.net/khteditor'))
+         QDesktopServices.openUrl( QUrl('http://khertan.net/khteditor'))
     def open_bugtracker(self):
-        QtGui.QDesktopServices.openUrl(QtCore.QUrl('http://khertan.net/khteditor/bugs'))
+         QDesktopServices.openUrl( QUrl('http://khertan.net/khteditor/bugs'))
     
 
 class KhtEditor:
@@ -128,7 +128,7 @@ class KhtEditor:
         self.window_list = []
         self.version = __version__
 
-        self.app = QtGui.QApplication(sys.argv)
+        self.app =  QApplication(sys.argv)
         self.app.setOrganizationName("Khertan Software")
         self.app.setOrganizationDomain("khertan.net")
         self.app.setApplicationName("KhtEditor")
@@ -143,10 +143,10 @@ class KhtEditor:
             import urllib2
             import urllib
             import pickle
-            if ((QtGui.QMessageBox.question(None,
+            if (( QMessageBox.question(None,
                 "KhtEditor Crash Report",
                 "An error occur on KhtEditor in the previous launch. Report this bug on the bug tracker ?",
-                QtGui.QMessageBox.Yes|QtGui.QMessageBox.Close)) == QtGui.QMessageBox.Yes):
+                QMessageBox.Yes| QMessageBox.Close)) ==  QMessageBox.Yes):
                 url = 'http://khertan.net/report.php' # write ur URL here
                 try:
                     filename = os.path.join(os.path.join(os.path.expanduser("~"),'.khteditor_crash_report'))
@@ -166,24 +166,24 @@ class KhtEditor:
                     the_page = response.read()
                 except Exception, detail:
                     print detail
-                    QtGui.QMessageBox.question(None,
+                    QMessageBox.question(None,
                     "KhtEditor Crash Report",
                     "An error occur during the report : %s" % detail,
-                    QtGui.QMessageBox.Close)
+                    QMessageBox.Close)
                     return False
 
                 if 'Your report have been successfully stored' in the_page:
-                    QtGui.QMessageBox.question(None,
+                    QMessageBox.question(None,
                     "KhtEditor Crash Report",
                     "%s" % the_page,
-                    QtGui.QMessageBox.Close)
+                    QMessageBox.Close)
                     return True
                 else:
                     print 'page:',the_page
-                    QtGui.QMessageBox.question(None,
+                    QMessageBox.question(None,
                     "KhtEditor Crash Report",
                     "%s" % the_page,
-                    QtGui.QMessageBox.Close)
+                    QMessageBox.Close)
                     return False
             try:
                 os.remove(os.path.join(os.path.join(os.path.expanduser("~"),'.khteditor_crash_report')))

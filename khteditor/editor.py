@@ -3,7 +3,8 @@
 """KhtEditor a source code editor by Khertan : Code Editor"""
 
 import re
-from PyQt4 import QtCore,QtGui
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 from PyQt4.QtCore import Qt
 from plugins.plugins_api import init_plugin_system, filter_plugins_by_capability
 from recent_files import RecentFiles
@@ -14,7 +15,7 @@ class KhtTextEdit( QPlainTextEdit):
         
     def __init__(self, parent=None, filename=None):
         """Initialization, can accept a filepath as argument"""
-         QPlainTextEdit.__init__(self, parent)
+        QPlainTextEdit.__init__(self, parent)
 #        self.connect(self,  SIGNAL('cursorPositionChanged()'),  self.highlightCurrentLine);
 
         self.hl_color =  QColor('lightblue').lighter(120)
@@ -148,7 +149,7 @@ class KhtTextEdit( QPlainTextEdit):
             for plugin in filter_plugins_by_capability('beforeKeyPressEvent',self.enabled_plugins):
                 plg = plugin()
                 plg.do_beforeKeyPressEvent(self,event)
-             QPlainTextEdit.keyPressEvent(self, event)
+            QPlainTextEdit.keyPressEvent(self, event)
             for plugin in filter_plugins_by_capability('afterKeyPressEvent',self.enabled_plugins):
                 plg = plugin()
                 plg.do_afterKeyPressEvent(self,event)
@@ -156,16 +157,16 @@ class KhtTextEdit( QPlainTextEdit):
     def closeEvent(self,event):
         """Catch the close event and ask to save if document is modified"""
         answer = self.document().isModified() and \
-         QMessageBox.question(self,
+        QMessageBox.question(self,
                "Text Editor - Unsaved Changes",
                "Save unsaved changes in %s?" % self.filename,
-                QMessageBox.Yes| QMessageBox.No| QMessageBox.Close)
+               QMessageBox.Yes| QMessageBox.No| QMessageBox.Close)
         if answer ==  QMessageBox.Yes:
             try:
                 self.save()
                 event.accept()
             except (IOError, OSError), ioError:
-                 QMessageBox.warning(self, "Text Editor -- Save Error",
+                QMessageBox.warning(self, "Text Editor -- Save Error",
                         "Failed to save %s: %s" % (self.filename, ioError))
                 event.ignore()
         elif answer ==  QMessageBox.Close:
@@ -383,7 +384,7 @@ class KhtTextEdit( QPlainTextEdit):
                 raise IOError, unicode(filehandle.errorString())
             stream =  QTextStream(filehandle)
             stream.setCodec("UTF-8")
-             QApplication.processEvents()
+            QApplication.processEvents()
             self.setPlainText(stream.readAll())
             self.document().setModified(False)
             self.setWindowTitle( QFileInfo(self.filename).fileName())
