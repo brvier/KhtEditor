@@ -264,41 +264,11 @@ class Highlighter(QSyntaxHighlighter):
         self.rules = []
         self.multilines_comment = None
 
-        # Multi-line strings (expression, flag, style)
-        # FIXME: The triple-quotes in these two lines will mess up the
-        # syntax highlighting from this point onward
-#        self.tri_double = ( QRegExp(r'''"""(?!')'''), 2, STYLES['string2'])
 
-#        rules += [(r'\b%s\b' % w, 0, STYLES['keyword']) for w in Highlighter.keywords]
-#        rules += [(r'\b%s\b' % w, 0, STYLES['preprocessor']) for w in Highlighter.preprocessors]
-#        rules += [(r'\b%s\b' % w, 0, STYLES['special']) for w in Highlighter.specials]
-#        rules += [(r'%s' % o, 0, STYLES['operator']) for o in Highlighter.operators]
-#        rules += [(r'%s' % b, 0, STYLES['brace']) for b in Highlighter.braces]
-#
-#        rules += [
-#                # Framework PyQt
-#                (r'\bPyQt4\b|\bQt?[A-Z][a-z]\w+\b',0,STYLES['framework']), 
-#                # 'def' followed by an identifier
-#                (r'\bdef\b\s*(\w+)', 1, STYLES['defclass']),
-#                # 'class' followed by an identifier
-#                (r'\bclass\b\s*(\w+)', 1, STYLES['defclass']),
-#                # Double-quoted string, possibly containing escape sequences
-#                #(r'"[^"\\]*(\\.[^"\\]*)*"', 0, STYLES['string']),
-#                (r"""(:?"["]".*"["]"|'''.*''')""", 0, STYLES['string']),
-#                # Single-quoted string, possibly containing escape sequences
-#                #(r"'[^'\\]*(\\.[^'\\]*)*'", 0, STYLES['string']),
-#                (r"""(?:'[^']*'|"[^"]*")""", 0, STYLES['string']),
-#                # From '#' until a newline
-#                (r'#[^\n]*', 0, STYLES['comment']),
-#        ]
-#
         syntax = XMLSyntaxParser(language)
         self.rules = syntax._grammar
         self.multilines_comment = syntax._comments
-
-        # Build a QRegExp for each pattern
-#        self.rules = [( QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
-                        
+                       
     def highlightBlock(self, text):
         """Apply syntax highlighting to the given block of text.
         """        

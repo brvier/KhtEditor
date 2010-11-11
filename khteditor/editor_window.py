@@ -276,7 +276,7 @@ class Window( QMainWindow):
             QApplication.processEvents()
             if isMAEMO:
                 self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)
-        elif language != None:
+        elif (language != None) and (language != 'None'):
             from syntax.generic_highlighter import Highlighter
             if isMAEMO:
                 self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
@@ -286,20 +286,15 @@ class Window( QMainWindow):
             if isMAEMO:
                 self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)            
         else:
+            from syntax import pygments_highlighter
             if isMAEMO:
                 self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
-            self.loadGenericHighlighter(filename)
+            QApplication.processEvents()
+            self.highlighter = pygments_highlighter.Highlighter(self.editor.document(),str(filename))
+            QApplication.processEvents()
             if isMAEMO:
                 self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)            
 
-    def loadGenericHighlighter(self,filename):
-        from syntax import pygments_highlighter
-        #self.language = self.detectLanguage(filename)
-        self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
-        QApplication.processEvents()
-        self.highlighter = pygments_highlighter.Highlighter(self.editor.document(),str(filename))
-        QApplication.processEvents()
-        self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)
     
     def detectLanguage(self,filename):
         for extension,lang in LANGUAGES:
