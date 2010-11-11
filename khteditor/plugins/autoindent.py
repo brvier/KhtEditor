@@ -7,7 +7,7 @@ import re
 
 class AutoIndent(Plugin):
     capabilities = ['afterKeyPressEvent']
-    __version__ = '0.1'
+    __version__ = '0.2'
     
     def do_afterKeyPressEvent(self, widget,event):
         if (event.key() == Qt.Key_Return) or (event.key() == Qt.Key_Enter):
@@ -16,7 +16,7 @@ class AutoIndent(Plugin):
             block = widget.document().findBlockByNumber(cursor.blockNumber()-1)
             whitespace = re.match(r"(\s*)", unicode(block.text())).group(1)
             print type(block.text()),dir(block.text())
-            if block.text().right(1) == ':':
+            if block.text()[-1] == ':':
                 whitespace = whitespace + '    '
             cursor = widget.textCursor()
             format = cursor.blockFormat()

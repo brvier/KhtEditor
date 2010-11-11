@@ -7,12 +7,12 @@ import sip
 sip.setapi('QString', 2)
 sip.setapi('QVariant', 2)
 
-__version__ = '0.0.15'
+__version__ = '0.0.16'
 
 import os
 import sys
 import welcome_window
-from PyQt4.QtCore import *
+from PyQt4.QtCore import * 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import Qt
 import editor_window

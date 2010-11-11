@@ -60,7 +60,7 @@ if __name__ == "__main__":
 chmod +x /usr/bin/khteditor_launch.py
 python -m compileall /usr/lib/python2.5/site-packages/khteditor"""
 
-    p.changelog=""" Better, Faster, Stronger : move to sipapi 2 for QString, QVariant, fix unicode errors and some others minor fixes (Works also on Windows now)."""
+    p.changelog=""" * Fix pylint plugin, * Fix bug #35 loading generic highlighter"""
 
 print p.generate(build_binary=False,build_src=True)
 #print p.generate(build_binary=True,build_src=True)
