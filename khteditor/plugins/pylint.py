@@ -105,7 +105,7 @@ class ResultWin(QMainWindow):
 class PyLint(Plugin, QObject):
     """ PyLint Plugin """
     capabilities = ['toolbarHook']
-    __version__ = '0.2'
+    __version__ = '0.3'
     thread = None
     
     def do_toolbarHook(self, parent):
@@ -180,7 +180,7 @@ class PyLint(Plugin, QObject):
         regex_score = \
             QRegExp('.*at.(\d.\d*)/10.*')
         while self.pylint_pross and self.pylint_pross.canReadLine():
-            result = self.pylint_pross.readLine()
+            result = unicode(self.pylint_pross.readLine())
             if result != None:
                 pos = 0
                 while True:
