@@ -3,9 +3,19 @@
 """KhtEditor a source code editor by Khertan : Code Editor"""
 
 import re
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import Qt, QEvent, \
+                        QFileInfo, \
+                        QFile, QIODevice, \
+                        QTextStream, QRegExp, \
+                        QPoint, QRect
+from PyQt4.QtGui import QPlainTextEdit, QColor, \
+                        QFont,  \
+                        QTextCursor, QPen, \
+                        QTextCharFormat, QTextEdit, \
+                        QTextFormat, QApplication, \
+                        QTextDocument, QKeyEvent, \
+                        QMessageBox
+                        
 from plugins.plugins_api import init_plugin_system, filter_plugins_by_capability
 from recent_files import RecentFiles
 
@@ -16,7 +26,6 @@ class KhtTextEdit( QPlainTextEdit):
     def __init__(self, parent=None, filename=None):
         """Initialization, can accept a filepath as argument"""
         QPlainTextEdit.__init__(self, parent)
-#        self.connect(self,  SIGNAL('cursorPositionChanged()'),  self.highlightCurrentLine);
 
         self.hl_color =  QColor('lightblue').lighter(120)
         
@@ -68,7 +77,6 @@ class KhtTextEdit( QPlainTextEdit):
         
         #Keep threaded plugins references to avoid them to be garbage collected
         self.threaded_plugins = []
-
         self.enabled_plugins = parent.enabled_plugins
 
         #Current Line highlight and Bracket matcher
@@ -261,17 +269,9 @@ class KhtTextEdit( QPlainTextEdit):
         _selection.cursor.clearSelection()
         extraSelection = []
         extraSelection.append(_selection)
-#        self.setExtraSelections(extraSelection)
-
-#        cursor =  QTextCursor(self.document())
-#        charformat = cursor.charFormat()            
-#        charformat.setTextOutline( QPen(Qt.NoPen))            
-#        cursor.setCharFormat(charformat)
         
         #Highlight Braces
         if self.bracepos is not None:
-#            self.__highlight(self.bracepos, cancel=True)
-            print 'should be canceled'
             self.bracepos = None
         cursor = self.textCursor()        
         if cursor.position() == 0:
@@ -290,11 +290,8 @@ class KhtTextEdit( QPlainTextEdit):
             return
         if pos2 is not None:
             self.bracepos = (pos1, pos2)
-#            self.__highlight(self.bracepos, color=Qt.blue)
-            print 'Bracket match'
             _selection =  QTextEdit.ExtraSelection()
             _selection.format.setForeground(Qt.white)
-#            _selection.format.setFontWeight(99)
             _selection.format.setBackground(Qt.blue)
             _selection.cursor = cursor
             extraSelection.append(_selection)
@@ -308,12 +305,9 @@ class KhtTextEdit( QPlainTextEdit):
             extraSelection.append(_selection)
         else:
             self.bracepos = (pos1,)
-#            self.__highlight(self.bracepos, color=Qt.red)
             _selection =  QTextEdit.ExtraSelection()
-#            _selection.format.setFontWeight(75)
             _selection.format.setBackground(Qt.red)
             _selection.format.setForeground(Qt.white)
-#            _selection.format.setProperty( QTextFormat.FullWidthSelection, True)        
             _selection.cursor = cursor
             extraSelection.append(_selection)
             

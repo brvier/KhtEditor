@@ -3,8 +3,19 @@
 """KhtEditor a source code editor by Khertan : Welcome Window"""
 
 import os
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt4.QtGui import QMainWindow, \
+    QSizePolicy, \
+    QVBoxLayout, \
+    QKeySequence, \
+    QPushButton, \
+    QHBoxLayout, \
+    QWidget, \
+    QMenu, \
+    QLabel, \
+    QPixmap, \
+    QScrollArea
+
+from PyQt4.QtCore import Qt
 try:
     from PyQt4 import QtMaemo5
     isMAEMO = True
@@ -38,6 +49,8 @@ class Curry:
         if maxArgs != -1:
             funcArgs = funcArgs[:maxArgs]
             delkwtmp["__max_args__"]
+        print funcArgs
+        
         return self.func(*funcArgs, **kwtmp)
 
 class WelcomeWindow( QMainWindow):
@@ -134,9 +147,9 @@ class WelcomeWindow( QMainWindow):
 
         self._layout_button =  QHBoxLayout()        
         self.new_button =  QPushButton("New")
-        self.connect(self.new_button,  SIGNAL('clicked()'),self.parent.newFile)
+        self.new_button.clicked.connect(self.parent.newFile)
         self.open_button =  QPushButton("Open")
-        self.connect(self.open_button,  SIGNAL('clicked()'),self.parent.openFile)
+        self.open_button.clicked.connect(self.parent.openFile)
         self._layout_button.addWidget(self.new_button)
         self._layout_button.addWidget(self.open_button)
         self._layout.addLayout(self._layout_button)
@@ -155,10 +168,10 @@ class WelcomeWindow( QMainWindow):
                 recentFileButton = QtMaemo5.QMaemo5ValueButton()
             else:
                 recentFileButton =  QPushButton()
-            self.connect(recentFileButton,  SIGNAL('clicked()'), Curry(self.openRecentFile,recentFileButton))
+            recentFileButton.clicked.connect(Curry(self.openRecentFile,recentFileButton))
             self._layout.addWidget(recentFileButton)
 
-    def openRecentFile(self,button):
+    def openRecentFile(self,button, Useless=None):
         """
             Call back which open a recent file
         """

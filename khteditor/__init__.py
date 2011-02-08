@@ -7,14 +7,20 @@ import sip
 sip.setapi('QString', 2)
 sip.setapi('QVariant', 2)
 
-__version__ = '0.0.16'
+__version__ = '0.0.17'
 
 import os
 import sys
 import welcome_window
-from PyQt4.QtCore import * 
-from PyQt4.QtGui import *
-from PyQt4.QtCore import Qt
+from PyQt4.QtCore import Qt , QSettings, QUrl
+from PyQt4.QtGui import QMainWindow, QScrollArea, \
+                        QWidget, QSizePolicy, \
+                        QVBoxLayout, QLabel, \
+                        QIcon, QPushButton, \
+                        QHBoxLayout, \
+                        QDesktopServices, \
+                        QApplication, QMessageBox
+                        
 import editor_window
 from recent_files import RecentFiles
 

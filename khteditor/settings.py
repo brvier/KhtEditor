@@ -1,5 +1,17 @@
-from PyQt4.QtGui import *
-from PyQt4.QtCore import *
+from PyQt4.QtGui import QMainWindow, \
+    QSizePolicy, \
+    QSpinBox, \
+    QApplication, \
+    QCheckBox, \
+    QFontComboBox, \
+    QGridLayout, \
+    QWidget, \
+    QLabel, \
+    QScrollArea
+
+from PyQt4.QtCore import QSettings, \
+    Qt
+    
 from plugins.plugins_api import init_plugin_system, filter_plugins_by_capability, find_plugins
 import os
 import sys

@@ -211,7 +211,7 @@ class Highlighter( QSyntaxHighlighter):
 
         rules += [
                 # Framework PyQt
-                (r'\bPyQt4\b|\bQt?[A-Z][a-z]\w+\b',0,STYLES['framework']), 
+                (r'\bPyQt4\b|\bPySide\b|\bQt?[A-Z][a-z]\w+\b',0,STYLES['framework']), 
                 # 'def' followed by an identifier
                 (r'\bdef\b\s*(\w+)', 1, STYLES['defclass']),
                 # 'class' followed by an identifier
