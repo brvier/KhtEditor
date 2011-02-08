@@ -425,22 +425,26 @@ class Window( QMainWindow):
         self.fileSave()
 
         if self.editor.filename != None:
-          fileHandle = open('/tmp/khteditor.tmp', 'wb')
-          fileHandle.write('#!/bin/sh\n')
-          fileHandle.write('cd '+os.path.dirname(unicode(self.editor.filename).encode('utf-8'))+' \n')
-          language = self.detectLanguage(self.editor.filename)
-          #Crappy way to handle that
-          if language == 'python':
-            fileHandle.write("python \'"+unicode(self.editor.filename).encode('utf-8') + "\'\n")
-          elif language == 'qml':
-            fileHandle.write("/opt/qt4-maemo5/bin/qmlviewer \'"+unicode(self.editor.filename).encode('utf-8') + "\' -fullscreen\n")             
-          elif language != None:
-            fileHandle.write(language+" \'"+unicode(self.editor.filename).encode('utf-8') + "\' \n")
-          else:
-            fileHandle.write("\'"+unicode(self.editor.filename).encode('utf-8') + "\' \n")
-          fileHandle.write('read -p "Press ENTER to continue ..." foo')
-          fileHandle.write('\nexit')
-          fileHandle.close()
+          try:
+              fileHandle = open('/tmp/khteditor.tmp', 'wb')
+              fileHandle.write('#!/bin/sh\n')
+              fileHandle.write('cd '+os.path.dirname(unicode(self.editor.filename).encode('utf-8'))+' \n')
+              language = self.detectLanguage(self.editor.filename)
+              #Crappy way to handle that
+              if language == 'python':
+                fileHandle.write("python \'"+unicode(self.editor.filename).encode('utf-8') + "\'\n")
+              elif language == 'qml':
+                fileHandle.write("/opt/qt4-maemo5/bin/qmlviewer \'"+unicode(self.editor.filename).encode('utf-8') + "\' -fullscreen\n")             
+              elif language != None:
+                fileHandle.write(language+" \'"+unicode(self.editor.filename).encode('utf-8') + "\' \n")
+              else:
+                fileHandle.write("\'"+unicode(self.editor.filename).encode('utf-8') + "\' \n")
+              fileHandle.write('read -p "Press ENTER to continue ..." foo')
+              fileHandle.write('\nexit')
+              fileHandle.close()
+          except (IOError, OSError), e:
+             QMessageBox.warning(self, "KhtEditor -- Execute Error",
+                    "Failed to write launch script %s: %s" % (filename, e))
           commands.getoutput("chmod 777 /tmp/khteditor.tmp")
           Popen('/usr/bin/osso-xterm /tmp/khteditor.tmp',shell=True,stdout=None)
 

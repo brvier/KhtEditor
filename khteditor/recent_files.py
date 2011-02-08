@@ -22,6 +22,10 @@ class RecentFiles():
         #recentFiles.prepend(path)
         if recentFiles == None:
             recentFiles = []
+
+        #Bug 60
+        if type(recentFiles) in (str,unicode):
+            recentFiles = [recentFiles,]
             
         if path in recentFiles:
             recentFiles.pop(recentFiles.index(path))
