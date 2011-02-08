@@ -316,7 +316,7 @@ class Window( QMainWindow):
             if isMAEMO:
                 self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
             QApplication.processEvents()
-            self.highlighter = pygments_highlighter.Highlighter(self.editor.document(),str(filename))
+            self.highlighter = pygments_highlighter.Highlighter(self.editor.document(),unicode(filename))
             QApplication.processEvents()
             if isMAEMO:
                 self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)            
@@ -327,9 +327,7 @@ class Window( QMainWindow):
             if filename.endswith(extension.lower()):
                  return lang
         return None
-            
-        return language
-        
+                    
     def setupToolBar(self):
         self.toolbar = self.addToolBar('Toolbar')
 
