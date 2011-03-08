@@ -48,7 +48,7 @@ class Curry:
         maxArgs = kwtmp.get("__max_args__", -1)
         if maxArgs != -1:
             funcArgs = funcArgs[:maxArgs]
-            delkwtmp["__max_args__"]
+            del kwtmp["__max_args__"]
         print funcArgs
         
         return self.func(*funcArgs, **kwtmp)
@@ -124,7 +124,7 @@ class WelcomeWindow( QMainWindow):
    
         #Kinetic scroller is available on Maemo and should be on meego
         try:
-            scroller = aboutScrollArea.property("kineticScroller") #.toPyObject()
+            scroller = self.scrollArea.property("kineticScroller") #.toPyObject()
             scroller.setEnabled(True)
         except:
             pass

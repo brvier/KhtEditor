@@ -16,7 +16,7 @@ class AutoIndent(Plugin):
             block = widget.document().findBlockByNumber(cursor.blockNumber()-1)
             whitespace = re.match(r"(\s*)", unicode(block.text())).group(1)
             print type(block.text()),dir(block.text())
-            if block.text()[-1] == ':':
+            if block.text()[-1:] == ':':
                 whitespace = whitespace + '    '
             cursor = widget.textCursor()
             format = cursor.blockFormat()

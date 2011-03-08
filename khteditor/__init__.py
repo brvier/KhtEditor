@@ -7,7 +7,7 @@ import sip
 sip.setapi('QString', 2)
 sip.setapi('QVariant', 2)
 
-__version__ = '0.0.17'
+__version__ = '0.0.18'
 
 import os
 import sys
@@ -121,7 +121,7 @@ class KhtEditorAbout( QMainWindow):
         awidget.setLayout(aboutLayout)
         aboutScrollArea.setWidget(awidget)
         self.setCentralWidget(aboutScrollArea)
-        self.show()        
+        self.show()
         
     def open_website(self):
          QDesktopServices.openUrl( QUrl('http://khertan.net/khteditor'))

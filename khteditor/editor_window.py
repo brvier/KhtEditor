@@ -414,7 +414,7 @@ class Window( QMainWindow):
     def do_find(self):
         self.findAndReplace.find.connect(self.editor.find)
         self.findAndReplace.replace.connect(self.editor.replace)
-        self.findAndReplace.replaceAll(self.editor.replace_all)
+        self.findAndReplace.replaceAll.connect(self.editor.replace_all)
         self.findAndReplace.show()
 
     def do_execute(self):
@@ -432,7 +432,11 @@ class Window( QMainWindow):
               if language == 'python':
                 fileHandle.write("python \'"+unicode(self.editor.filename).encode('utf-8') + "\'\n")
               elif language == 'qml':
-                fileHandle.write("/opt/qt4-maemo5/bin/qmlviewer \'"+unicode(self.editor.filename).encode('utf-8') + "\' -fullscreen\n")             
+                fileHandle.write("qmlviewer \'"+unicode(self.editor.filename).encode('utf-8') + "\' -fullscreen\n")      
+              elif language in ('c', 'cpp'):
+                fileHandle.write("make %s\nchmod +x %s\n./%s" % (unicode(self.editor.filename).encode('utf-8'),\
+                                                                 unicode(self.editor.filename).encode('utf-8'),\
+                                                                 unicode(self.editor.filename).encode('utf-8')))       
               elif language != None:
                 fileHandle.write(language+" \'"+unicode(self.editor.filename).encode('utf-8') + "\' \n")
               else:
@@ -442,7 +446,7 @@ class Window( QMainWindow):
               fileHandle.close()
           except (IOError, OSError), e:
              QMessageBox.warning(self, "KhtEditor -- Execute Error",
-                    "Failed to write launch script %s: %s" % (filename, e))
+                    "Failed to write launch script %s: %s" % (self.editor.filename, e))
           commands.getoutput("chmod 777 /tmp/khteditor.tmp")
           Popen('/usr/bin/osso-xterm /tmp/khteditor.tmp',shell=True,stdout=None)
 

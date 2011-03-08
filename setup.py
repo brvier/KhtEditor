@@ -23,12 +23,15 @@ for fpath in glob.glob('*/*.py[c|o]'):
 setup(name='khteditor',
       version=khteditor.__version__,
       license='GNU GPLv3',
-      description='A source code editor designed for Maemo and Meego devices, support Scripts and Plugins.',
+      description='A source code editor.',
+      long_description="A source code editor designed for Maemo and Meego devices, support Scripts and Plugins..",
       author='Benoît HERVIER',
       author_email='khertan@khertan.net',
+      maintainer=u'Benoît HERVIER',
+      maintainer_email='khertan@khertan.net',
       url='http://www.khertan.net/khteditor',
       requires=['pygments','pyqt4'],
-      packages= ['khteditor', 'khteditor/plugins', 'khteditor/syntax'],
+      packages= ['khteditor', ],
       package_data = {'khteditor': ['icons/*.png'],
                       'khteditor': ['syntax/*.xml']},
       data_files=[('/usr/share/dbus-1/services', ['khteditor.service']),
@@ -39,7 +42,7 @@ setup(name='khteditor',
       scripts=['khteditor_launch.py'],
       cmdclass={'sdist_maemo': _sdist_maemo},      
       options = { 'sdist_maemo':{
-      'buildversion':'1',
+      'buildversion':'5',
       'depends':'python2.5-qt4-gui,python2.5-qt4-core, python2.5-qt4-maemo5, python2.5-qt4-common, python-pygments',
       'suggests':'pylint',
       'XSBC_Bugtracker':'http://khertan.net/khteditor:bugs',
@@ -58,5 +61,5 @@ rm -rf /usr/lib/python2.5/site-packages/khteditor/*.pyc""",
       'bdist_rpm':{
       'requires':'python2.5-qt4-gui,python2.5-qt4-core, python2.5-qt4-maemo5, python2.5-qt4-common, python-pygments',
       'icon':'khteditor.png',
-      'group':'Network',}}
+      'group':'Development',}}
      )
