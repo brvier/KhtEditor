@@ -14,7 +14,8 @@ from PyQt4.QtGui import QPlainTextEdit, QColor, \
                         QTextCharFormat, QTextEdit, \
                         QTextFormat, QApplication, \
                         QTextDocument, QKeyEvent, \
-                        QMessageBox
+                        QMessageBox, \
+                        QPalette
                         
 from plugins.plugins_api import init_plugin_system, filter_plugins_by_capability
 from recent_files import RecentFiles
@@ -27,6 +28,11 @@ class KhtTextEdit( QPlainTextEdit):
         """Initialization, can accept a filepath as argument"""
         QPlainTextEdit.__init__(self, parent)
 
+        palette = self.palette();
+        palette.setColor(QPalette.Base, Qt.white);
+        palette.setColor(QPalette.Text, Qt.black);
+        self.setPalette(palette);
+      
         self.hl_color =  QColor('lightblue').lighter(120)
         
         # Brace matching

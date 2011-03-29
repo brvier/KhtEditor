@@ -42,14 +42,14 @@ setup(name='khteditor',
       scripts=['khteditor_launch.py'],
       cmdclass={'sdist_maemo': _sdist_maemo},      
       options = { 'sdist_maemo':{
-      'buildversion':'5',
+      'buildversion':'1',
       'depends':'python2.5-qt4-gui,python2.5-qt4-core, python2.5-qt4-maemo5, python2.5-qt4-common, python-pygments',
       'suggests':'pylint',
       'XSBC_Bugtracker':'http://khertan.net/khteditor:bugs',
       'XB_Maemo_Display_Name':'KhtEditor',
       'XB_Maemo_Icon_26':'khteditor.png',
       'section':'user/development',
-      'changelog':'* Fix bug #60 (QSetting return unicode instead of a list)\n* Fix bug #58 (Error is now managed)\n* Optimize import by avoiding * import\n* add QClassList plugin which try to generate import of QtClass\n* switch to new signal style\n* Fix autoindent plugin',
+      'changelog':'* Fix the editor background to white and default text to dark due to some Maemo Theme fixing strange textedit color',
       'architecture':'any',
       'postinst':"""#!/bin/sh
 chmod +x /usr/bin/khteditor_launch.py
