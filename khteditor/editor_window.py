@@ -31,7 +31,7 @@ from PyQt4.QtCore import QFileInfo, \
     QTimer, \
     QSettings, \
     pyqtSlot,pyqtSignal
-    
+
 from PyQt4.QtCore import Qt
 
 from plugins.plugins_api import init_plugin_system, filter_plugins_by_capability, find_plugins, Plugin
@@ -87,7 +87,7 @@ class FindAndReplaceDlg( QDialog):
     find = pyqtSignal(unicode,bool,bool,bool,bool)
     replace = pyqtSignal(unicode,bool,bool,bool,bool)
     replaceAll = pyqtSignal(unicode,bool,bool,bool,bool)
-    
+
     def __init__(self, parent=None):
         super(FindAndReplaceDlg, self).__init__(parent)
 
@@ -182,7 +182,7 @@ class FindAndReplaceDlg( QDialog):
         self.replaceButton.setEnabled(enable)
         self.replaceAllButton.setEnabled(enable)
 
-class Window( QMainWindow):    
+class Window( QMainWindow):
     def __init__(self, parent):
         global isMAEMO
         QMainWindow.__init__(self,None)
@@ -190,19 +190,19 @@ class Window( QMainWindow):
 
         #Initialization of the plugin system
         init_plugin_system()
-            
+
         #Got the enabled plugin
         self.settings =  QSettings()
         self.enabled_plugins = []
         for plugin in find_plugins():
             if bool(self.settings.value(plugin.__name__)):
-                self.enabled_plugins.append(plugin)      
+                self.enabled_plugins.append(plugin)
 
         self.findAndReplace = FindAndReplaceDlg()
         self.setupFileMenu()
         self.setupHelpMenu()
         self.setupEditor()
-        
+
         try:
             self.setAttribute( Qt.WA_Maemo5AutoOrientation, True)
             self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
@@ -213,21 +213,21 @@ class Window( QMainWindow):
         #Resize window if not maemo
         if not isMAEMO:
             self.resize(800, 600)
-            
+
         self.area =  QScrollArea(self)
         try:
             scroller = self.area.property("kineticScroller") #.toPyObject()
             scroller.setEnabled(True)
         except:
             scroller = None
-            
+
         #speed hack
         self.editor.scroller = scroller
         self.editor.area = self.area
         self.area.setWidget(self.editor)
         self.area.setWidgetResizable(True)
 #        self.area.takeWidget()
-        
+
 #        self.setCentralWidget(self.editor)
         self.setCentralWidget(self.area)
 
@@ -243,9 +243,9 @@ class Window( QMainWindow):
     def saveAsFile(self):
         filename =  QFileDialog.getSaveFileName(self,
                         "KhtEditor -- Save File As",
-                        self.editor.filename, u'Python file(*.py);;'  
-                                            + u'Text file(*.txt);;' 
-                                            + u'C File(*.c);;' 
+                        self.editor.filename, u'Python file(*.py);;'
+                                            + u'Text file(*.txt);;'
+                                            + u'C File(*.c);;'
                                             + u'C++ File(*.cpp)')
         if not (filename == ''):
             self.editor.filename = filename
@@ -270,6 +270,7 @@ class Window( QMainWindow):
             self.setWindowTitle( QFileInfo(self.editor.filename).fileName())
 #             QTimer.singleShot(100, self.loadHighlighter)
             self.loadHighlighter(filename)
+
         except (IOError, OSError), e:
              QMessageBox.warning(self, "KhtEditor -- Load Error",
                     "Failed to load %s: %s" % (filename, e))
@@ -281,11 +282,7 @@ class Window( QMainWindow):
 #        font.setPointSize(12)
 
         self.editor = editor.KhtTextEdit(self)
-#        self.editor.setFont(font)
-        #self.editor_frame = editor_frame.Frame(self.editor)
         self.setupToolBar()
-#        self.language = self.detectLanguage()
-#        self.loadHilighter()
         self.editor.document().modificationChanged.connect(self.do_documentChanged)
 
     def loadHighlighter(self,filename=None):
@@ -310,7 +307,7 @@ class Window( QMainWindow):
             self.highlighter = Highlighter(self.editor.document(),language)
             QApplication.processEvents()
             if isMAEMO:
-                self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)            
+                self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)
         else:
             from syntax import pygments_highlighter
             if isMAEMO:
@@ -319,15 +316,15 @@ class Window( QMainWindow):
             self.highlighter = pygments_highlighter.Highlighter(self.editor.document(),unicode(filename))
             QApplication.processEvents()
             if isMAEMO:
-                self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)            
+                self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)
 
-    
+
     def detectLanguage(self,filename):
         for extension,lang in LANGUAGES:
             if filename.endswith(extension.lower()):
                  return lang
         return None
-                    
+
     def setupToolBar(self):
         self.toolbar = self.addToolBar('Toolbar')
 
@@ -432,11 +429,11 @@ class Window( QMainWindow):
               if language == 'python':
                 fileHandle.write("python \'"+unicode(self.editor.filename).encode('utf-8') + "\'\n")
               elif language == 'qml':
-                fileHandle.write("qmlviewer \'"+unicode(self.editor.filename).encode('utf-8') + "\' -fullscreen\n")      
+                fileHandle.write("qmlviewer \'"+unicode(self.editor.filename).encode('utf-8') + "\' -fullscreen\n")
               elif language in ('c', 'cpp'):
                 fileHandle.write("make %s\nchmod +x %s\n./%s" % (unicode(self.editor.filename).encode('utf-8'),\
                                                                  unicode(self.editor.filename).encode('utf-8'),\
-                                                                 unicode(self.editor.filename).encode('utf-8')))       
+                                                                 unicode(self.editor.filename).encode('utf-8')))
               elif language != None:
                 fileHandle.write(language+" \'"+unicode(self.editor.filename).encode('utf-8') + "\' \n")
               else:
