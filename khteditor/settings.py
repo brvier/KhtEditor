@@ -1,3 +1,7 @@
+import sip
+sip.setapi('QString', 2)
+sip.setapi('QVariant', 2)
+
 from PyQt4.QtGui import QMainWindow, \
     QSizePolicy, \
     QSpinBox, \
@@ -49,6 +53,8 @@ class KhtSettings(QMainWindow):
             self.fontSize.setValue(int(self.settings.value("FontSize")))    
         if self.settings.value('WrapLine'):        
             self.wrapLine.setCheckState(int(self.settings.value('WrapLine')))
+        if self.settings.value('qt18720'):        
+            self.qt18720.setCheckState(int(self.settings.value('qt18720')))
 
     def savePrefs(self):
         for checkBox in self.plugins_widgets :
@@ -56,6 +62,7 @@ class KhtSettings(QMainWindow):
         self.settings.setValue('FontName',self.fontName.currentFont())
         self.settings.setValue('FontSize',self.fontSize.value())
         self.settings.setValue('WrapLine',self.wrapLine.checkState())
+        self.settings.setValue('qt18720',self.qt18720.checkState())
             
     def closeEvent(self,widget,*args):
         self.savePrefs()
@@ -104,6 +111,9 @@ class KhtSettings(QMainWindow):
         gridIndex += 1
         self.wrapLine = QCheckBox('Wrap Lines')
         self._main_layout.addWidget(self.wrapLine,gridIndex,0)
+        gridIndex += 1
+        self.qt18720 = QCheckBox('Work Arround QTBUG-18720')
+        self._main_layout.addWidget(self.qt18720,gridIndex,0)
         gridIndex += 1
 
                             

@@ -202,7 +202,7 @@ class Window( QMainWindow):
         self.setupFileMenu()
         self.setupHelpMenu()
         self.setupEditor()
-
+        
         try:
             self.setAttribute( Qt.WA_Maemo5AutoOrientation, True)
             self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
@@ -275,13 +275,13 @@ class Window( QMainWindow):
                     "Failed to load %s: %s" % (filename, e))
 
     def setupEditor(self):
-        font =  QFont()
-        font.setFamily("Courier")
-        font.setFixedPitch(True)
-        font.setPointSize(12)
+#        font =  QFont()
+#        font.setFamily("Courier")
+#        font.setFixedPitch(True)
+#        font.setPointSize(12)
 
         self.editor = editor.KhtTextEdit(self)
-        self.editor.setFont(font)
+#        self.editor.setFont(font)
         #self.editor_frame = editor_frame.Frame(self.editor)
         self.setupToolBar()
 #        self.language = self.detectLanguage()

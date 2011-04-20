@@ -4,12 +4,9 @@ from plugins_api import Plugin
 import os
 import re
 
-
-
 class EndWhiteSpaceRemover(Plugin):
-    #Unactivate on save. Too slow for n900 use
-    capabilities = ['afterKeyPressEvent',]#'beforeFileSave']
-    __version__ = '0.1'
+    capabilities = ['afterKeyPressEvent', 'beforeFileSave']
+    __version__ = '0.2'
 
     def do_afterKeyPressEvent(self, widget,event):
         if (event.key() == Qt.Key_Return) or (event.key() == Qt.Key_Enter):
@@ -18,37 +15,34 @@ class EndWhiteSpaceRemover(Plugin):
 
             #Do not strip whitespace if there is a selection
             if cursor.hasSelection():
-                return                
-                
+                return
+
             #keep position
             position = cursor.position()
-            
+
             cursor.beginEditBlock()
             cursor.movePosition(QTextCursor.Up,QTextCursor.MoveAnchor)
             cursor.movePosition(QTextCursor.EndOfLine,QTextCursor.MoveAnchor)
             cursor.movePosition(QTextCursor.WordLeft,QTextCursor.MoveAnchor)
             cursor.movePosition(QTextCursor.EndOfWord,QTextCursor.MoveAnchor)
-            cursor.movePosition(QTextCursor.EndOfLine,QTextCursor.KeepAnchor)            
+            cursor.movePosition(QTextCursor.EndOfLine,QTextCursor.KeepAnchor)
             cursor.removeSelectedText()
 
             #Restore position
-            cursor.setPosition(position,QTextCursor.MoveAnchor)            
+            cursor.setPosition(position,QTextCursor.MoveAnchor)
             cursor.endEditBlock()
-                               
+
     def do_beforeFileSave(self, widget):
         # delete whitespace at end of the previous line
         cursor = widget.textCursor()
-        line_number = widget.document().findBlock( cursor.position()).blockNumber()
-        cursor.beginEditBlock()
-        cursor.select(QTextCursor.Document)
-        text = cursor.selectedText()
+        pos = cursor.position()
         new_text = u''
-        for line in unicode(text).splitlines():
-            new_text += '%s%s' % (unicode.rstrip(line,' \t'),os.linesep)
+        linesep = os.linesep
+        for line in widget.toPlainText().splitlines():
+            new_text += '%s%s' % (unicode.rstrip(line,' \t'),linesep)
         widget.document().setPlainText(new_text)
         cursor = widget.textCursor()
-        cursor.endEditBlock()
-        cursor.setPosition(widget.document().findBlockByLineNumber(line_number).position())
+        cursor.setPosition(pos)
         widget.setTextCursor(cursor)
         widget.document().setModified(False)
         widget.document().emit(SIGNAL('modificationChanged(bool)'),False)

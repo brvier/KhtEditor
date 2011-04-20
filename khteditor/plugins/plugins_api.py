@@ -3,7 +3,10 @@ import os
 import glob
 #from PyQt4.QtCore import QSettings
 
-PATHS = [os.path.join(os.path.dirname(__file__) ), os.path.join(os.path.dirname(sys.argv[0]),'plugins'),os.path.join(os.path.expanduser("~"),'.khteditor','plugins'),os.path.join(os.path.abspath(sys.path[0]),'plugins')]
+PATHS = [os.path.join(os.path.dirname(os.path.abspath(__file__)) ),
+         os.path.join(os.path.dirname(sys.argv[0]),'plugins'),
+         os.path.join(os.path.expanduser("~"),'.khteditor','plugins'),
+         os.path.join(os.path.abspath(sys.path[0]),'plugins')]
 
 class Plugin(object):
     capabilities = []
@@ -21,6 +24,14 @@ class Plugin(object):
 
     def do_beforeKeyPressEvent(self,widget,event):
         """Called before a key pressed event"""
+        raise NotImplementedError    
+
+    def do_afterFileSave(self,widget,event):
+        """Called after file save"""
+        raise NotImplementedError
+         
+    def do_beforeFileSave(self,widget,event):
+        """Called after file save"""
         raise NotImplementedError    
 
 
@@ -44,7 +55,10 @@ def load_plugins(plugins):
         try:
             print __import__('khteditor.plugins.'+plugin, None, None, [''])
         except:
-            print __import__('plugins.'+plugin, None, None, [''])
+            try:
+                print __import__('plugins.'+plugin, None, None, [''])
+            except:
+                print __import__(plugin, None, None, [''])
 
 def discover_plugin_in_paths():
     plugins = []
@@ -78,3 +92,6 @@ def init_plugin_system():
 
 def find_plugins():
     return Plugin.__subclasses__()
+
+if __name__ == '__main__':
+    discover_plugin_in_paths()

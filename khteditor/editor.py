@@ -32,8 +32,14 @@ class KhtTextEdit( QPlainTextEdit):
         palette.setColor(QPalette.Base, Qt.white);
         palette.setColor(QPalette.Text, Qt.black);
         self.setPalette(palette);
-      
+        self.setWindowOpacity(0.9)
         self.hl_color =  QColor('lightblue').lighter(120)
+        self.qt18720 = False
+
+        if (bool(parent.settings.value("qt18720"))):
+            self.qt18720 = True                                 
+        else:
+            self.qt18720 = False
         
         # Brace matching
         self.bracepos = None
@@ -61,21 +67,29 @@ class KhtTextEdit( QPlainTextEdit):
         else:
             self.setLineWrapMode( QPlainTextEdit.WidgetWidth)
 
+        font =  QFont()
+        try:
+            if parent.settings.contains('FontName'):       
+                font.setFamily(parent.settings.value('FontName'))
+            else:
+                font.setFamily("Courier")
+        except:
+            font.setFamily("Courier")
+            
+        font.setFixedPitch(True)
+        font.setPointSize(12)
+
         #Get Font Size
         try:
-            fontsize = int(parent.settings.value("FontSize"))
+            if parent.settings.contains('FontSize'):
+                font.setPointSize(int(parent.settings.value('FontSize')))
+            else:
+                font.setPointSize(11)
         except:
-            fontsize = 11
+            font.setPointSize(11)
             
-        if fontsize==0:
-            fontsize=11
-        #Get Font
-        try:
-            fontname = parent.settings.value("FontName").toString()
-        except:
-            fontname = 'Monospace'
         #Set Font
-        self.document().setDefaultFont( QFont(fontname,fontsize))
+        self.document().setDefaultFont( font)
         
 
         #Remove auto capitalization
@@ -126,6 +140,7 @@ class KhtTextEdit( QPlainTextEdit):
 
     def curPositionChanged(self):
         #Hilight current line
+        #Workarround QTBUG-18720
         self.highlightCurrentLine()
         
         #Make sure cursor is visible
@@ -269,10 +284,10 @@ class KhtTextEdit( QPlainTextEdit):
     def highlightCurrentLine(self):            
         #Hilgight background
         _selection =  QTextEdit.ExtraSelection()
-        _selection.format.setBackground(self.hl_color)
-        _selection.format.setProperty( QTextFormat.FullWidthSelection, True)        
         _selection.cursor = self.textCursor()
         _selection.cursor.clearSelection()
+        _selection.format.setBackground(self.hl_color)
+        _selection.format.setProperty( QTextFormat.FullWidthSelection, True)        
         extraSelection = []
         extraSelection.append(_selection)
         
@@ -280,44 +295,43 @@ class KhtTextEdit( QPlainTextEdit):
         if self.bracepos is not None:
             self.bracepos = None
         cursor = self.textCursor()        
-        if cursor.position() == 0:
+        if not cursor.position() == 0:
+            cursor.movePosition( QTextCursor.PreviousCharacter,
+                                 QTextCursor.KeepAnchor)                           
+            text = unicode(cursor.selectedText())
+            pos1 = cursor.position()
+            if text in (')', ']', '}'):
+                pos2 = self.__find_brace_match(pos1, text, forward=False)
+            elif text in ('(', '[', '{'):
+                pos2 = self.__find_brace_match(pos1, text, forward=True)
+            else:
+                pos1 = None
+                pos2 = None
+            if pos2 is not None:
+                self.bracepos = (pos1, pos2)
+                _selection =  QTextEdit.ExtraSelection()
+                _selection.format.setForeground(Qt.white)
+                _selection.format.setBackground(Qt.blue)
+                _selection.cursor = cursor
+                extraSelection.append(_selection)
+                _selection =  QTextEdit.ExtraSelection()
+                _selection.format.setForeground(Qt.white)
+                _selection.format.setBackground(Qt.blue)
+                _selection.cursor = self.textCursor()
+                _selection.cursor.setPosition(pos2)
+                _selection.cursor.movePosition( QTextCursor.NextCharacter,
+                                 QTextCursor.KeepAnchor)
+                extraSelection.append(_selection)
+            elif pos1 is not None:
+                self.bracepos = (pos1,)
+                _selection =  QTextEdit.ExtraSelection()
+                _selection.format.setBackground(Qt.red)
+                _selection.format.setForeground(Qt.white)
+                _selection.cursor = cursor
+                extraSelection.append(_selection)
+                
+        if not self.qt18720:        
             self.setExtraSelections(extraSelection)
-            return
-        cursor.movePosition( QTextCursor.PreviousCharacter,
-                             QTextCursor.KeepAnchor)                           
-        text = unicode(cursor.selectedText())
-        pos1 = cursor.position()
-        if text in (')', ']', '}'):
-            pos2 = self.__find_brace_match(pos1, text, forward=False)
-        elif text in ('(', '[', '{'):
-            pos2 = self.__find_brace_match(pos1, text, forward=True)
-        else:
-            self.setExtraSelections(extraSelection)
-            return
-        if pos2 is not None:
-            self.bracepos = (pos1, pos2)
-            _selection =  QTextEdit.ExtraSelection()
-            _selection.format.setForeground(Qt.white)
-            _selection.format.setBackground(Qt.blue)
-            _selection.cursor = cursor
-            extraSelection.append(_selection)
-            _selection =  QTextEdit.ExtraSelection()
-            _selection.format.setForeground(Qt.white)
-            _selection.format.setBackground(Qt.blue)
-            _selection.cursor = self.textCursor()
-            _selection.cursor.setPosition(pos2)
-            _selection.cursor.movePosition( QTextCursor.NextCharacter,
-                             QTextCursor.KeepAnchor)
-            extraSelection.append(_selection)
-        else:
-            self.bracepos = (pos1,)
-            _selection =  QTextEdit.ExtraSelection()
-            _selection.format.setBackground(Qt.red)
-            _selection.format.setForeground(Qt.white)
-            _selection.cursor = cursor
-            extraSelection.append(_selection)
-            
-        self.setExtraSelections(extraSelection)
                     
     def load(self):
         """Load ?"""
