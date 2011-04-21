@@ -18,26 +18,37 @@ class Plugin(object):
             self.capabilities
         )
 
+    #beforeCursorPositionChanged capabilities
+    def do_beforeCursorPositionChanged(self,widget):
+        """Called before cursor position change"""
+        raise NotImplementedError
+
+    #afterKeyPressEvent capabilities
     def do_afterKeyPressEvent(self,widget,event):
         """Called after a key pressed event"""
         raise NotImplementedError
 
+    #beforeKeyPressEvent capabilities
     def do_beforeKeyPressEvent(self,widget,event):
         """Called before a key pressed event"""
         raise NotImplementedError
 
+    #afterFileSave capabilities
     def do_afterFileSave(self,widget,event):
         """Called after file save"""
         raise NotImplementedError
 
+    #afterFileOpen capabilities
     def do_afterFileOpen(self,widget,event):
         """Called after opening a file"""
         raise NotImplementedError
 
+    #beforeFileSave capabilities
     def do_beforeFileSave(self,widget,event):
         """Called after file save"""
         raise NotImplementedError
 
+    #toolbarHook capabilities
     def do_toolbarHook(self,widget,event):
         """Called while initializing the toolbar for adding
            qaction from plugins """

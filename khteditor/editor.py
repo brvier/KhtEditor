@@ -115,6 +115,7 @@ class KhtTextEdit( QPlainTextEdit):
         self.setMinimumHeight(max(s.height(), s.height() + (fr.height() - cr.height() - 1)))
         self.setMinimumWidth(max(s.width(),s.width() + (fr.width()-cr.width()) - 1))
 
+
     def ensureVisible(self,pos,xmargin,ymargin):
 
         visible = self.area.viewport().size()
@@ -139,12 +140,16 @@ class KhtTextEdit( QPlainTextEdit):
 
 
     def curPositionChanged(self):
+        #Plugin hook
+        for plugin in filter_plugins_by_capability('beforeCursorPositionChanged',self.enabled_plugins):
+            plg = plugin()
+            plg.do_beforeCursorPositionChanged(self)
+
         #Hilight current line
         #Workarround QTBUG-18720
         self.highlightCurrentLine()
 
         #Make sure cursor is visible
-
         cursor = self.cursorRect()
         pos = cursor.center()
         self.area.ensureVisible(pos.x(),pos.y(), 2*cursor.width()+20, 2*cursor.height())
