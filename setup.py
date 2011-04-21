@@ -19,7 +19,13 @@ from distutils.core import setup
 import glob,os
 for fpath in glob.glob('*/*.py[c|o]'):
     os.remove(fpath)
-    
+
+for fpath in glob.glob('*/plugins/*.py[c|o]'):
+    os.remove(fpath)
+for fpath in glob.glob('*/syntax/*.py[c|o]'):
+    os.remove(fpath)
+
+
 setup(name='khteditor',
       version=khteditor.__version__,
       license='GNU GPLv3',
@@ -30,7 +36,7 @@ setup(name='khteditor',
       maintainer=u'Benoît HERVIER',
       maintainer_email='khertan@khertan.net',
       url='http://www.khertan.net/khteditor',
-      requires=['pygments','pyqt4'],
+      requires=['pygments','pyside','simplejson','pyflakes'],
       #packages = ['khteditor'],
       packages= ['khteditor', 'khteditor/plugins', 'khteditor/syntax'],
       package_data = {'khteditor': ['icons/*.png'],
@@ -41,10 +47,10 @@ setup(name='khteditor',
                   ('/usr/share/icons/hicolor/128x128/apps', ['khteditor.png']),
                   ],
       scripts=['khteditor_launch.py'],
-      cmdclass={'sdist_maemo': _sdist_maemo},      
+      cmdclass={'sdist_maemo': _sdist_maemo},
       options = { 'sdist_maemo':{
       'buildversion':'1',
-      'depends':'python2.5-qt4-gui,python2.5-qt4-core, python2.5-qt4-maemo5, python2.5-qt4-common, python-pygments (>=1.4.0-4)',
+      'depends':'python2.5-qt4-gui,python2.5-qt4-core, python2.5-qt4-maemo5, python2.5-qt4-common, python-pygments (>=1.4.0-4), pyflakes',
       'suggests':'pylint',
       'XSBC_Bugtracker':'http://khertan.net/khteditor:bugs',
       'XB_Maemo_Display_Name':'KhtEditor',
@@ -61,7 +67,7 @@ python -m compileall /usr/lib/python2.5/site-packages/khteditor
 rm -rf /usr/lib/python2.5/site-packages/khteditor/*.pyc""",
       'copyright':'gpl'},
       'bdist_rpm':{
-      'requires':'python2.5-qt4-gui,python2.5-qt4-core, python2.5-qt4-maemo5, python2.5-qt4-common, python-pygments',
+      'requires':'python2.5-qt4-gui,python2.5-qt4-core, python2.5-qt4-maemo5, python2.5-qt4-common, python-pygments, pyflakes',
       'icon':'khteditor.png',
       'group':'Development',}}
      )
