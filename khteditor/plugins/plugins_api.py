@@ -71,14 +71,12 @@ def get_plugins_by_capability(capability):
 
 def load_plugins(plugins):
     for plugin in plugins:
-        print 'Load plugin:',plugin
         try:
-            print __import__('khteditor.plugins.'+plugin, None, None, [''])
+            #Get the module path for loading plugin path
+            md_path = __name__.split('.')[:-1]
+            print __import__('%s.%s' % ('.'.join(md_path),plugin), None, None, [''])
         except:
-            try:
-                print __import__('plugins.'+plugin, None, None, [''])
-            except:
-                print __import__(plugin, None, None, [''])
+            pass #Probably defect plugin
 
 def discover_plugin_in_paths():
     plugins = []
