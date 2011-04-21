@@ -7,7 +7,7 @@ import sip
 sip.setapi('QString', 2)
 sip.setapi('QVariant', 2)
 
-__version__ = '1.0.3'
+__version__ = '1.0.4'
 
 import os
 import sys
@@ -20,7 +20,7 @@ from PyQt4.QtGui import QMainWindow, QScrollArea, \
                         QHBoxLayout, \
                         QDesktopServices, \
                         QApplication, QMessageBox
-                        
+
 import editor_window
 from recent_files import RecentFiles
 
@@ -39,7 +39,7 @@ def install_excepthook(app_name,app_version):
         output = open(filename, 'wb')
         pickle.dump(error, output)
         output.close()
-        
+
     def my_excepthook(exctype, value, tb):
         #traceback give us all the errors information message like the method, file line ... everything like
         #we have in the python interpreter
@@ -48,7 +48,7 @@ def install_excepthook(app_name,app_version):
         print 'Except hook called : %s' % (s)
         formatted_text = "%s Version %s\nTrace : %s\nComments : " % (APP_NAME, APP_VERSION, s)
         write_report(formatted_text)
-        
+
     sys.excepthook = my_excepthook
 
 class KhtEditorAbout( QMainWindow):
@@ -66,10 +66,10 @@ class KhtEditorAbout( QMainWindow):
         except:
             isMAEMO = False
         self.setWindowTitle("KhtEditor About")
-        
+
         #Resize window if not maemo
         if not isMAEMO:
-            self.resize(800, 600)        
+            self.resize(800, 600)
 
         aboutScrollArea =  QScrollArea(self)
         aboutScrollArea.setWidgetResizable(True)
@@ -95,10 +95,10 @@ class KhtEditorAbout( QMainWindow):
         aboutLabel =  QLabel('''<center><b>KhtEditor</b> %s
                                    <br><br>A source code editor designed for ease of use on small screen
                                    <br>Licenced under GPLv3
-                                   <br>By Beno&icirc;t HERVIER (Khertan) 
+                                   <br>By Beno&icirc;t HERVIER (Khertan)
                                    <br><br><br><b>Bugtracker : </b>http://khertan.net/khteditor:bugs
-                                   <br><b>Sources : </b>http://gitorious.org/khteditor                                   
-                                   <br><b>Www : </b>http://khertan.net/khteditor                                   
+                                   <br><b>Sources : </b>http://gitorious.org/khteditor
+                                   <br><b>Www : </b>http://khertan.net/khteditor
                                    <br><br><b>Thanks to :</b>
                                    <br>achipa on #pyqt
                                    <br>ddoodie on #pyqt
@@ -113,21 +113,21 @@ class KhtEditorAbout( QMainWindow):
         self.website_button =  QPushButton('Website')
         self.website_button.clicked.connect(self.open_website)
         awidget2 =  QWidget()
-        buttonLayout =  QHBoxLayout(awidget2)        
+        buttonLayout =  QHBoxLayout(awidget2)
         buttonLayout.addWidget(self.bugtracker_button)
         buttonLayout.addWidget(self.website_button)
         aboutLayout.addWidget(awidget2)
-        
+
         awidget.setLayout(aboutLayout)
         aboutScrollArea.setWidget(awidget)
         self.setCentralWidget(aboutScrollArea)
         self.show()
-        
+
     def open_website(self):
          QDesktopServices.openUrl( QUrl('http://khertan.net/khteditor'))
     def open_bugtracker(self):
          QDesktopServices.openUrl( QUrl('http://khertan.net/khteditor/bugs'))
-    
+
 
 class KhtEditor:
     def __init__(self):
@@ -164,8 +164,8 @@ class KhtEditor:
                           'project' : 'khteditor',
                           'version': __version__,
                           'description':error,
-                      }    
-        
+                      }
+
                     data = urllib.urlencode(values)
                     req = urllib2.Request(url, data)
                     response = urllib2.urlopen(req)
@@ -216,15 +216,15 @@ class KhtEditor:
                 RecentFiles().append(unicode(path))
 
         sys.exit(self.app.exec_())
-      
+
     def about(self,widget):
-        self.aboutWin = KhtEditorAbout(widget)       
-                
+        self.aboutWin = KhtEditorAbout(widget)
+
     def newFile(self):
         """
             Create a new editor window
         """
-        
+
         editor_win = editor_window.Window(self)
         editor_win.show()
         self.window_list.append(editor_win)
@@ -240,7 +240,7 @@ class KhtEditor:
             self.window_list.append(editor_win)
             RecentFiles().append(filename)
             self.last_know_path=os.path.dirname(unicode(filename))
-#        else:           
+#        else:
 #          editor_win.destroy()
 
     def openRecentFile(self, path):
@@ -258,13 +258,13 @@ class KhtEditor:
             editor_win.loadFile(path.text())
             RecentFiles().append(path.text())
             self.last_know_path=os.path.dirname(unicode(path.text()))
-        
-            
+
+
     def showPrefs(self,win):
         """
             Instantiate the prefs window and show it
         """
-        
+
         self.khtsettings = settings.KhtSettings(win)
         self.khtsettings.show()
 
