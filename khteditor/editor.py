@@ -142,8 +142,7 @@ class KhtTextEdit( QPlainTextEdit):
     def curPositionChanged(self):
         #Plugin hook
         for plugin in filter_plugins_by_capability('beforeCursorPositionChanged',self.enabled_plugins):
-            plg = plugin()
-            plg.do_beforeCursorPositionChanged(self)
+            plugin.do_beforeCursorPositionChanged(self)
 
         #Hilight current line
         #Workarround QTBUG-18720
@@ -159,12 +158,10 @@ class KhtTextEdit( QPlainTextEdit):
         """Intercept the key event to lets plugin do something if they want"""
         if event.type() ==  QEvent.KeyPress:
             for plugin in filter_plugins_by_capability('beforeKeyPressEvent',self.enabled_plugins):
-                plg = plugin()
-                plg.do_beforeKeyPressEvent(self,event)
+                plugin.do_beforeKeyPressEvent(self,event)
             QPlainTextEdit.keyPressEvent(self, event)
             for plugin in filter_plugins_by_capability('afterKeyPressEvent',self.enabled_plugins):
-                plg = plugin()
-                plg.do_afterKeyPressEvent(self,event)
+                plugin.do_afterKeyPressEvent(self,event)
 
     def closeEvent(self,event):
         """Catch the close event and ask to save if document is modified"""
@@ -199,9 +196,7 @@ class KhtTextEdit( QPlainTextEdit):
         try:
             #Before FileSave plugin hook
             for plugin in filter_plugins_by_capability('beforeFileSave',self.enabled_plugins):
-                plg = plugin()
-                self.threaded_plugins.append(plg)
-                plg.do_beforeFileSave(self)
+                plugin.do_beforeFileSave(self)
 
             filehandle =  QFile(self.filename)
             if not filehandle.open( QIODevice.WriteOnly):
@@ -217,9 +212,7 @@ class KhtTextEdit( QPlainTextEdit):
             if filehandle is not None:
                 filehandle.close()
                 for plugin in filter_plugins_by_capability('afterFileSave',self.enabled_plugins):
-                    plg = plugin()
-                    self.threaded_plugins.append(plg)
-                    plg.do_afterFileSave(self)
+                    plugin.do_afterFileSave(self)
 
             if exception is not None:
                 raise exception
@@ -353,9 +346,7 @@ class KhtTextEdit( QPlainTextEdit):
             self.document().setModified(False)
             self.setWindowTitle( QFileInfo(self.filename).fileName())
             for plugin in filter_plugins_by_capability('afterFileOpen',self.enabled_plugins):
-                plg = plugin()
-                self.threaded_plugins.append(plg)
-                plg.do_afterFileOpen(self)
+                plugin.do_afterFileOpen(self)
 
         except (IOError, OSError), error:
             exception = error

@@ -10,7 +10,7 @@ PATHS = [os.path.join(os.path.dirname(os.path.abspath(__file__)) ),
 
 class Plugin(object):
     capabilities = []
-    __version__ = '0.1'
+    __version__ = '0.5'
 
     def __repr__(self):
         return '<%s %r>' % (
@@ -49,9 +49,9 @@ class Plugin(object):
         raise NotImplementedError
 
     #toolbarHook capabilities
-    def do_toolbarHook(self,widget,event):
+    def do_toolbarHook(self,menu):
         """Called while initializing the toolbar for adding
-           qaction from plugins """
+           qaction from plugins to plugin menu"""
         raise NotImplementedError
 
 

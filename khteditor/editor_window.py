@@ -24,7 +24,8 @@ from PyQt4.QtGui import QMainWindow, \
     QAction, \
     QApplication, \
     QIcon, \
-    QMessageBox
+    QMessageBox, \
+    QToolButton
 
 from PyQt4.QtCore import QFileInfo, \
     Qt, \
@@ -198,7 +199,7 @@ class Window( QMainWindow):
             if self.settings.contains(plugin.__name__):
                 if self.settings.value(plugin.__name__) == '2':
                     print 'Enable plugin ', plugin
-                    self.enabled_plugins.append(plugin)
+                    self.enabled_plugins.append(plugin()) #FIXME
 
         self.findAndReplace = FindAndReplaceDlg()
         self.setupFileMenu()
@@ -380,11 +381,19 @@ class Window( QMainWindow):
         self.tb_findagain.triggered.connect(self.findAndReplace.findClicked)
         self.addAction(self.tb_findagain)
 
-        #Hook for plugins to add buttons :
+        #Plugins menu
+        self.tb_plugin_menu = QMenu(self)
+        self.tb_plugin_button = QToolButton(self)
+        self.tb_plugin_button.setText('Plugins')
+        self.tb_plugin_button.setMenu(self.tb_plugin_menu)
+        self.tb_plugin_button.setPopupMode(QToolButton.InstantPopup)
+        self.tb_plugin_button.setCheckable(False)
+        self.toolbar.addWidget(self.tb_plugin_button)
+
+        #Hook for plugins to add buttons in combo box:
         for plugin in filter_plugins_by_capability('toolbarHook',self.enabled_plugins):
             print 'Found 1 Plugin for toolbarHook'
-            plg = plugin()
-            plg.do_toolbarHook(self)
+            plugin.do_toolbarHook(self.tb_plugin_menu)
 
     def setupFileMenu(self):
         fileMenu =  QMenu(self.tr("&File"), self)

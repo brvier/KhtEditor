@@ -1,12 +1,17 @@
 from PyQt4.QtGui import QTextEdit,QTextCursor
-from PyQt4.QtCore import Qt,SIGNAL
+from PyQt4.QtCore import Qt, \
+                         QObject, \
+                         pyqtSlot
 from plugins_api import Plugin
 import os
-import re
+#import re
 
-class EndWhiteSpaceRemover(Plugin):
-    capabilities = ['afterKeyPressEvent', 'beforeFileSave']
-    __version__ = '0.2'
+class TrailingWhiteSpaceRemover(Plugin, QObject):
+    capabilities = ['afterKeyPressEvent', 'toolbarHook']
+    __version__ = '0.5'
+
+    def __init__(self):
+        QObject.__init__(self,parent=None)
 
     def do_afterKeyPressEvent(self, widget,event):
         if (event.key() == Qt.Key_Return) or (event.key() == Qt.Key_Enter):
@@ -32,8 +37,14 @@ class EndWhiteSpaceRemover(Plugin):
             cursor.setPosition(position,QTextCursor.MoveAnchor)
             cursor.endEditBlock()
 
-    def do_beforeFileSave(self, widget):
+    def do_toolbarHook(self, widget):
+        self.editor_win = widget.parent() #Get the editor_window object
+        widget.addAction('Remove trailing white space',self.removeWhiteSpace)
+
+    @pyqtSlot()
+    def removeWhiteSpace(self):
         # delete whitespace at end of the previous line
+        widget = self.editor_win.editor
         cursor = widget.textCursor()
         pos = cursor.position()
         new_text = u''
@@ -45,4 +56,4 @@ class EndWhiteSpaceRemover(Plugin):
         cursor.setPosition(pos)
         widget.setTextCursor(cursor)
         widget.document().setModified(False)
-        widget.document().emit(SIGNAL('modificationChanged(bool)'),False)
+        widget.document().modificationChanged.emit(False)

@@ -10,10 +10,11 @@
 from PyQt4.QtCore import Qt, \
                          QProcess, \
                          QRegExp, \
-                         SIGNAL, \
                          QObject, \
                          QAbstractListModel, \
-                         QModelIndex
+                         QModelIndex, \
+                         pyqtSlot, \
+                         SIGNAL
 
 from PyQt4.QtGui import QAction, \
                         QMainWindow, \
@@ -31,7 +32,6 @@ except:
     from khteditor.plugins.plugins_api import Plugin
         
 import os.path
-import sys
 
 class ResultModel(QAbstractListModel):
     """ list_model : The lint result model"""
@@ -105,29 +105,15 @@ class ResultWin(QMainWindow):
 class PyLint(Plugin, QObject):
     """ PyLint Plugin """
     capabilities = ['toolbarHook']
-    __version__ = '0.3'
+    __version__ = '0.5'
     thread = None
     
-    def do_toolbarHook(self, parent):
+    def do_toolbarHook(self, widget):
         """ Hook to install the pylint toolbar button"""
-        self.parent = parent
+        widget.addAction('PyLint', self.do_pylint)
         
-        #Keep a references to prevent gc 
-        #deleting our callback methode
-        try:
-            self.parent.plugins_ref.append(self)
-        except StandardError:            
-            self.parent.plugins_ref = [self, ]
-            
-#        icon = QIcon(os.path.join(sys.path[0], \
-#            'icons/tb_pylint.png'))
-        print 'test'
-        self.parent.tb_pylint = QAction('PyLint', self.parent)          
-        self.connect(self.parent.tb_pylint, \
-            SIGNAL('triggered()'), \
-            self.do_pylint)
-        self.parent.toolbar.addAction(self.parent.tb_pylint)
         
+    @pyqtSlot()
     def do_pylint(self):
         """ Launch the lint process and create the result window """
         print 'do_pylint'
