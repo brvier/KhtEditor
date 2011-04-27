@@ -48,15 +48,15 @@ setup(name='khteditor',
       scripts=['khteditor_launch.py'],
       cmdclass={'sdist_maemo': _sdist_maemo},
       options = { 'sdist_maemo':{
-      'buildversion':'2',
+      'buildversion':'1',
       'depends':'python2.5-qt4-gui,python2.5-qt4-core, python2.5-qt4-maemo5, python2.5-qt4-common, python-pygments (>=1.4.0-4), pyflakes',
       'suggests':'pylint',
       'XSBC_Bugtracker':'http://khertan.net/khteditor:bugs',
       'XB_Maemo_Display_Name':'KhtEditor',
       'XB_Maemo_Icon_26':'khteditor.png',
       'section':'user/development',
-      'changelog':'* Implement pyflake plugin, improve whitespacetrailing plugin',
-      'XB_Maemo_Upgrade_Description':'Implement pyflake plugin, improve whitespacetrailing plugin',
+      'changelog':'* Change in plugin api to keep instance of plugin instead of creating a new one at each call. Add QMenu for all plugin action in toolbar and modify each plugin with a toolbarhook to reflect that change.',
+      'XB_Maemo_Upgrade_Description':'Change in plugin api to keep instance of plugin instead of creating a new one at each call. Add QMenu for all plugin action in toolbar and modify each plugin with a toolbarhook to reflect that change.',
       'architecture':'any',
       'postinst':"""#!/bin/sh
 chmod +x /usr/bin/khteditor_launch.py
