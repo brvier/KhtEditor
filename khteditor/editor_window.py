@@ -1,8 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
-"""KhtEditor a source code editor by Khertan : Editor Window"""
+"""KhtEditor a source code editor by Benoît HERVIER (Khertan) : Editor Window"""
 
-import sys
 import re
 
 from PyQt4.QtGui import QMainWindow, \
@@ -195,8 +195,10 @@ class Window( QMainWindow):
         self.settings =  QSettings()
         self.enabled_plugins = []
         for plugin in find_plugins():
-            if bool(self.settings.value(plugin.__name__)):
-                self.enabled_plugins.append(plugin)
+            if self.settings.contains(plugin.__name__):
+                if self.settings.value(plugin.__name__) == '2':
+                    print 'Enable plugin ', plugin
+                    self.enabled_plugins.append(plugin)
 
         self.findAndReplace = FindAndReplaceDlg()
         self.setupFileMenu()

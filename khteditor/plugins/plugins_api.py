@@ -75,8 +75,8 @@ def load_plugins(plugins):
             #Get the module path for loading plugin path
             md_path = __name__.split('.')[:-1]
             print __import__('%s.%s' % ('.'.join(md_path),plugin), None, None, [''])
-        except:
-            pass #Probably defect plugin
+        except Exception, err:
+            print 'Failed to load : %s : %s' % (str(plugin), str(err)) #Probably defect plugin
 
 def discover_plugin_in_paths():
     plugins = []
