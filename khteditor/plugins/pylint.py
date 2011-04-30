@@ -84,7 +84,7 @@ class ResultWin(QMainWindow):
         self.parent = parent
         try:
             self.setAttribute(Qt.WA_Maemo5AutoOrientation, True)
-        except:
+        except AttributeError:
             pass
         self.list_view = QListView()
         self.list_model = ResultModel()

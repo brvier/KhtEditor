@@ -3,8 +3,6 @@
 
 """KhtEditor a source code editor by Benoît HERVIER (Khertan) : Editor Window"""
 
-import re
-
 from PyQt4.QtGui import QMainWindow, \
     QHBoxLayout, \
     QVBoxLayout, \
@@ -17,7 +15,6 @@ from PyQt4.QtGui import QMainWindow, \
     QFrame, \
     QLabel, \
     QPushButton, \
-    QFont, \
     QKeySequence, \
     QLayout, \
     QMenu, \
@@ -29,16 +26,13 @@ from PyQt4.QtGui import QMainWindow, \
 
 from PyQt4.QtCore import QFileInfo, \
     Qt, \
-    QTimer, \
     QSettings, \
     pyqtSlot,pyqtSignal
 
-from PyQt4.QtCore import Qt
-
-from plugins.plugins_api import init_plugin_system, filter_plugins_by_capability, find_plugins, Plugin
+from plugins.plugins_api import init_plugin_system, filter_plugins_by_capability, find_plugins
 import editor
 #import editor_frame
-from subprocess import *
+from subprocess import Popen
 import commands
 import os
 
@@ -185,7 +179,6 @@ class FindAndReplaceDlg( QDialog):
 
 class Window( QMainWindow):
     def __init__(self, parent):
-        global isMAEMO
         QMainWindow.__init__(self,None)
         self.parent = parent
 
@@ -204,36 +197,29 @@ class Window( QMainWindow):
         self.findAndReplace = FindAndReplaceDlg()
         self.setupFileMenu()
         self.setupHelpMenu()
-        self.setupEditor()
+
 
         try:
             self.setAttribute( Qt.WA_Maemo5AutoOrientation, True)
-            self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
-            isMAEMO = True
-        except:
-            isMAEMO = False
+            self.setAttribute(Qt.WA_Maemo5StackedWindow, True)       
 
-        #Resize window if not maemo
-        if not isMAEMO:
+            #Speed Hack for Maemo Kinetic scrolling     
+            self.area =  QScrollArea(self)
+            try:
+                scroller = self.area.property("kineticScroller") #.toPyObject()
+                scroller.setEnabled(True)
+            except:
+                scroller = None
+            self.setupEditor(self.area)              
+            self.area.setWidget(self.editor)
+            self.area.setWidgetResizable(True)
+            self.setCentralWidget(self.area)
+
+        except AttributeError:
+            #Resize window if not maemo
             self.resize(800, 600)
-
-        self.area =  QScrollArea(self)
-        try:
-            scroller = self.area.property("kineticScroller") #.toPyObject()
-            scroller.setEnabled(True)
-        except:
-            scroller = None
-
-        #speed hack
-        self.editor.scroller = scroller
-        self.editor.area = self.area
-        self.area.setWidget(self.editor)
-        self.area.setWidgetResizable(True)
-#        self.area.takeWidget()
-
-#        self.setCentralWidget(self.editor)
-        self.setCentralWidget(self.area)
-
+            self.setupEditor()              
+            self.setCentralWidget(self.editor)
 
     def fileSave(self):
         try:
@@ -278,48 +264,55 @@ class Window( QMainWindow):
              QMessageBox.warning(self, "KhtEditor -- Load Error",
                     "Failed to load %s: %s" % (filename, e))
 
-    def setupEditor(self):
-#        font =  QFont()
-#        font.setFamily("Courier")
-#        font.setFixedPitch(True)
-#        font.setPointSize(12)
-
+    def setupEditor(self,scroller=None):
         self.editor = editor.KhtTextEdit(self)
+        self.editor.scroller = scroller
         self.setupToolBar()
         self.editor.document().modificationChanged.connect(self.do_documentChanged)
 
     def loadHighlighter(self,filename=None):
-        global isMAEMO
         filename = self.editor.filename
         language = self.detectLanguage(filename)
         #Return None if language not yet implemented natively in KhtEditor
         if language == 'python':
             from syntax.python_highlighter import Highlighter
-            if isMAEMO:
+            try:
                 self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
+            except AttributeError:
+                pass
             QApplication.processEvents()
             self.highlighter = Highlighter(self.editor.document())
             QApplication.processEvents()
-            if isMAEMO:
+            try:
                 self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)
+            except AttributeError:
+                pass
         elif (language != None) and (language != 'None'):
             from syntax.generic_highlighter import Highlighter
-            if isMAEMO:
+            try:
                 self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
+            except AttributeError:
+                pass
             QApplication.processEvents()
             self.highlighter = Highlighter(self.editor.document(),language)
             QApplication.processEvents()
-            if isMAEMO:
+            try:
                 self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)
+            except AttributeError:
+                pass
         else:
             from syntax import pygments_highlighter
-            if isMAEMO:
+            try:
                 self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
+            except AttributeError:
+                pass
             QApplication.processEvents()
             self.highlighter = pygments_highlighter.Highlighter(self.editor.document(),unicode(filename))
             QApplication.processEvents()
-            if isMAEMO:
+            try:
                 self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)
+            except AttributeError:
+                pass
 
 
     def detectLanguage(self,filename):
@@ -412,19 +405,23 @@ class Window( QMainWindow):
 
         helpMenu.addAction(self.tr("&About"), self.do_about)
 
+    @pyqtSlot()
     def do_about(self):
         self.parent.about(self)
 
+    @pyqtSlot(long)
     def do_gotoLine(self, line):
         print 'goto line:'+str(line)
         self.editor.gotoLine(line)
 
+    @pyqtSlot()
     def do_find(self):
         self.findAndReplace.find.connect(self.editor.find)
         self.findAndReplace.replace.connect(self.editor.replace)
         self.findAndReplace.replaceAll.connect(self.editor.replace_all)
         self.findAndReplace.show()
 
+    @pyqtSlot()
     def do_execute(self):
         print "execute"
         #ask for save if unsaved
@@ -458,6 +455,7 @@ class Window( QMainWindow):
           commands.getoutput("chmod 777 /tmp/khteditor.tmp")
           Popen('/usr/bin/osso-xterm /tmp/khteditor.tmp',shell=True,stdout=None)
 
+    @pyqtSlot()
     def lineCountUpdate(self):
         cursor = self.editor.textCursor()
         self.lineCount.setText("L.%d C.%d" % (cursor.blockNumber()+1,
@@ -466,12 +464,14 @@ class Window( QMainWindow):
     def closeEvent(self,event):
         self.editor.closeEvent(event)
 
+    @pyqtSlot()
     def do_fullscreen(self):
         if self.isFullScreen():
             self.showMaximized()
         else:
             self.showFullScreen()
 
+    @pyqtSlot(bool)
     def do_documentChanged(self,changed):
         if changed == True:
             self.setWindowTitle('*'+ QFileInfo(self.editor.filename).fileName())

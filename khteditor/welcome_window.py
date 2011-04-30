@@ -21,9 +21,9 @@ try:
     isMAEMO = True
 except:
     isMAEMO = False
-from PyQt4.QtCore import Qt
+
 from recent_files import RecentFiles
-import sys
+
 
 class Curry:
     """keep a reference to all curried instances or they are immediately garbage collected"""
@@ -61,20 +61,20 @@ class WelcomeWindow( QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self,None)
         self.parent = parent
-
-        #Resize window if not maemo
-        if not isMAEMO:
-            self.resize(800, 600)
-            
-        self.setupMenu()
-        self.setupMain()
-
-        self.setCentralWidget(self.scrollArea)
-        
+                 
         #This is for the case we aren't on Maemo
-        if isMAEMO:
+        try:
             self.setAttribute( Qt.WA_Maemo5AutoOrientation, True)
             self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
+            self.isMaemo = True
+        except AttributeError:
+            self.isMaemo = False
+            self.resize(800,600)
+        self.setupMain(self.isMaemo)
+        self.setupMenu()        
+
+        self.setCentralWidget(self.scrollArea)
+
         self.setWindowTitle("KhtEditor")
 
     def do_about(self):
@@ -93,23 +93,23 @@ class WelcomeWindow( QMainWindow):
     def refreshMain(self):
         """
             Refresh the recent files list
-        """
-        
+        """        
         recentfiles = RecentFiles().get()
         print self._layout.count()
         for index in range(0,self._layout.count()-4):
             recentFileButton = self._layout.itemAt(index+4).widget()
-            try:
-                if isMAEMO:
+            try:                
+                if self.isMaemo:
                     recentFileButton.setText(os.path.basename(unicode(recentfiles[index]).encode('utf-8')).decode('utf-8'))
                     recentFileButton.setValueText(os.path.abspath(unicode(recentfiles[index]).encode('utf-8')).decode('utf-8'))         
                 else:
-                    recentFileButton.setText(os.path.abspath(unicode(recentfiles[index]).encode('utf-8')).decode('utf-8')) 
-            except StandardError, e:
+                    recentFileButton.setText(os.path.abspath(unicode(recentfiles[index]).encode('utf-8')).decode('utf-8'))
+
+            except StandardError:
                 recentFileButton.setDisabled(True)
         
 
-    def setupMain(self):
+    def setupMain(self, isMaemo=False):
         """
             GUI Initialization
         """
@@ -117,7 +117,7 @@ class WelcomeWindow( QMainWindow):
         self.scrollArea =  QScrollArea(self)
         self.scrollArea.setWidgetResizable(True)
         awidget =  QWidget(self.scrollArea)
-        if isMAEMO:
+        if isMaemo:
             awidget.setMinimumSize(480,1000)
         awidget.setSizePolicy(  QSizePolicy.Expanding,  QSizePolicy.Expanding)
         self.scrollArea.setSizePolicy(  QSizePolicy.Expanding,  QSizePolicy.Expanding)
@@ -132,9 +132,6 @@ class WelcomeWindow( QMainWindow):
         self._layout =  QVBoxLayout(awidget)
         
         self.icon =  QLabel()
-#        print os.path.abspath(os.path.dirname(sys.argv[0]))
-#        print sys.path
-#        print os.path.dirname(__file__)  
         self.icon.setPixmap( QPixmap(os.path.join(os.path.dirname(__file__) ,'icons','khteditor.png')).scaledToHeight(64))
         self.icon.setAlignment( Qt.AlignCenter or Qt.AlignHCenter )
         self.icon.resize(70,70)
@@ -159,12 +156,10 @@ class WelcomeWindow( QMainWindow):
 
         self._layout.addWidget(label)
 
-
         awidget.setLayout(self._layout)
         self.scrollArea.setWidget(awidget)
-        recentfiles = RecentFiles().get()
         for index in range(10):
-            if isMAEMO:
+            if isMaemo:
                 recentFileButton = QtMaemo5.QMaemo5ValueButton()
             else:
                 recentFileButton =  QPushButton()
@@ -176,10 +171,10 @@ class WelcomeWindow( QMainWindow):
             Call back which open a recent file
         """
         
-        if isMAEMO:
+        if self.isMaemo:
             self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
         self.parent.openRecentFile(button)
-        if isMAEMO:
+        if self.isMaemo:
             self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)
 
     def setupMenu(self):

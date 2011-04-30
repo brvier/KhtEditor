@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 """KhtEditor a source code editor by Khertan : Code Editor"""
 
@@ -6,37 +6,39 @@ import re
 from PyQt4.QtCore import Qt, QEvent, \
                         QFileInfo, \
                         QFile, QIODevice, \
-                        QTextStream, QRegExp, \
-                        QPoint, QRect
+                        QTextStream, QRegExp
 from PyQt4.QtGui import QPlainTextEdit, QColor, \
-                        QFont,  \
+                        QFont,  QFontMetrics, \
                         QTextCursor, QPen, \
                         QTextCharFormat, QTextEdit, \
                         QTextFormat, QApplication, \
-                        QTextDocument, QKeyEvent, \
+                        QTextDocument, \
                         QMessageBox, \
                         QPalette
 
-from plugins.plugins_api import init_plugin_system, filter_plugins_by_capability
+from plugins.plugins_api import filter_plugins_by_capability
 from recent_files import RecentFiles
 
 
-class KhtTextEdit( QPlainTextEdit):
+class KhtTextEdit(QPlainTextEdit):
     """ Widget which handle all specifities of implemented in the editor"""
 
     def __init__(self, parent=None, filename=None):
         """Initialization, can accept a filepath as argument"""
         QPlainTextEdit.__init__(self, parent)
 
+        self.isMAEMO = False
+        self.scroller = None
+
         palette = self.palette();
-        palette.setColor(QPalette.Base, Qt.white);
-        palette.setColor(QPalette.Text, Qt.black);
-        self.setPalette(palette);
+        palette.setColor(QPalette.Base, Qt.white)
+        palette.setColor(QPalette.Text, Qt.black)
+        self.setPalette(palette)
         self.setWindowOpacity(0.9)
         self.hl_color =  QColor('lightblue').lighter(120)
         self.qt18720 = False
 
-        if (bool(parent.settings.value("qt18720"))):
+        if ((parent.settings.value("qt18720"))=='2'):
             self.qt18720 = True
         else:
             self.qt18720 = False
@@ -45,8 +47,12 @@ class KhtTextEdit( QPlainTextEdit):
         self.bracepos = None
 
         # Init scroller and area which are tricky hack to speed scrolling
-        scroller = None
-        area = None
+#        try:
+#            scroller = self.property("kineticScroller")
+#            scroller.setEnabled(True)
+#        except:
+#            print 'Cannot instance kineticScroller'
+           
 
         #Plugin init moved to editor_window.py
         #initialization init of plugin system
@@ -76,9 +82,6 @@ class KhtTextEdit( QPlainTextEdit):
         except:
             font.setFamily("Courier")
 
-        font.setFixedPitch(True)
-        font.setPointSize(12)
-
         #Get Font Size
         try:
             if parent.settings.contains('FontSize'):
@@ -89,8 +92,8 @@ class KhtTextEdit( QPlainTextEdit):
             font.setPointSize(11)
 
         #Set Font
-        self.document().setDefaultFont( font)
-
+        self.fmetrics = QFontMetrics(font)
+        self.document().setDefaultFont(font)
 
         #Remove auto capitalization
         self.setInputMethodHints(Qt.ImhNoAutoUppercase)
@@ -105,41 +108,41 @@ class KhtTextEdit( QPlainTextEdit):
         # Brackets ExtraSelection ...
 
     def textEditChanged(self):
-        #Resize
-        doc = self.document()
-        cursor = self.cursorRect()
-        s = doc.size()
-        s.setHeight((s.height() + 1) * (self.fontMetrics().lineSpacing() + 1))
-        fr = self.frameRect()
-        cr = self.contentsRect()
-        self.setMinimumHeight(max(s.height(), s.height() + (fr.height() - cr.height() - 1)))
-        self.setMinimumWidth(max(s.width(),s.width() + (fr.width()-cr.width()) - 1))
+        if self.scroller:
+            #Resize
+            doc = self.document()            
+            s = doc.size().toSize()
+            s.setHeight((s.height() + 1) * (self.fmetrics.lineSpacing()+1) )
+            fr = self.frameRect()
+            cr = self.contentsRect()
+            self.setMinimumHeight(max(70, s.height() +  (fr.height() - cr.height() - 1)))
+            self.setMinimumWidth(max(240,s.width() + (fr.width()-cr.width()) - 1))
+
+#    Remove ensureVisible Hack which is now fixed in qt 4.7.2
+#    def ensureVisible(self,pos,xmargin,ymargin):
+#
+#        visible = self.area.viewport().size()
+#        currentPos =  QPoint(self.area.horizontalScrollBar().value(),
+#                      self.area.verticalScrollBar().value())
+#        posRect =  QRect(pos.x()-xmargin, pos.y()-ymargin,2*xmargin,2*ymargin)
+#        visibleRect =  QRect(currentPos, visible)
+#
+#        if (visibleRect.contains(posRect)):
+#            return
+#
+#        newPos = currentPos
+#        if (posRect.top() < visibleRect.top()):
+#            newPos.setY(posRect.top())
+#        elif (posRect.bottom() > visibleRect.bottom()):
+#            newPos.setY(posRect.bottom() - visible.height())
+#        if (posRect.left() < visibleRect.left()):
+#            newPos.setX(posRect.left())
+#        elif (posRect.right() > visibleRect.right()):
+#            newPos.setX(posRect.right() - visible.width())
+#        self.scroller.scrollTo(newPos)
 
 
-    def ensureVisible(self,pos,xmargin,ymargin):
-
-        visible = self.area.viewport().size()
-        currentPos =  QPoint(self.area.horizontalScrollBar().value(),
-                      self.area.verticalScrollBar().value())
-        posRect =  QRect(pos.x()-xmargin, pos.y()-ymargin,2*xmargin,2*ymargin)
-        visibleRect =  QRect(currentPos, visible)
-
-        if (visibleRect.contains(posRect)):
-            return
-
-        newPos = currentPos
-        if (posRect.top() < visibleRect.top()):
-            newPos.setY(posRect.top())
-        elif (posRect.bottom() > visibleRect.bottom()):
-            newPos.setY(posRect.bottom() - visible.height())
-        if (posRect.left() < visibleRect.left()):
-            newPos.setX(posRect.left())
-        elif (posRect.right() > visibleRect.right()):
-            newPos.setX(posRect.right() - visible.width())
-        self.scroller.scrollTo(newPos)
-
-
-    def curPositionChanged(self):
+    def curPositionChanged(self):                
         #Plugin hook
         for plugin in filter_plugins_by_capability('beforeCursorPositionChanged',self.enabled_plugins):
             plugin.do_beforeCursorPositionChanged(self)
@@ -149,9 +152,139 @@ class KhtTextEdit( QPlainTextEdit):
         self.highlightCurrentLine()
 
         #Make sure cursor is visible
+        #self.ensureCursorVisible()
         cursor = self.cursorRect()
         pos = cursor.center()
-        self.area.ensureVisible(pos.x(),pos.y(), 2*cursor.width()+20, 2*cursor.height())
+        #self.ensureVisible(pos.x(),pos.y(), 2*cursor.width()+20, 2*cursor.height())
+        if self.scroller:
+            self.scroller.ensureVisible(pos.x(),pos.y(),2*cursor.width()+20, 2*cursor.height())
+
+    def match_left(self, block, character, start, found):
+        map = {'{': '}', '(': ')', '[': ']'}
+        block_jump = 0
+             
+        while block.isValid() and (block_jump < 20):
+            data = block.userData()
+            if data is not None:
+                braces = data.braces
+                N = len(braces)
+ 
+                for k in range(start, N):
+                    if braces[k].character == character:
+                        found += 1
+ 
+                    if braces[k].character == map[character]:
+                        if not found:
+                            return braces[k].position + block.position()
+                        else:
+                            found -= 1
+ 
+                block = block.next()
+                block_jump += 1
+                start = 0
+ 
+    def match_right(self, block, character, start, found):
+        map = {'}': '{', ')': '(', ']': '['}
+        block_jump = 0
+ 
+        while block.isValid() and (block_jump < 20):
+            data = block.userData()
+ 
+            if data is not None:
+                braces = data.braces
+ 
+                if start is None:
+                    start = len(braces)
+                for k in range(start - 1, -1, -1):
+                    if braces[k].character == character:
+                        found += 1
+                    if braces[k].character == map[character]:
+                        if found == 0:
+                            return braces[k].position + block.position()
+                        else:
+                            found -= 1
+            block = block.previous()
+            block_jump += 1
+            start = None
+ 
+    def check_brackets(self):
+        left, right = QTextEdit.ExtraSelection(),\
+                      QTextEdit.ExtraSelection()
+ 
+        cursor = self.textCursor()
+        block = cursor.block()
+        data = block.userData()
+        previous, next = None, None
+ 
+        if data is not None:
+            position = cursor.position()
+            block_position = cursor.block().position()
+            braces = data.braces
+            N = len(braces)
+ 
+            for k in range(0, N):
+                if braces[k].position == position - block_position or\
+                   braces[k].position == position - block_position - 1:
+                    previous = braces[k].position + block_position
+                    if braces[k].character in ['{', '(', '[']:
+                        next = self.match_left(block,
+                                               braces[k].character,
+                                               k + 1, 0)
+                    elif braces[k].character in ['}', ')', ']']:
+                        next = self.match_right(block,
+                                                braces[k].character,
+                                                k, 0)
+#                    if next is None:
+#                        next = -1
+        if (next is not None and next > 0) \
+            and (previous is not None and previous > 0):
+
+            format = QTextCharFormat()
+ 
+            cursor.setPosition(previous)
+            cursor.movePosition(QTextCursor.NextCharacter,
+                                QTextCursor.KeepAnchor)
+ 
+            format.setForeground(QColor('white'))
+            format.setBackground(QColor('blue'))
+            left.format = format
+            left.cursor = cursor
+ 
+            cursor.setPosition(next)
+            cursor.movePosition(QTextCursor.NextCharacter,
+                                QTextCursor.KeepAnchor)
+ 
+            format.setForeground(QColor('white'))
+            format.setBackground(QColor('blue'))
+            right.format = format
+            right.cursor = cursor
+
+            return left, right
+            
+        elif previous is not None:
+            format = QTextCharFormat()
+
+            cursor.setPosition(previous)
+            cursor.movePosition(QTextCursor.NextCharacter,
+                                QTextCursor.KeepAnchor)
+ 
+            format.setForeground(QColor('white'))
+            format.setBackground(QColor('red'))
+            left.format = format
+            left.cursor = cursor
+            return (left,)
+        elif next is not None:
+            format = QTextCharFormat()
+
+            cursor.setPosition(next)
+            cursor.movePosition(QTextCursor.NextCharacter,
+                                QTextCursor.KeepAnchor)
+ 
+            format.setForeground(QColor('white'))
+            format.setBackground(QColor('red'))
+            left.format = format
+            left.cursor = cursor
+            return (left,)
 
     #PySide Bug : The type of e is QEvent instead of QKeyEvent
     def keyPressEvent(self, event):
@@ -289,44 +422,9 @@ class KhtTextEdit( QPlainTextEdit):
         extraSelection = []
         extraSelection.append(_selection)
 
-        #Highlight Braces
-        if self.bracepos is not None:
-            self.bracepos = None
-        cursor = self.textCursor()
-        if not cursor.position() == 0:
-            cursor.movePosition( QTextCursor.PreviousCharacter,
-                                 QTextCursor.KeepAnchor)
-            text = unicode(cursor.selectedText())
-            pos1 = cursor.position()
-            if text in (')', ']', '}'):
-                pos2 = self.__find_brace_match(pos1, text, forward=False)
-            elif text in ('(', '[', '{'):
-                pos2 = self.__find_brace_match(pos1, text, forward=True)
-            else:
-                pos1 = None
-                pos2 = None
-            if pos2 is not None:
-                self.bracepos = (pos1, pos2)
-                _selection =  QTextEdit.ExtraSelection()
-                _selection.format.setForeground(Qt.white)
-                _selection.format.setBackground(Qt.blue)
-                _selection.cursor = cursor
-                extraSelection.append(_selection)
-                _selection =  QTextEdit.ExtraSelection()
-                _selection.format.setForeground(Qt.white)
-                _selection.format.setBackground(Qt.blue)
-                _selection.cursor = self.textCursor()
-                _selection.cursor.setPosition(pos2)
-                _selection.cursor.movePosition( QTextCursor.NextCharacter,
-                                 QTextCursor.KeepAnchor)
-                extraSelection.append(_selection)
-            elif pos1 is not None:
-                self.bracepos = (pos1,)
-                _selection =  QTextEdit.ExtraSelection()
-                _selection.format.setBackground(Qt.red)
-                _selection.format.setForeground(Qt.white)
-                _selection.cursor = cursor
-                extraSelection.append(_selection)
+        extras = self.check_brackets()
+        if extras:
+            extraSelection.extend(extras)
 
         if not self.qt18720:
             self.setExtraSelections(extraSelection)
@@ -434,7 +532,6 @@ class KhtTextEdit( QPlainTextEdit):
             if not cursor.isNull():
                 if cursor.hasSelection():
                     cursor.insertText(new)
-                    print 'insertText %s' % (new,)
                 else:
                     print 'no selection'
             else:
@@ -533,13 +630,13 @@ class KhtTextEdit( QPlainTextEdit):
             cursor.insertText(line)
 
     def gotoLine(self, line):
-            print 'goto line:'+str(line)
-            cursor = self.textCursor()
-            block = self.document().findBlockByLineNumber(line-1)
-            cursor.setPosition(block.position())
-            self.setTextCursor(cursor)
-            self.ensureCursorVisible()
-            self.parent().activateWindow()
+        print 'goto line:'+str(line)
+        cursor = self.textCursor()
+        block = self.document().findBlockByLineNumber(line-1)
+        cursor.setPosition(block.position())
+        self.setTextCursor(cursor)
+        self.ensureCursorVisible()
+        self.parent().activateWindow()
 
 
     def comment(self):

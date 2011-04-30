@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import os
-import glob
 import xml.sax
 from xml.sax.handler import ContentHandler
 from xml.sax.saxutils import unescape
 
 from PyQt4.QtCore import QRegExp
-from PyQt4.QtGui import QSyntaxHighlighter, QColor, QTextCharFormat, QFont
+from PyQt4.QtGui import QSyntaxHighlighter, QColor, QTextCharFormat, \
+    QTextBlockUserData, QFont
 
 SYNTAX_PATH = [ os.path.join('.', 'syntax'),
                 os.path.abspath('.'),
@@ -59,10 +59,10 @@ class XMLSyntaxParser(ContentHandler):
         for syntax_dir in SYNTAX_PATH:
             fname = os.path.join(syntax_dir, "%s.xml"%lang_name)
             if os.path.isfile(fname): break
-    
+
         if not os.path.isfile(fname):
             raise Exception("No syntax-file for %s found !"%lang_name)
-    
+
         xml.sax.parse(fname, self)
 
     def get_style(self,style):
@@ -179,7 +179,7 @@ class XMLSyntaxParser(ContentHandler):
         del self.__escape
         del self.__start_pattern
         del self.__end_pattern
-        
+
     #handle Multiline def
     def start_multilines(self, attr):
         self.__style = "comment"
@@ -256,22 +256,56 @@ class XMLSyntaxParser(ContentHandler):
         # store value
         self.__style_props[self.__style_prop_name] = value
 
+class BracketsInfo:
+    def __init__(self, character, position):
+        self.character = character
+        self.position  = position
+
+class TextBlockData(QTextBlockUserData):
+    def __init__(self, parent = None):
+        super(TextBlockData, self).__init__()
+        self.braces = []
+        self.valid = False
+
+    def insert_brackets_info(self, info):
+        self.valid = True
+        self.braces.append(info)
+
+    def isValid(self):
+        return self.valid
+
 class Highlighter(QSyntaxHighlighter):
-    
+
     def __init__(self, document,language):
         super(Highlighter, self).__init__(document)
 
         self.rules = []
         self.multilines_comment = None
 
+        #Brace rule
+        self.braces = QRegExp('(\{|\}|\(|\)|\[|\])')
 
         syntax = XMLSyntaxParser(language)
         self.rules = syntax._grammar
         self.multilines_comment = syntax._comments
-                       
+
     def highlightBlock(self, text):
         """Apply syntax highlighting to the given block of text.
-        """        
+        """
+        braces = self.braces
+        block_data = TextBlockData()
+
+        # Brackets
+        index = braces.indexIn(text, 0)
+
+        while index >= 0:
+            matched_brace = str(braces.capturedTexts()[0])
+            info = BracketsInfo(matched_brace, index)
+            block_data.insert_brackets_info(info)
+            index = braces.indexIn(text, index + 1)
+
+        self.setCurrentBlockUserData(block_data)
+
         # Do other syntax formatting
         for expression, nth, format in self.rules:
             index = expression.indexIn(text, 0)
@@ -280,11 +314,11 @@ class Highlighter(QSyntaxHighlighter):
                 # We actually want the index of the nth match
                 index = expression.pos(nth)
                 length = len(expression.cap(nth))
-                self.setFormat(index, length, format)                
+                self.setFormat(index, length, format)
                 index = expression.indexIn(text, index + length)
 
         self.setCurrentBlockState(0)
-            
+
         # Do multi-line strings
         if self.multilines_comment:
             for index,multilines_comment in enumerate(self.multilines_comment):
@@ -297,11 +331,11 @@ class Highlighter(QSyntaxHighlighter):
         state changes when inside those strings. Returns True if we're still
         inside a multi-line string when this function is finished.
         """
-        
+
         # If inside triple-single quot:es, start at 0
         if self.previousBlockState() == in_state:
             start = 0
-            add = 0            
+            add = 0
             #print 'No multiline:',text
         # Otherwise, look for the delimiter on this line
         else:

@@ -16,26 +16,24 @@ from PyQt4.QtGui import QMainWindow, \
 from PyQt4.QtCore import QSettings, \
     Qt
     
-from plugins.plugins_api import init_plugin_system, filter_plugins_by_capability, find_plugins
-import os
+from plugins.plugins_api import init_plugin_system, find_plugins
 import sys
 
 class KhtSettings(QMainWindow):
     def __init__(self, parent=None):
-        global isMAEMO
         QMainWindow.__init__(self,parent)
         self.parent = parent
 
         try:
             self.setAttribute(Qt.WA_Maemo5AutoOrientation, True)
             self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
-            isMAEMO = True
+            isMaemo = True
         except:
-            isMAEMO = False
+            isMaemo = False
         self.setWindowTitle("KhtEditor Prefs")
 
         #Resize window if not maemo
-        if not isMAEMO:
+        if not isMaemo:
             self.resize(800, 600)
             
         self.settings = QSettings()
@@ -67,9 +65,7 @@ class KhtSettings(QMainWindow):
     def closeEvent(self,widget,*args):
         self.savePrefs()
                      
-    def setupGUI(self):
-        global isMAEMO
-        
+    def setupGUI(self):        
         self.scrollArea = QScrollArea(self)
         self.scrollArea.setWidgetResizable(True)
 
@@ -79,10 +75,11 @@ class KhtSettings(QMainWindow):
         self.aWidget.setSizePolicy( QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.scrollArea.setSizePolicy( QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.scrollArea.setWidget(self.aWidget)
-        if isMAEMO:
+        try:
             scroller = self.scrollArea.property("kineticScroller") #.toPyObject()
             scroller.setEnabled(True)
-
+        except:
+            pass
         gridIndex = 0
 
         self._main_layout.addWidget(QLabel('Font :'),gridIndex,0)
@@ -122,7 +119,6 @@ class KhtSettings(QMainWindow):
 
         
 if __name__ == '__main__':
-    import sys
     app = QApplication(sys.argv)
     app.setOrganizationName("Khertan Software")
     app.setOrganizationDomain("khertan.net")

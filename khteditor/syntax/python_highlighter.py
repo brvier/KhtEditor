@@ -1,11 +1,32 @@
-#!/usr/bin/env python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 """KhtEditor a source code editor by Khertan : Python Syntax Hilighter"""
 
-import sys
-import re
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PyQt4.QtCore import QRegExp
+from PyQt4.QtGui import QColor, \
+    QFont, \
+    QSyntaxHighlighter, \
+    QTextBlockUserData, \
+    QTextCharFormat
+
+class BracketsInfo:
+    def __init__(self, character, position):
+        self.character = character
+        self.position  = position
+
+class TextBlockData(QTextBlockUserData):
+    def __init__(self, parent = None):
+        super(TextBlockData, self).__init__()
+        self.braces = []
+        self.valid = False
+
+    def insert_brackets_info(self, info):
+        self.valid = True
+        self.braces.append(info)
+
+    def isValid(self):
+        return self.valid
 
 class Highlighter( QSyntaxHighlighter):
 
@@ -192,7 +213,7 @@ class Highlighter( QSyntaxHighlighter):
         'defclass': self.format('blue'),
         'string': self.format('green'),
         'string2': self.format('green'),
-        'comment': self.format('red'),
+        'comment': self.format('grey'),
         'framework': self.format('blue'),
         }
 
@@ -201,6 +222,9 @@ class Highlighter( QSyntaxHighlighter):
         # syntax highlighting from this point onward
         self.tri_double = ( QRegExp(r'''"""(?!')'''), 2, STYLES['string2'])
         self.tri_single = ( QRegExp(r"""'''(?!")"""), 1, STYLES['string2'])
+
+        #Brace rule
+        self.braces = QRegExp('(\{|\}|\(|\)|\[|\])')
 
         rules = []
         rules += [(r'\b%s\b' % w, 0, STYLES['keyword']) for w in Highlighter.keywords]
@@ -211,7 +235,7 @@ class Highlighter( QSyntaxHighlighter):
 
         rules += [
                 # Framework PyQt
-                (r'\bPyQt4\b|\bPySide\b|\bQt?[A-Z][a-z]\w+\b',0,STYLES['framework']), 
+                (r'\bPyQt4\b|\bPySide\b|\bQt?[A-Z][a-z]\w+\b',0,STYLES['framework']),
                 # 'def' followed by an identifier
                 (r'\bdef\b\s*(\w+)', 1, STYLES['defclass']),
                 # 'class' followed by an identifier
@@ -230,7 +254,7 @@ class Highlighter( QSyntaxHighlighter):
         self.rules = [( QRegExp(pat), index, fmt) for (pat, index, fmt) in rules]
         self.rules[-2][0].setMinimal(True)
         self.rules[-3][0].setMinimal(True)
-                
+
     def format(self,color, style=''):
         """Return a QTextCharFormat with the given attributes.
         """
@@ -245,10 +269,24 @@ class Highlighter( QSyntaxHighlighter):
             _format.setFontItalic(True)
 
         return _format
-        
+
     def highlightBlock(self, text):
         """Apply syntax highlighting to the given block of text.
-        """        
+        """
+        braces = self.braces
+        block_data = TextBlockData()
+
+        # Brackets
+        index = braces.indexIn(text, 0)
+
+        while index >= 0:
+            matched_brace = str(braces.capturedTexts()[0])
+            info = BracketsInfo(matched_brace, index)
+            block_data.insert_brackets_info(info)
+            index = braces.indexIn(text, index + 1)
+
+        self.setCurrentBlockUserData(block_data)
+
         # Do other syntax formatting
         for expression, nth, format in self.rules:
             index = expression.indexIn(text, 0)
@@ -257,15 +295,15 @@ class Highlighter( QSyntaxHighlighter):
                 # We actually want the index of the nth match
                 index = expression.pos(nth)
                 length = len(expression.cap(nth))
-                self.setFormat(index, length, format)                
+                self.setFormat(index, length, format)
                 index = expression.indexIn(text, index + length)
 
         self.setCurrentBlockState(0)
-            
+
         # Do multi-line strings
         self.match_multiline(text, *self.tri_single)
         self.match_multiline(text, *self.tri_double)
-            
+
         # QApplication.flush()
         # QApplication.processEvents( QEventLoop.ExcludeUserInputEvents)
         # QApplication.sendPostedEvents()
