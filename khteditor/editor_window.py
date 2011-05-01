@@ -214,8 +214,9 @@ class Window( QMainWindow):
             self.area.setWidget(self.editor)
             self.area.setWidgetResizable(True)
             self.setCentralWidget(self.area)
-
-        except AttributeError:
+            
+        except AttributeError, err:
+            print 'Not on maemo', err
             #Resize window if not maemo
             self.resize(800, 600)
             self.setupEditor()              
