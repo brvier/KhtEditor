@@ -282,6 +282,10 @@ class Highlighter(QSyntaxHighlighter):
         self.rules = []
         self.multilines_comment = None
 
+        #Init error format
+        self.err_format = self.format('red', ('bold', 'underline'))
+        self.errors = self.parent().parent().parent().errors
+
         #Brace rule
         self.braces = QRegExp('(\{|\}|\(|\)|\[|\])')
 
@@ -316,6 +320,11 @@ class Highlighter(QSyntaxHighlighter):
                 length = len(expression.cap(nth))
                 self.setFormat(index, length, format)
                 index = expression.indexIn(text, index + length)
+
+        # Do errors coloration
+        if self.currentBlock().firstLineNumber() in self.errors:
+            currBlock = self.currentBlock()
+            self.setFormat(0, self.currentBlock().length(), self.err_format)
 
         self.setCurrentBlockState(0)
 

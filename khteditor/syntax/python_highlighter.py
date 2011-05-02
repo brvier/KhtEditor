@@ -11,12 +11,15 @@ from PyQt4.QtGui import QColor, \
     QTextCharFormat
 
 class BracketsInfo:
+
     def __init__(self, character, position):
         self.character = character
-        self.position  = position
+        self.position = position
+
 
 class TextBlockData(QTextBlockUserData):
-    def __init__(self, parent = None):
+
+    def __init__(self, parent=None):
         super(TextBlockData, self).__init__()
         self.braces = []
         self.valid = False
@@ -217,6 +220,10 @@ class Highlighter( QSyntaxHighlighter):
         'framework': self.format('blue'),
         }
 
+        #Init error format
+        self.err_format = self.format('red', ('bold', 'underline'))
+        self.errors = self.parent().parent().parent().errors
+
         # Multi-line strings (expression, flag, style)
         # FIXME: The triple-quotes in these two lines will mess up the
         # syntax highlighting from this point onward
@@ -255,6 +262,8 @@ class Highlighter( QSyntaxHighlighter):
         self.rules[-2][0].setMinimal(True)
         self.rules[-3][0].setMinimal(True)
 
+
+
     def format(self,color, style=''):
         """Return a QTextCharFormat with the given attributes.
         """
@@ -267,6 +276,8 @@ class Highlighter( QSyntaxHighlighter):
             _format.setFontWeight(QFont.Bold)
         if 'italic' in style:
             _format.setFontItalic(True)
+        if 'underline' in style:
+            _format.setFontUnderline(True)
 
         return _format
 
@@ -297,6 +308,13 @@ class Highlighter( QSyntaxHighlighter):
                 length = len(expression.cap(nth))
                 self.setFormat(index, length, format)
                 index = expression.indexIn(text, index + length)
+
+        # Do errors coloration
+        if self.currentBlock().firstLineNumber() in self.parent().parent().parent().errors:
+            currBlock = self.currentBlock()
+            self.setFormat(0, self.currentBlock().length(), self.err_format)
+        #print , self.errors
+        #print self.parent().parent().parent().errors.id, self.errors.id
 
         self.setCurrentBlockState(0)
 

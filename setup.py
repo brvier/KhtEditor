@@ -3,7 +3,6 @@
 
 #KhtEditor Setup File
 import khteditor
-import imp
 import sys
 reload(sys).setdefaultencoding("UTF-8")
 

@@ -6,7 +6,7 @@ import re
 from PyQt4.QtCore import Qt, QEvent, \
                         QFileInfo, \
                         QFile, QIODevice, \
-                        QTextStream, QRegExp
+                        QTextStream, QRegExp, pyqtSignal
 from PyQt4.QtGui import QPlainTextEdit, QColor, \
                         QFont,  QFontMetrics, \
                         QTextCursor, QPen, \
@@ -19,13 +19,59 @@ from PyQt4.QtGui import QPlainTextEdit, QColor, \
 from plugins.plugins_api import filter_plugins_by_capability
 from recent_files import RecentFiles
 
+LANGUAGES = (('.R','R'),
+            ('.ada','ada'),
+            ('.c','c'),
+            ('.changelog','changelog'),
+            ('.cpp','cpp'),
+            ('.csharp','csharp'),
+            ('.desktop','desktop'),
+            ('.css','css'),
+            ('.diff','diff'),
+            ('.fort','fortran'),
+            ('.gtkrc','gtkrc'),
+            ('.haskell','haskell'),
+            ('.html','html'),
+            ('.idl','idl'),
+            ('.ini','ini'),
+            ('.java','java'),
+            ('.js','javascript'),
+            ('.tex','latex'),
+            ('.lua','lua'),
+            ('makefile','makefile'),
+            ('markdown','markdown'),
+            ('.msil','msil'),
+            ('nemerle','nemerle'),
+            ('octave','octave'),
+            ('.pas','pascal'),
+            ('.pl','perl'),
+            ('.php','php'),
+            ('.po','po'),
+            ('.py','python'),
+            ('.qml','qml'),
+            ('.rb','ruby'),
+            ('.scheme','scheme'),
+            ('.sh','sh'),
+            ('.tcl','tcl'),
+            ('texinfo','texinfo'),
+            ('.txt','None'),
+            ('.vb','vbnet'),
+            ('verilog','verilog'),
+            ('vhdl','vhdl'),
+            ('.xml','xml'),
+            )
 
 class KhtTextEdit(QPlainTextEdit):
     """ Widget which handle all specifities of implemented in the editor"""
 
+    show_progress = pyqtSignal(bool)
+
     def __init__(self, parent=None, filename=None):
         """Initialization, can accept a filepath as argument"""
         QPlainTextEdit.__init__(self, parent)
+
+        # Errors
+        self.errors = {}
 
         self.isMAEMO = False
         self.scroller = None
@@ -46,13 +92,16 @@ class KhtTextEdit(QPlainTextEdit):
         # Brace matching
         self.bracepos = None
 
+
+
+
         # Init scroller and area which are tricky hack to speed scrolling
 #        try:
 #            scroller = self.property("kineticScroller")
 #            scroller.setEnabled(True)
 #        except:
 #            print 'Cannot instance kineticScroller'
-           
+
 
         #Plugin init moved to editor_window.py
         #initialization init of plugin system
@@ -107,10 +156,44 @@ class KhtTextEdit(QPlainTextEdit):
         self.textChanged.connect(self.textEditChanged)
         # Brackets ExtraSelection ...
 
+    def detectLanguage(self,filename):
+        for extension,lang in LANGUAGES:
+            if filename.endswith(extension.lower()):
+                return lang
+        return None
+
+    def loadHighlighter(self,filename=None):
+        filename = self.filename
+        language = self.detectLanguage(filename)
+        #Return None if language not yet implemented natively in KhtEditor
+        if language == 'python':
+            self.show_progress.emit(True)
+            QApplication.processEvents()
+            from syntax.python_highlighter import Highlighter
+            self.highlighter = Highlighter(self.document())
+            QApplication.processEvents()
+            self.show_progress.emit(False)
+        elif (language != None) and (language != 'None'):
+            self.show_progress.emit(True)
+            QApplication.processEvents()
+            from syntax.generic_highlighter import Highlighter
+            self.highlighter = Highlighter(self.document(),language)
+            QApplication.processEvents()
+            self.show_progress.emit(False)
+        else:
+            self.show_progress.emit(True)
+            QApplication.processEvents()
+            from syntax import pygments_highlighter
+            self.highlighter = \
+                pygments_highlighter.Highlighter(self.document(),
+                                                 unicode(filename))
+            QApplication.processEvents()
+            self.show_progress.emit(False)
+
     def textEditChanged(self):
         if self.scroller:
             #Resize
-            doc = self.document()            
+            doc = self.document()
             s = doc.size().toSize()
             s.setHeight((s.height() + 1) * (self.fmetrics.lineSpacing()+1) )
             fr = self.frameRect()
@@ -142,7 +225,7 @@ class KhtTextEdit(QPlainTextEdit):
 #        self.scroller.scrollTo(newPos)
 
 
-    def curPositionChanged(self):                
+    def curPositionChanged(self):
         #Plugin hook
         for plugin in filter_plugins_by_capability('beforeCursorPositionChanged',self.enabled_plugins):
             plugin.do_beforeCursorPositionChanged(self)
@@ -162,37 +245,37 @@ class KhtTextEdit(QPlainTextEdit):
     def match_left(self, block, character, start, found):
         map = {'{': '}', '(': ')', '[': ']'}
         block_jump = 0
-             
+
         while block.isValid() and (block_jump < 20):
             data = block.userData()
             if data is not None:
                 braces = data.braces
                 N = len(braces)
- 
+
                 for k in range(start, N):
                     if braces[k].character == character:
                         found += 1
- 
+
                     if braces[k].character == map[character]:
                         if not found:
                             return braces[k].position + block.position()
                         else:
                             found -= 1
- 
+
                 block = block.next()
                 block_jump += 1
                 start = 0
- 
+
     def match_right(self, block, character, start, found):
         map = {'}': '{', ')': '(', ']': '['}
         block_jump = 0
- 
+
         while block.isValid() and (block_jump < 20):
             data = block.userData()
- 
+
             if data is not None:
                 braces = data.braces
- 
+
                 if start is None:
                     start = len(braces)
                 for k in range(start - 1, -1, -1):
@@ -206,22 +289,22 @@ class KhtTextEdit(QPlainTextEdit):
             block = block.previous()
             block_jump += 1
             start = None
- 
+
     def check_brackets(self):
         left, right = QTextEdit.ExtraSelection(),\
                       QTextEdit.ExtraSelection()
- 
+
         cursor = self.textCursor()
         block = cursor.block()
         data = block.userData()
         previous, next = None, None
- 
+
         if data is not None:
             position = cursor.position()
             block_position = cursor.block().position()
             braces = data.braces
             N = len(braces)
- 
+
             for k in range(0, N):
                 if braces[k].position == position - block_position or\
                    braces[k].position == position - block_position - 1:
@@ -240,34 +323,34 @@ class KhtTextEdit(QPlainTextEdit):
             and (previous is not None and previous > 0):
 
             format = QTextCharFormat()
- 
+
             cursor.setPosition(previous)
             cursor.movePosition(QTextCursor.NextCharacter,
                                 QTextCursor.KeepAnchor)
- 
+
             format.setForeground(QColor('white'))
             format.setBackground(QColor('blue'))
             left.format = format
             left.cursor = cursor
- 
+
             cursor.setPosition(next)
             cursor.movePosition(QTextCursor.NextCharacter,
                                 QTextCursor.KeepAnchor)
- 
+
             format.setForeground(QColor('white'))
             format.setBackground(QColor('blue'))
             right.format = format
             right.cursor = cursor
 
             return left, right
-            
+
         elif previous is not None:
             format = QTextCharFormat()
 
             cursor.setPosition(previous)
             cursor.movePosition(QTextCursor.NextCharacter,
                                 QTextCursor.KeepAnchor)
- 
+
             format.setForeground(QColor('white'))
             format.setBackground(QColor('red'))
             left.format = format
@@ -279,7 +362,7 @@ class KhtTextEdit(QPlainTextEdit):
             cursor.setPosition(next)
             cursor.movePosition(QTextCursor.NextCharacter,
                                 QTextCursor.KeepAnchor)
- 
+
             format.setForeground(QColor('white'))
             format.setBackground(QColor('red'))
             left.format = format
@@ -443,6 +526,7 @@ class KhtTextEdit(QPlainTextEdit):
             self.setPlainText(stream.readAll())
             self.document().setModified(False)
             self.setWindowTitle( QFileInfo(self.filename).fileName())
+            self.loadHighlighter(self.filename)
             for plugin in filter_plugins_by_capability('afterFileOpen',self.enabled_plugins):
                 plugin.do_afterFileOpen(self)
 

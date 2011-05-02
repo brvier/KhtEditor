@@ -36,47 +36,6 @@ from subprocess import Popen
 import commands
 import os
 
-LANGUAGES = (('.R','R'),
-            ('.ada','ada'),
-            ('.c','c'),
-            ('.changelog','changelog'),
-            ('.cpp','cpp'),
-            ('.csharp','csharp'),
-            ('.desktop','desktop'),
-            ('.css','css'),
-            ('.diff','diff'),
-            ('.fort','fortran'),
-            ('.gtkrc','gtkrc'),
-            ('.haskell','haskell'),
-            ('.html','html'),
-            ('.idl','idl'),
-            ('.ini','ini'),
-            ('.java','java'),
-            ('.js','javascript'),
-            ('.tex','latex'),
-            ('.lua','lua'),
-            ('makefile','makefile'),
-            ('markdown','markdown'),
-            ('.msil','msil'),
-            ('nemerle','nemerle'),
-            ('octave','octave'),
-            ('.pas','pascal'),
-            ('.pl','perl'),
-            ('.php','php'),
-            ('.po','po'),
-            ('.py','python'),
-            ('.qml','qml'),
-            ('.rb','ruby'),
-            ('.scheme','scheme'),
-            ('.sh','sh'),
-            ('.tcl','tcl'),
-            ('texinfo','texinfo'),
-            ('.txt','None'),
-            ('.vb','vbnet'),
-            ('verilog','verilog'),
-            ('vhdl','vhdl'),
-            ('.xml','xml'),
-            )
 class FindAndReplaceDlg( QDialog):
     """ Find and replace dialog """
     find = pyqtSignal(unicode,bool,bool,bool,bool)
@@ -201,25 +160,25 @@ class Window( QMainWindow):
 
         try:
             self.setAttribute( Qt.WA_Maemo5AutoOrientation, True)
-            self.setAttribute(Qt.WA_Maemo5StackedWindow, True)       
+            self.setAttribute(Qt.WA_Maemo5StackedWindow, True)
 
-            #Speed Hack for Maemo Kinetic scrolling     
+            #Speed Hack for Maemo Kinetic scrolling
             self.area =  QScrollArea(self)
             try:
                 scroller = self.area.property("kineticScroller") #.toPyObject()
                 scroller.setEnabled(True)
             except:
                 scroller = None
-            self.setupEditor(self.area)              
+            self.setupEditor(self.area)
             self.area.setWidget(self.editor)
             self.area.setWidgetResizable(True)
             self.setCentralWidget(self.area)
-            
+
         except AttributeError, err:
             print 'Not on maemo', err
             #Resize window if not maemo
             self.resize(800, 600)
-            self.setupEditor()              
+            self.setupEditor()
             self.setCentralWidget(self.editor)
 
     def fileSave(self):
@@ -259,7 +218,7 @@ class Window( QMainWindow):
 #             QTimer.singleShot(100, self.editor.load)
             self.setWindowTitle( QFileInfo(self.editor.filename).fileName())
 #             QTimer.singleShot(100, self.loadHighlighter)
-            self.loadHighlighter(filename)
+#            self.loadHighlighter(filename)
 
         except (IOError, OSError), e:
              QMessageBox.warning(self, "KhtEditor -- Load Error",
@@ -268,59 +227,19 @@ class Window( QMainWindow):
     def setupEditor(self,scroller=None):
         self.editor = editor.KhtTextEdit(self)
         self.editor.scroller = scroller
+        self.editor.show_progress.connect(self.show_progress)
         self.setupToolBar()
         self.editor.document().modificationChanged.connect(self.do_documentChanged)
 
-    def loadHighlighter(self,filename=None):
-        filename = self.editor.filename
-        language = self.detectLanguage(filename)
-        #Return None if language not yet implemented natively in KhtEditor
-        if language == 'python':
-            from syntax.python_highlighter import Highlighter
-            try:
-                self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
-            except AttributeError:
-                pass
-            QApplication.processEvents()
-            self.highlighter = Highlighter(self.editor.document())
-            QApplication.processEvents()
-            try:
-                self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)
-            except AttributeError:
-                pass
-        elif (language != None) and (language != 'None'):
-            from syntax.generic_highlighter import Highlighter
-            try:
-                self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
-            except AttributeError:
-                pass
-            QApplication.processEvents()
-            self.highlighter = Highlighter(self.editor.document(),language)
-            QApplication.processEvents()
-            try:
-                self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)
-            except AttributeError:
-                pass
-        else:
-            from syntax import pygments_highlighter
-            try:
-                self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,True)
-            except AttributeError:
-                pass
-            QApplication.processEvents()
-            self.highlighter = pygments_highlighter.Highlighter(self.editor.document(),unicode(filename))
-            QApplication.processEvents()
-            try:
-                self.setAttribute( Qt.WA_Maemo5ShowProgressIndicator,False)
-            except AttributeError:
-                pass
+
+    @pyqtSlot(bool)
+    def show_progress(self,show):
+        try:
+            self.setAttribute(Qt.WA_Maemo5ShowProgressIndicator, show)
+        except AttributeError:
+            print 'Not on maemo'
 
 
-    def detectLanguage(self,filename):
-        for extension,lang in LANGUAGES:
-            if filename.endswith(extension.lower()):
-                 return lang
-        return None
 
     def setupToolBar(self):
         self.toolbar = self.addToolBar('Toolbar')
