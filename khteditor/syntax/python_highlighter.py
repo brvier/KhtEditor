@@ -311,7 +311,6 @@ class Highlighter( QSyntaxHighlighter):
 
         # Do errors coloration
         if self.currentBlock().firstLineNumber() in self.parent().parent().parent().errors:
-            currBlock = self.currentBlock()
             self.setFormat(0, self.currentBlock().length(), self.err_format)
         #print , self.errors
         #print self.parent().parent().parent().errors.id, self.errors.id

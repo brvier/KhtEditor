@@ -186,7 +186,7 @@ class Window( QMainWindow):
             self.editor.save()
         except (IOError, OSError), e:
              QMessageBox.warning(self, "KhtEditor -- Save Error",
-                    "Failed to save %s: %s" % (self.filename, e))
+                    "Failed to save %s: %s" % (self.editor.filename, e))
 
 
     def saveAsFile(self):
@@ -352,7 +352,7 @@ class Window( QMainWindow):
               fileHandle = open('/tmp/khteditor.tmp', 'wb')
               fileHandle.write('#!/bin/sh\n')
               fileHandle.write('cd '+os.path.dirname(unicode(self.editor.filename).encode('utf-8'))+' \n')
-              language = self.detectLanguage(self.editor.filename)
+              language = self.editor.detectLanguage(self.editor.filename)
               #Crappy way to handle that
               if language == 'python':
                 fileHandle.write("python \'"+unicode(self.editor.filename).encode('utf-8') + "\'\n")

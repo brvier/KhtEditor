@@ -283,7 +283,7 @@ class Highlighter(QSyntaxHighlighter):
         self.multilines_comment = None
 
         #Init error format
-        self.err_format = self.format('red', ('bold', 'underline'))
+        self.err_format = format('red', ('bold', 'underline'))
         self.errors = self.parent().parent().parent().errors
 
         #Brace rule

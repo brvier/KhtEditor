@@ -7,7 +7,7 @@ import sip
 sip.setapi('QString', 2)
 sip.setapi('QVariant', 2)
 
-__version__ = '1.0.4'
+__version__ = '1.0.7'
 
 import os
 import sys
