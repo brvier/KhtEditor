@@ -1,5 +1,5 @@
-from PyQt4.QtGui import QTextEdit
-from PyQt4.QtCore import Qt
+from PySide.QtGui import QTextEdit
+from PySide.QtCore import Qt
 from plugins_api import Plugin
 import re
 

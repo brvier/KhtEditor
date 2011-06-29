@@ -1,7 +1,6 @@
 import sys
 import os
 import glob
-#from PyQt4.QtCore import QSettings
 
 PATHS = [os.path.join(os.path.dirname(os.path.abspath(__file__)) ),
          os.path.join(os.path.dirname(sys.argv[0]),'plugins'),
@@ -10,7 +9,7 @@ PATHS = [os.path.join(os.path.dirname(os.path.abspath(__file__)) ),
 
 class Plugin(object):
     capabilities = []
-    __version__ = '0.5'
+    __version__ = '2.0'
 
     def __repr__(self):
         return '<%s %r>' % (
@@ -45,6 +44,21 @@ class Plugin(object):
 
     #beforeFileSave capabilities
     def do_beforeFileSave(self,widget,event):
+        """Called after file save"""
+        raise NotImplementedError
+
+    #beforeFileClose capabilities
+    def do_beforeFileClose(self,widget,event):
+        """Called after file save"""
+        raise NotImplementedError
+
+    #afterFileClose capabilities
+    def do_afterFileClose(self,widget,event):
+        """Called after file save"""
+        raise NotImplementedError
+
+    #beforeFileOpen capabilities
+    def do_beforeFileOpen(self,widget,event):
         """Called after file save"""
         raise NotImplementedError
 

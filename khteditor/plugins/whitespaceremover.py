@@ -1,7 +1,7 @@
-from PyQt4.QtGui import QTextEdit,QTextCursor
-from PyQt4.QtCore import Qt, \
+from PySide.QtGui import QTextEdit,QTextCursor
+from PySide.QtCore import Qt, \
                          QObject, \
-                         pyqtSlot
+                         Slot
 from plugins_api import Plugin
 import os
 #import re
@@ -41,7 +41,7 @@ class TrailingWhiteSpaceRemover(Plugin, QObject):
         self.editor_win = widget.parent() #Get the editor_window object
         widget.addAction('Remove trailing white space',self.removeWhiteSpace)
 
-    @pyqtSlot()
+    @Slot()
     def removeWhiteSpace(self):
         # delete whitespace at end of the previous line
         widget = self.editor_win.editor
