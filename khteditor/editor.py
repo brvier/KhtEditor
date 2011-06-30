@@ -102,7 +102,7 @@ class KhtTextEditor(QPlainTextEdit):
 
     def getFilePath(self):
         return self._filepath
-        
+
     def setFilePath(self, filepath):
         if filepath != self._filepath:
             if self.detectLanguage(filepath) != self.detectLanguage(self._filepath):
@@ -119,13 +119,13 @@ class KhtTextEditor(QPlainTextEdit):
             style = STYLES[styleName]
         else:
             style = STYLES['default']
-            
+
         palette = self.palette()
         palette.setColor(QPalette.Base, style['background'].foreground().color())
         palette.setColor(QPalette.Text, style['default'].foreground().color())
         self.setPalette(palette)
 #        self.setWindowOpacity(0.9)
-       
+
         self.hl_color =  style['linehighlight'].foreground().color() #QColor('lightblue').lighter(120)
 
         if ((self.settings.value("qt18720"))=='2'):

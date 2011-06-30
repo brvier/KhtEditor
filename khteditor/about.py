@@ -2,13 +2,19 @@ from PySide.QtGui import QMainWindow, QHBoxLayout, QSizePolicy, \
     QVBoxLayout, QDesktopServices, QScrollArea, QPushButton, \
     QLabel, QWidget, QIcon
 from PySide.QtCore import Qt, QUrl, QSettings, Slot
-from PySide.QtMaemo5 import *
+
+try:
+    from PySide.QtMaemo5 import *
+except ImportError:
+    print 'QtMaemo5 Not available'
 
 from khteditor import __version__
+import os
 
 class QAboutWin(QMainWindow):
 
     '''About Window'''
+
 
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
@@ -38,7 +44,9 @@ class QAboutWin(QMainWindow):
                 scroller = aboutScrollArea.property('kineticScroller')
                 scroller.setEnabled(True)
             except:
-                pass
+                aboutScrollArea.close()
+                aboutScrollArea.destroy()
+                del aboutScrollArea
 
             aboutLayout = QVBoxLayout(awidget)
         except:
@@ -46,11 +54,12 @@ class QAboutWin(QMainWindow):
             aboutLayout = QVBoxLayout(awidget)
 
         aboutIcon = QLabel()
-        try:
-            aboutIcon.setPixmap(QIcon.fromTheme('khteditor').pixmap(128, 128))
-        except:
-            aboutIcon.setPixmap(QIcon(os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                                'icons', 'khteditor.png')).pixmap(128, 128))
+        icon = QIcon.fromTheme('khteditor').pixmap(128, 128)
+        print icon
+        if not icon:
+            icon = QIcon(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                'icons', 'khteditor.png')).pixmap(128, 128)
+        aboutIcon.setPixmap(icon)
 
         aboutIcon.setAlignment(Qt.AlignCenter or Qt.AlignHCenter)
         aboutIcon.resize(128, 128)
@@ -88,7 +97,8 @@ class QAboutWin(QMainWindow):
             awidget.setLayout(aboutLayout)
             aboutScrollArea.setWidget(awidget)
             self.setCentralWidget(aboutScrollArea)
-        except:
+        except Exception, err:
+            print "DEBUG:", err
             self.setCentralWidget(awidget)
 
         self.show()

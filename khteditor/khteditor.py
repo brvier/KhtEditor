@@ -13,7 +13,7 @@ from plugins.plugins_api import init_plugin_system, \
                                 find_plugins
 from window import KhtWindow
 
-__version__ = '2.0.0'
+__version__ = '2.0.0a1'
 
 
 class KhtEditor(QApplication):
@@ -60,7 +60,7 @@ class KhtEditor(QApplication):
             filepath, ok =  QFileDialog.getOpenFileName(self.sender(),
                             "KhtEditor -- Open File",path)
         if filepath:
-            win = self.newWindow()          
+            win = self.newWindow()
             win.editor.setFilePath(filepath)
             win.editor.load()
 
