@@ -264,6 +264,10 @@ class KhtWindow(QMainWindow):
                         "Failed to save %s: %s" % (self.editor.filename, ioError))
 
     @Slot()
+    def executeFile(self):
+        print 'Not yet implemented'
+        
+    @Slot()
     def openFile(self):
         self.tb_openFile.emit(self.editor._filepath)
 
@@ -284,6 +288,8 @@ class KhtWindow(QMainWindow):
             self.editor.comment()
         elif action == 'Duplicate':
             self.editor.duplicate()
+        elif action == 'Execute':
+            self.editor.execute()
         elif action == 'Fullscreen':
             if self.isFullScreen():
                 self.showMaximized()

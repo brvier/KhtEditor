@@ -21,49 +21,50 @@ from PySide.QtGui import QPlainTextEdit, QColor, \
                         QPalette
 
 from recent_files import RecentFiles
-
+import os.path
 from plugins.plugins_api import filter_plugins_by_capability
+from execute import KhtExecute
 
-LANGUAGES = (('.R','R'),
-            ('.ada','ada'),
-            ('.c','c'),
-            ('.changelog','changelog'),
-            ('.cpp','cpp'),
-            ('.csharp','csharp'),
-            ('.desktop','desktop'),
-            ('.css','css'),
-            ('.diff','diff'),
-            ('.fort','fortran'),
-            ('.gtkrc','gtkrc'),
-            ('.haskell','haskell'),
-            ('.html','html'),
-            ('.idl','idl'),
-            ('.ini','ini'),
-            ('.java','java'),
-            ('.js','javascript'),
-            ('.tex','latex'),
-            ('.lua','lua'),
-            ('makefile','makefile'),
-            ('markdown','markdown'),
-            ('.msil','msil'),
-            ('nemerle','nemerle'),
-            ('octave','octave'),
-            ('.pas','pascal'),
-            ('.pl','perl'),
-            ('.php','php'),
-            ('.po','po'),
-            ('.py','python'),
-            ('.qml','qml'),
-            ('.rb','ruby'),
-            ('.scheme','scheme'),
-            ('.sh','sh'),
-            ('.tcl','tcl'),
-            ('texinfo','texinfo'),
-            ('.txt','None'),
-            ('.vb','vbnet'),
-            ('verilog','verilog'),
-            ('vhdl','vhdl'),
-            ('.xml','xml'),
+LANGUAGES = ({'Ext':'.R','Name':'R'},
+            {'Ext':'.ada','Name':'ada'},
+            {'Ext':'.c','Name':'c'},
+            {'Ext':'.changelog','Name':'changelog'},
+            {'Ext':'.cpp','Name':'cpp'},
+            {'Ext':'.csharp','Name':'csharp'},
+            {'Ext':'.desktop','Name':'desktop'},
+            {'Ext':'.css','Name':'css'},
+            {'Ext':'.diff','Name':'diff'},
+            {'Ext':'.fort','Name':'fortran'},
+            {'Ext':'.gtkrc','Name':'gtkrc'},
+            {'Ext':'.haskell','Name':'haskell'},
+            {'Ext':'.html','Name':'html'},
+            {'Ext':'.idl','Name':'idl'},
+            {'Ext':'.ini','Name':'ini'},
+            {'Ext':'.java','Name':'java'},
+            {'Ext':'.js','Name':'javascript'},
+            {'Ext':'.tex','Name':'latex'},
+            {'Ext':'.lua','Name':'lua'},
+            {'Ext':'makefile','Name':'makefile'},
+            {'Ext':'markdown','Name':'markdown'},
+            {'Ext':'.msil','Name':'msil'},
+            {'Ext':'nemerle','Name':'nemerle'},
+            {'Ext':'octave','Name':'octave'},
+            {'Ext':'.pas','Name':'pascal'},
+            {'Ext':'.pl','Name':'perl'},
+            {'Ext':'.php','Name':'php'},
+            {'Ext':'.po','Name':'po'},
+            {'Ext':('.py','.pyw'),'Name':'python', 'Exec':'cd $0;python -u $1'},
+            {'Ext':'.qml','Name':'qml'},
+            {'Ext':'.rb','Name':'ruby'},
+            {'Ext':'.scheme','Name':'scheme'},
+            {'Ext':'.sh','Name':'sh'},
+            {'Ext':'.tcl','Name':'tcl'},
+            {'Ext':'texinfo','Name':'texinfo'},
+            {'Ext':'.txt','Name':'None'},
+            {'Ext':'.vb','Name':'vbnet'},
+            {'Ext':'verilog','Name':'verilog'},
+            {'Ext':'vhdl','Name':'vhdl'},
+            {'Ext':'.xml','Name':'xml'},
             )
 
 class KhtTextEditor(QPlainTextEdit):
@@ -162,14 +163,22 @@ class KhtTextEditor(QPlainTextEdit):
         self.document().setDefaultFont(font)
 
     def detectLanguage(self,filename):
-        for extension,lang in LANGUAGES:
-            if filename.endswith(extension.lower()):
-                return lang
+        #lang = None
+        ext = os.path.splitext(self._filepath)[1]
+        for lang in LANGUAGES:
+            if ext in lang['Ext']:
+                return lang['Name']
+
+        #lang = [lang['Name'] for lang in LANGUAGES if ( os.path.splitext(self._filepath)[1] in lang['Ext'])]
+#        for extension,lang in LANGUAGES:
+#            if filename.endswith(extension.lower()):
+#                return lang
         return None
 
     def loadHighlighter(self,filename=None):
         filename = self._filepath
         language = self.detectLanguage(filename)
+        print 'Detected Language: ',language
         #Return None if language not yet implemented natively in KhtEditor
         if language == 'python':
             self.showProgress.emit(True)
@@ -677,3 +686,14 @@ class KhtTextEditor(QPlainTextEdit):
         text = cursor.selectedText()
 
         return unicode(text)
+
+    def execute(self):
+        command = None
+        ext = os.path.splitext(self._filepath)[1]
+        for lang in LANGUAGES:
+            if ext in lang['Ext']:
+                command = lang['Exec']
+        
+        print command
+        if command:
+            KhtExecute(None,command=command)
