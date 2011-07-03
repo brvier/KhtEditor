@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=net.khertan.khteditor
-Exec=/usr/bin/khteditor_launch.py

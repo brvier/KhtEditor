@@ -33,12 +33,9 @@ class PyFlakes_plugin(Plugin, QObject):
     def __init__(self):
         QObject.__init__(self)
         self.m_bus = dbus.SystemBus()
-        try:
-            self.m_notify = self.m_bus.get_object('org.freedesktop.Notifications',
-                                  '/org/freedesktop/Notifications')
-            self.iface = dbus.Interface(self.m_notify, 'org.freedesktop.Notifications')
-        except Exception:
-            print 'No freedesktop Dbus Notification support'
+        self.m_notify = self.m_bus.get_object('org.freedesktop.Notifications',
+                              '/org/freedesktop/Notifications')
+        self.iface = dbus.Interface(self.m_notify, 'org.freedesktop.Notifications')
 
     def do_afterFileOpen(self, parent):
         self.do_check(parent)
@@ -48,7 +45,7 @@ class PyFlakes_plugin(Plugin, QObject):
 
     def do_beforeCursorPositionChanged(self, parent):
         try:
-            doc = parent.document()
+            doc = self.parent.document()
             if hasattr(doc,'errors'):
                 if len(doc.errors):
                     cur = parent.textCursor()
@@ -60,22 +57,23 @@ class PyFlakes_plugin(Plugin, QObject):
 
     def do_check(self, parent):
         """ Do the pylint check and appends in the highlighter errors"""
+        self.parent = parent
 
         #Limit to python source file
-        if (not parent.getFilePath().endswith('.py')) and (parent.getFilePath().endswith('.pyw')):
+        if (not self.parent.getFilePath().endswith('.py')) and (self.parent.getFilePath().endswith('.pyw')):
             return
 
-        doc = parent.document()
+        doc = self.parent.document()
 
         errors = []
-        rows = parent.errors.keys()
+        rows = self.parent.errors.keys()
         doc.errors = {}
         for row in rows:
-            parent.highlighter.rehighlightBlock(doc.findBlockByLineNumber(row))
+            self.parent.highlighter.rehighlightBlock(doc.findBlockByLineNumber(row))
 
         try:
-            ast = compiler.parse(parent.toPlainText().encode('ascii', 'ignore'))
-            c = Checker(ast, parent.getFilePath())
+            ast = compiler.parse(self.parent.toPlainText().encode('ascii', 'ignore'))
+            c = Checker(ast, self.parent.getFilePath())
             c.messages.sort(lambda a, b: cmp(a.lineno, b.lineno))
             for msg in c.messages:
                 try:
@@ -98,5 +96,4 @@ class PyFlakes_plugin(Plugin, QObject):
 #        selections = []
         for ((row, col, length), msg, is_fatal) in errors:
             doc.errors[row] = msg
-            parent.highlighter.rehighlightBlock(doc.findBlockByLineNumber(row))
-        parent.documentErrorsChanged.emit()
+            self.parent.highlighter.rehighlightBlock(doc.findBlockByLineNumber(row))

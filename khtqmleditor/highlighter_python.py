@@ -8,10 +8,11 @@
 """KhtEditor a source code editor by Khertan : Python Syntax Hilighter"""
 
 from PySide.QtCore import QRegExp
-from PySide.QtGui import QSyntaxHighlighter, \
-                         QTextBlockUserData
-
-import keyword
+from PySide.QtGui import QColor, \
+    QFont, \
+    QSyntaxHighlighter, \
+    QTextBlockUserData, \
+    QTextCharFormat
 
 from styles import STYLES
 
@@ -48,13 +49,36 @@ class Highlighter( QSyntaxHighlighter):
         '__debug__'
     ]
 
-    keywords = keyword.kwlist
-    datatype = [ bkey for bkey, bvalue in \
-                 __builtins__.items() \
-                 if bvalue.__class__ == type ]
-    specials = [ bkey for bkey, bvalue in \
-                __builtins__.items() \
-                if bvalue.__class__ != type ]
+    keywords = ['and',
+        'assert',
+        'break',
+        'continue',
+        'del',
+        'elif',
+        'else',
+        'except',
+        'exec',
+        'finally',
+        'for',
+        'global',
+        'if',
+        'in',
+        'is',
+        'lambda',
+        'not',
+        'or',
+        'pass',
+        'print',
+        'raise',
+        'try',
+        'while',
+        'yield',
+                'def',
+                'class',
+                'return',
+    ]
+
+    specials = dir(__builtins__)
 
     operators = [
                 '=',
@@ -84,7 +108,7 @@ class Highlighter( QSyntaxHighlighter):
         #Init error object
 #        print type(self.document())
         self.doc = self.document()
-
+        
         # Multi-line strings (expression, flag, style)
         # FIXME: The triple-quotes in these two lines will mess up the
         # syntax highlighting from this point onward
@@ -97,7 +121,6 @@ class Highlighter( QSyntaxHighlighter):
         rules = []
         rules += [(r'\b%s\b' % w, 0, self.styles['keyword']) for w in Highlighter.keywords]
         rules += [(r'\b%s\b' % w, 0, self.styles['preprocessor']) for w in Highlighter.preprocessors]
-        rules += [(r'\b%s\b' % w, 0, self.styles['datatype']) for w in Highlighter.datatype]
         rules += [(r'\b%s\b' % w, 0, self.styles['special']) for w in Highlighter.specials]
         rules += [(r'%s' % o, 0, self.styles['operator']) for o in Highlighter.operators]
         rules += [(r'%s' % b, 0, self.styles['brace']) for b in Highlighter.braces]

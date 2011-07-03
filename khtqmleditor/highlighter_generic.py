@@ -4,7 +4,7 @@ import xml.sax
 from xml.sax.handler import ContentHandler
 from xml.sax.saxutils import unescape
 
-from PySide.QtCore import QRegExp, Qt
+from PySide.QtCore import QRegExp
 from PySide.QtGui import QSyntaxHighlighter, QColor, QTextCharFormat, \
     QTextBlockUserData, QFont
 
@@ -259,7 +259,7 @@ class TextBlockData(QTextBlockUserData):
 
 class Highlighter(QSyntaxHighlighter):
 
-    def __init__(self, document,language, styleName='default'):
+    def __init__(self, document,language):
         super(Highlighter, self).__init__(document)
 
         self.rules = []

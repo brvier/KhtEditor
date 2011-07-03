@@ -1,7 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Version=1.0
-Type=Application
-Name=KhtEditor
-Exec=/usr/bin/khteditor_launch.py
-Icon=khteditor

@@ -11,71 +11,101 @@ import re
 from PySide.QtCore import Qt, QEvent, \
                         QFileInfo, QSettings, \
                         QFile, QIODevice, \
-                        QTextStream, QRegExp, Signal
+                        QTextStream, QRegExp, Signal, QSize, \
+                        QPoint
 from PySide.QtGui import QPlainTextEdit, QColor, \
                         QFont,  QFontMetrics, \
                         QTextCursor, \
                         QTextCharFormat, QTextEdit, \
                         QTextFormat, QApplication, \
                         QTextDocument, \
-                        QPalette
+                        QMessageBox, \
+                        QPalette, QStackedWidget, \
+                        QScrollArea, QFrame, \
+                        QPainter, QPen, QGraphicsItem
+                        
 
 from recent_files import RecentFiles
-import os.path
-from plugins.plugins_api import filter_plugins_by_capability
-from execute import KhtExecute
 
-LANGUAGES = ({'Ext':'.R','Name':'R'},
-            {'Ext':'.ada','Name':'ada'},
-            {'Ext':'.c','Name':'c'},
-            {'Ext':'.changelog','Name':'changelog'},
-            {'Ext':'.cpp','Name':'cpp'},
-            {'Ext':'.csharp','Name':'csharp'},
-            {'Ext':'.desktop','Name':'desktop'},
-            {'Ext':'.css','Name':'css'},
-            {'Ext':'.diff','Name':'diff'},
-            {'Ext':'.fort','Name':'fortran'},
-            {'Ext':'.gtkrc','Name':'gtkrc'},
-            {'Ext':'.haskell','Name':'haskell'},
-            {'Ext':'.html','Name':'html'},
-            {'Ext':'.idl','Name':'idl'},
-            {'Ext':'.ini','Name':'ini'},
-            {'Ext':'.java','Name':'java'},
-            {'Ext':'.js','Name':'javascript'},
-            {'Ext':'.tex','Name':'latex'},
-            {'Ext':'.lua','Name':'lua'},
-            {'Ext':'makefile','Name':'makefile'},
-            {'Ext':'markdown','Name':'markdown'},
-            {'Ext':'.msil','Name':'msil'},
-            {'Ext':'nemerle','Name':'nemerle'},
-            {'Ext':'octave','Name':'octave'},
-            {'Ext':'.pas','Name':'pascal'},
-            {'Ext':'.pl','Name':'perl'},
-            {'Ext':'.php','Name':'php'},
-            {'Ext':'.po','Name':'po'},
-            {'Ext':('.py','.pyw'),'Name':'python', 'Exec':'cd $0;python -u $1'},
-            {'Ext':'.qml','Name':'qml'},
-            {'Ext':'.rb','Name':'ruby'},
-            {'Ext':'.scheme','Name':'scheme'},
-            {'Ext':'.sh','Name':'sh'},
-            {'Ext':'.tcl','Name':'tcl'},
-            {'Ext':'texinfo','Name':'texinfo'},
-            {'Ext':'.txt','Name':'None'},
-            {'Ext':'.vb','Name':'vbnet'},
-            {'Ext':'verilog','Name':'verilog'},
-            {'Ext':'vhdl','Name':'vhdl'},
-            {'Ext':'.xml','Name':'xml'},
+from plugins.plugins_api import filter_plugins_by_capability
+
+from PySide.QtDeclarative import *
+
+LANGUAGES = (('.R','R'),
+            ('.ada','ada'),
+            ('.c','c'),
+            ('.changelog','changelog'),
+            ('.cpp','cpp'),
+            ('.csharp','csharp'),
+            ('.desktop','desktop'),
+            ('.css','css'),
+            ('.diff','diff'),
+            ('.fort','fortran'),
+            ('.gtkrc','gtkrc'),
+            ('.haskell','haskell'),
+            ('.html','html'),
+            ('.idl','idl'),
+            ('.ini','ini'),
+            ('.java','java'),
+            ('.js','javascript'),
+            ('.tex','latex'),
+            ('.lua','lua'),
+            ('makefile','makefile'),
+            ('markdown','markdown'),
+            ('.msil','msil'),
+            ('nemerle','nemerle'),
+            ('octave','octave'),
+            ('.pas','pascal'),
+            ('.pl','perl'),
+            ('.php','php'),
+            ('.po','po'),
+            ('.py','python'),
+            ('.qml','qml'),
+            ('.rb','ruby'),
+            ('.scheme','scheme'),
+            ('.sh','sh'),
+            ('.tcl','tcl'),
+            ('texinfo','texinfo'),
+            ('.txt','None'),
+            ('.vb','vbnet'),
+            ('verilog','verilog'),
+            ('vhdl','vhdl'),
+            ('.xml','xml'),
             )
 
-class KhtTextEditor(QPlainTextEdit):
+class QmlTextEditor(QDeclarativeItem):
+    def __init__(self, parent=None):
+        QDeclarativeItem.__init__(self, parent)
+        self.widget = KhtTextEditor()
+        self.setFlag(QGraphicsItem.ItemHasNoContents, False)
+        self.setKeepMouseGrab(True)
+        self.setAcceptTouchEvents(True)
+        self.setAcceptedMouseButtons(Qt.LeftButton)
+
+    def paint(self, painter, options, widget):
+        self.widget.render(painter,QPoint(0,0))
+
+    def mouseMoveEvent(self,event):
+        return self.widget.mouseMoveEvent(event)
+
+    def sizeHint(self):
+        return self.widget.sizeHint()
+
+    def keyPressEvent(self, event):
+        self.widget.keyPressEvent(event)
+
+    def keyReleaseEvent(self, event):
+        self.widget.keyReleaseEvent(event)
+
+class KhtTextEditor( QPlainTextEdit):
     """ Widget which handle all specifities of implemented in the editor"""
 
     showProgress = Signal(bool)
     filepathChanged = Signal(unicode)
-    documentErrorsChanged = Signal()
 
     def __init__(self, parent=None, scroller=None):
         """Initialization, can accept a filepath as argument"""
+        #QDeclarativeItem.__init__(self, parent)
         QPlainTextEdit.__init__(self, parent)
 
         # Errors
@@ -83,6 +113,8 @@ class KhtTextEditor(QPlainTextEdit):
         self.qt18720 = False
         self.scroller = scroller
 
+        self.enabled_plugins = []
+                
         #settings
         self.settings = QSettings()
         self.loadSettings()
@@ -91,7 +123,7 @@ class KhtTextEditor(QPlainTextEdit):
         self.bracepos = None
 
         self._filepath = u'Unnamed'
-
+        
         self.document().setModified(False)
 
         #Remove auto capitalization
@@ -101,9 +133,24 @@ class KhtTextEditor(QPlainTextEdit):
         self.cursorPositionChanged.connect(self.curPositionChanged)
         self.textChanged.connect(self.textEditChanged)
 
+        self.setPlainText('import test')
+        self.setFilePath('unammed.py')
+
+#    def paint(self, painter, options, widget):
+#        self.render(painter,QPoint(0,0))
+
+#    def sizeHint(self):
+#        #Resize
+#        s = self.document().size().toSize()
+#        s.setHeight((s.height() + 1) * (self.fmetrics.lineSpacing()+1) )
+#        fr = self.frameRect()
+#        cr = self.contentsRect()
+#        return QSize(max(400, s.height() +  (fr.height() - cr.height() - 1)),\
+#                    (max(400,s.width() + (fr.width()-cr.width()) - 1)))
+                    
     def getFilePath(self):
         return self._filepath
-
+        
     def setFilePath(self, filepath):
         if filepath != self._filepath:
             if self.detectLanguage(filepath) != self.detectLanguage(self._filepath):
@@ -113,21 +160,13 @@ class KhtTextEditor(QPlainTextEdit):
             self.filepathChanged.emit(filepath)
 
     def loadSettings(self):
-        from styles import STYLES
-
-        styleName = self.settings.value('theme')
-        if styleName in STYLES:
-            style = STYLES[styleName]
-        else:
-            style = STYLES['default']
-
-        palette = self.palette()
-        palette.setColor(QPalette.Base, style['background'].foreground().color())
-        palette.setColor(QPalette.Text, style['default'].foreground().color())
+        palette = self.palette();
+        palette.setColor(QPalette.Base, Qt.white)
+        palette.setColor(QPalette.Text, Qt.black)
         self.setPalette(palette)
-#        self.setWindowOpacity(0.9)
+        self.setWindowOpacity(0.9)
 
-        self.hl_color =  style['linehighlight'].foreground().color() #QColor('lightblue').lighter(120)
+        self.hl_color =  QColor('lightblue').lighter(120)
 
         if ((self.settings.value("qt18720"))=='2'):
             self.qt18720 = True
@@ -163,22 +202,14 @@ class KhtTextEditor(QPlainTextEdit):
         self.document().setDefaultFont(font)
 
     def detectLanguage(self,filename):
-        #lang = None
-        ext = os.path.splitext(self._filepath)[1]
-        for lang in LANGUAGES:
-            if ext in lang['Ext']:
-                return lang['Name']
-
-        #lang = [lang['Name'] for lang in LANGUAGES if ( os.path.splitext(self._filepath)[1] in lang['Ext'])]
-#        for extension,lang in LANGUAGES:
-#            if filename.endswith(extension.lower()):
-#                return lang
+        for extension,lang in LANGUAGES:
+            if filename.endswith(extension.lower()):
+                return lang
         return None
 
     def loadHighlighter(self,filename=None):
         filename = self._filepath
         language = self.detectLanguage(filename)
-        print 'Detected Language: ',language
         #Return None if language not yet implemented natively in KhtEditor
         if language == 'python':
             self.showProgress.emit(True)
@@ -356,9 +387,10 @@ class KhtTextEditor(QPlainTextEdit):
             left.format = format
             left.cursor = cursor
             return (left,)
-
+    
     #PySide Bug : The type of e is QEvent instead of QKeyEvent
     def keyPressEvent(self, event):
+        print 'test'
         """Intercept the key event to lets plugin do something if they want"""
         if event.type() ==  QEvent.KeyPress:
             for plugin in filter_plugins_by_capability('beforeKeyPressEvent',self.enabled_plugins):
@@ -686,14 +718,3 @@ class KhtTextEditor(QPlainTextEdit):
         text = cursor.selectedText()
 
         return unicode(text)
-
-    def execute(self):
-        command = None
-        ext = os.path.splitext(self._filepath)[1]
-        for lang in LANGUAGES:
-            if ext in lang['Ext']:
-                command = lang['Exec']
-        
-        print command
-        if command:
-            KhtExecute(None,command=command)
