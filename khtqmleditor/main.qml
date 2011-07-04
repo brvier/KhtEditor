@@ -7,6 +7,8 @@ Rectangle {
     height:480
     KhtTextEditor {
         id:editor
+        anchors.fill: parent
+	width:800
     }
 }
 

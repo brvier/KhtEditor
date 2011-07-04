@@ -15,7 +15,7 @@ from PySide.QtCore import Qt, QEvent, \
                         QPoint
 from PySide.QtGui import QPlainTextEdit, QColor, \
                         QFont,  QFontMetrics, \
-                        QTextCursor, \
+                        QTextCursor, QGraphicsProxyWidget, \
                         QTextCharFormat, QTextEdit, \
                         QTextFormat, QApplication, \
                         QTextDocument, \
@@ -77,25 +77,11 @@ class QmlTextEditor(QDeclarativeItem):
     def __init__(self, parent=None):
         QDeclarativeItem.__init__(self, parent)
         self.widget = KhtTextEditor()
+        self.proxy = QGraphicsProxyWidget(self)
+        self.proxy.setWidget(self.widget)
+        self.proxy.setPos(0,0)
         self.setFlag(QGraphicsItem.ItemHasNoContents, False)
         self.setKeepMouseGrab(True)
-        self.setAcceptTouchEvents(True)
-        self.setAcceptedMouseButtons(Qt.LeftButton)
-
-    def paint(self, painter, options, widget):
-        self.widget.render(painter,QPoint(0,0))
-
-    def mouseMoveEvent(self,event):
-        return self.widget.mouseMoveEvent(event)
-
-    def sizeHint(self):
-        return self.widget.sizeHint()
-
-    def keyPressEvent(self, event):
-        self.widget.keyPressEvent(event)
-
-    def keyReleaseEvent(self, event):
-        self.widget.keyReleaseEvent(event)
 
 class KhtTextEditor( QPlainTextEdit):
     """ Widget which handle all specifities of implemented in the editor"""

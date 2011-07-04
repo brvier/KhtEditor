@@ -30,7 +30,6 @@ QtDeclarative.qmlRegisterType(QmlTextEditor,'net.khertan.qmlcomponents',1,0,'Kht
 
 view = QtDeclarative.QDeclarativeView()
 
-
 view.setResizeMode(QtDeclarative.QDeclarativeView.SizeRootObjectToView)
 #view.rootContext().setContextProperty('listener', listener)
 view.setSource(__file__.replace('.py', '.qml'))
