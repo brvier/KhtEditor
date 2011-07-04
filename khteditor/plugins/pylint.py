@@ -7,16 +7,16 @@
 #PYLINT:W:Unused import Qt
 #PYLINT:C:Comma not followed by a space
 #PYLINT:C:Missing docstring
-from PyQt4.QtCore import Qt, \
+from PySide.QtCore import Qt, \
                          QProcess, \
                          QRegExp, \
                          QObject, \
                          QAbstractListModel, \
                          QModelIndex, \
-                         pyqtSlot, \
-                         SIGNAL
+                         Slot, \
+                         Signal
 
-from PyQt4.QtGui import QAction, \
+from PySide.QtGui import QAction, \
                         QMainWindow, \
                         QListView 
                         
@@ -51,8 +51,9 @@ class ResultModel(QAbstractListModel):
         try:
             if len(mlist[0])==3:
                 self.items = mlist
-                QObject.emit(self, \
-                    SIGNAL("dataChanged(const QModelIndex&, const QModelIndex &)"), self.createIndex(0,0), self.createIndex(0,len(self.items))) # pylint: disable=C0301
+                self.dataChanged.emit(self.createIndex(0,0), self.createIndex(0, len(self.items)))
+                #QObject.emit(self, \
+                #    SIGNAL("dataChanged(const QModelIndex&, const QModelIndex &)"), self.createIndex(0,0), self.createIndex(0,len(self.items))) # pylint: disable=C0301
         except StandardError:
             pass
             
@@ -61,8 +62,9 @@ class ResultModel(QAbstractListModel):
         try:
             if len(mlist[0])==3:
                 self.items = self.items + mlist
-                QObject.emit(self, \
-                    SIGNAL("dataChanged(const QModelIndex&, const QModelIndex &)"), self.createIndex(0,0), self.createIndex(0,len(self.items))) # pylint: disable=C0301
+                self.dataChanded.emit(self.createIndex(0,0), self.createIndex(0, len(self.items)))
+                #QObject.emit(self, \
+                #    SIGNAL("dataChanged(const QModelIndex&, const QModelIndex &)"), self.createIndex(0,0), self.createIndex(0,len(self.items))) # pylint: disable=C0301
         except StandardError:
             pass
             

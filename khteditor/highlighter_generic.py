@@ -4,8 +4,8 @@ import xml.sax
 from xml.sax.handler import ContentHandler
 from xml.sax.saxutils import unescape
 
-from PyQt4.QtCore import QRegExp
-from PyQt4.QtGui import QSyntaxHighlighter, QColor, QTextCharFormat, \
+from PySide.QtCore import QRegExp
+from PySide.QtGui import QSyntaxHighlighter, QColor, QTextCharFormat, \
     QTextBlockUserData, QFont
 
 SYNTAX_PATH = [ os.path.join('.', 'syntax'),
@@ -29,23 +29,6 @@ def format(color, style=''):
         _format.setFontItalic(True)
 
     return _format
-
-STYLES = {
-    'default': format('black'),
-    'preprocessor': format('darkMagenta'),
-    'keyword': format('darkOrange'),
-    'datatype': format('darkMagenta'),
-    'operator': format('darkMagenta'),
-    'brace': format('darkGray'),
-    'number': format('blue'),
-    'string': format('green'),
-    'string2': format('green'),
-    'comment': format('red'),
-    'framework': format('blue'),
-    'function': format('darkBlue'),
-    'mark1': format('darkOrange'),
-    'mark2': format('red'),
-    }
 
 class XMLSyntaxParser(ContentHandler):
     def __init__(self,lang_name):
@@ -283,8 +266,7 @@ class Highlighter(QSyntaxHighlighter):
         self.multilines_comment = None
 
         #Init error format
-        self.err_format = format('red', ('bold', 'underline'))
-        self.errors = self.parent().parent().parent().errors
+        self.errors = self.document().parent().errors
 
         #Brace rule
         self.braces = QRegExp('(\{|\}|\(|\)|\[|\])')
@@ -322,9 +304,10 @@ class Highlighter(QSyntaxHighlighter):
                 index = expression.indexIn(text, index + length)
 
         # Do errors coloration
+
+        print 'errors : %s' % self.errors
         if self.currentBlock().firstLineNumber() in self.errors:
-            currBlock = self.currentBlock()
-            self.setFormat(0, self.currentBlock().length(), self.err_format)
+            self.setFormat(0, self.currentBlock().length(), self.styles['error'])
 
         self.setCurrentBlockState(0)
 
