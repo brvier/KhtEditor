@@ -11,6 +11,7 @@ class QmlTextEditor(QDeclarativeItem):
         self.proxy.setWidget(self.widget)
         self.proxy.setPos(0,0)
         self.setFlag(QGraphicsItem.ItemHasNoContents, False)
+        self.widget.setEnabled(False)
+        self.widget.setPlainText('test\n'*200)
 #        self.widget.resize(850,850)
 #        self.setKeepMouseGrab(True)
-        
