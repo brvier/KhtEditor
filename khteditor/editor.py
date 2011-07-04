@@ -11,7 +11,9 @@ import re
 from PySide.QtCore import Qt, QEvent, \
                         QFileInfo, QSettings, \
                         QFile, QIODevice, \
-                        QTextStream, QRegExp, Signal
+                        QTextStream, QRegExp, Signal, \
+                        QSize
+                        
 from PySide.QtGui import QPlainTextEdit, QColor, \
                         QFont,  QFontMetrics, \
                         QTextCursor, QSizePolicy, \
@@ -74,7 +76,8 @@ class KhtTextEditor(QPlainTextEdit):
     showProgress = Signal(bool)
     filepathChanged = Signal(unicode)
     documentErrorsChanged = Signal()
-
+    sizeChanged = Signal(QSize)
+    
     def __init__(self, parent=None, scroller=None, inQML=False):
         """Initialization, can accept a filepath as argument"""
         QPlainTextEdit.__init__(self, parent)
@@ -230,8 +233,9 @@ class KhtTextEditor(QPlainTextEdit):
             s.setHeight((s.height() + 1) * (self.fmetrics.lineSpacing()+1) )
             fr = self.frameRect()
             cr = self.contentsRect()
-            self.setMinimumHeight(max(70, s.height() +  (fr.height() - cr.height() - 1)))
-            self.setMinimumWidth(max(240,s.width() + (fr.width()-cr.width()) - 1))
+            self.setMinimumHeight(max(460, s.height() +  (fr.height() - cr.height() - 1)))
+            self.setMinimumWidth(max(800,s.width() + (fr.width()-cr.width()) - 1))
+            self.sizeChanged.emit(self.size())
 
     def curPositionChanged(self):
         #Plugin hook

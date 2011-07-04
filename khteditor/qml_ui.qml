@@ -6,14 +6,21 @@ Rectangle {
     width:800
     height:480
     Flickable {
-        id: flick
-        width: parent.width - 10; height: parent.height;
+        id:flicker
+        width: parent.width; height: parent.height
+        contentWidth: editor.width; contentHeight: editor.height     
         clip: true
         QmlTextEditor {
             id:editor
-            width: parent.width; height: parent.height;                
-            anchors.centerIn: parent            
+            anchors.fill: parent
+            onWidthChanged:{
+                flicker.contentWidth=editor.width
+            }
+            onHeightChanged:{
+                flicker.contentWidth=editor.width
+            }
         }
     }
 }
+
 
