@@ -6,4 +6,4 @@ Type=Application
 Name=KhtEditor
 Exec=/usr/bin/khteditor_launch.py
 Icon=khteditor
-Name[fr_FR]=readme.txt
+Name[fr_FR]=readme.desktop
