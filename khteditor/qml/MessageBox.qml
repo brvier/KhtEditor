@@ -1,4 +1,4 @@
-import QtQuick 1.0
+import Qt 4.7
 
 Item {
     width: parent.width / 1.2

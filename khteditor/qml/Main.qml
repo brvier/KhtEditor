@@ -1,13 +1,15 @@
-import QtQuick 1.0
+import Qt 4.7
 import net.khertan.qmlcomponents 1.0
 
-Item {
-    id: window
+Rectangle {
+    id:win
+    color: "grey"
+    width:800
+    height:480
 
-    Flickable{
-        id: flicker
-        width: parent.width
-        height: parent.height
+    Flickable {
+        id:flicker
+        width: parent.width; height: parent.height - 64
         contentWidth: editor.width; contentHeight: editor.height     
         clip: true
         QmlTextEditor {
@@ -21,7 +23,7 @@ Item {
             }
         }
     }
-    
+        
     ScrollBar{
         id:texteditscroller
         scrollArea: flicker
@@ -33,7 +35,6 @@ Item {
     MessageBox{
         id:message
         opacity: 0
-
     }
 
     ToolBar{
