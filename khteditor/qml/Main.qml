@@ -2,10 +2,30 @@ import Qt 4.7
 import net.khertan.qmlcomponents 1.0
 
 Rectangle {
-    id:win
+    id:view
     color: "grey"
     width:800
     height:480
+
+    property string filepath
+    property string filename
+
+    Rectangle {
+        id:titlebar
+        width:parent.width
+        height:48
+        anchors.top: parent.top
+        color:'black'
+        Text {
+            id:titlelabel
+            anchors.fill: parent
+            font { bold: true; family: "Helvetica"; pixelSize: 18 }
+            color:'white'
+            text:view.filename + '\n' + view.filepath
+            horizontalAlignment: "AlignHCenter"
+            verticalAlignment: "AlignVCenter"
+        }        
+    }
 
     Flickable {
         id:flicker
@@ -14,12 +34,13 @@ Rectangle {
         clip: true
         QmlTextEditor {
             id:editor
+            filepath: view.filepath
             anchors.fill: parent
             onWidthChanged:{
                 flicker.contentWidth=editor.width
             }
             onHeightChanged:{
-                flicker.contentWidth=editor.width
+                flicker.contentHeight=editor.height
             }
         }
     }
