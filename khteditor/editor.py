@@ -56,8 +56,8 @@ LANGUAGES = ({'Ext':'.R','Name':'R'},
             {'Ext':'.pl','Name':'perl'},
             {'Ext':'.php','Name':'php'},
             {'Ext':'.po','Name':'po'},
-            {'Ext':('.py','.pyw'),'Name':'python', 'Exec':'cd $0;python -u $1'},
-            {'Ext':'.qml','Name':'qml'},
+            {'Ext':('.py','.pyw'),'Name':'python', 'Exec':'cd $0;python -u $1', 'Comment':'#'},
+            {'Ext':'.qml','Name':'qml', 'Exec':'cd $0;qmlviewer $1', 'Comment':'//'},
             {'Ext':'.rb','Name':'ruby'},
             {'Ext':'.scheme','Name':'scheme'},
             {'Ext':'.sh','Name':'sh'},
@@ -87,6 +87,7 @@ class KhtTextEditor(QPlainTextEdit):
         self.qt18720 = False
         self.scroller = scroller
         self.inQML = inQML
+        self._commentSyntax = None
         
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         
@@ -186,22 +187,26 @@ class KhtTextEditor(QPlainTextEdit):
         self.fmetrics = QFontMetrics(font)
         self.document().setDefaultFont(font)
 
-    def detectLanguage(self,filename):
-        #lang = None
-        ext = os.path.splitext(self._filepath)[1]
+    def detectLanguage(self, filepath=None):
+        if not filepath: filepath = self._filepath
+        ext = os.path.splitext(filepath)[1]
         for lang in LANGUAGES:
             if ext in lang['Ext']:
                 return lang['Name']
-
-        #lang = [lang['Name'] for lang in LANGUAGES if ( os.path.splitext(self._filepath)[1] in lang['Ext'])]
-#        for extension,lang in LANGUAGES:
-#            if filename.endswith(extension.lower()):
-#                return lang
+        return None
+        
+    def detectComment(self, filepath=None):
+        if not filepath: filepath = self._filepath
+        ext = os.path.splitext(filepath)[1]
+        for lang in LANGUAGES:
+            if ext in lang['Ext']:
+                return lang['Comment']
         return None
 
     def loadHighlighter(self,filename=None):
         filename = self._filepath
         language = self.detectLanguage(filename)
+        
         print 'Detected Language: ',language
         #Return None if language not yet implemented natively in KhtEditor
         if language == 'python':
@@ -650,25 +655,29 @@ class KhtTextEditor(QPlainTextEdit):
 
     def comment(self):
         """Comment the current line or selection"""
+        if not self._commentSyntax:
+            self._commentSyntax = self.detectComment()
+        _commentSyntax = self._commentSyntax
+        
         maincursor = self.textCursor()
         if not maincursor.hasSelection():
             maincursor.movePosition( QTextCursor.StartOfBlock)
             line = str(self.document().\
                  findBlockByNumber(maincursor.blockNumber()).text())
-            if line.startswith('#'):
+            if line.startswith(_commentSyntax):
                 maincursor.deleteChar()
             else:
-                maincursor.insertText("#")
+                maincursor.insertText(_commentSyntax)
         else:
             block = self.document().findBlock(maincursor.selectionStart())
             while True:
                 cursor = self.textCursor()
                 cursor.setPosition(block.position())
 
-                if str(block.text()).startswith('#'):
+                if str(block.text()).startswith(_commentSyntax):
                     cursor.deleteChar()
                 else:
-                    cursor.insertText("#")
+                    cursor.insertText(_commentSyntax)
 
                 if block.contains(maincursor.selectionEnd()):
                     break

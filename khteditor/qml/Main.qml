@@ -30,7 +30,6 @@ Rectangle {
                 font { bold: true; family: "Helvetica"; pixelSize: 18 }
                 color:'white'
                 text:((editor.modification==true) ? '* ':'')+view.filepath
-//                horizontalAlignment: "AlignHLeft"
                 verticalAlignment: "AlignVCenter"
             }        
         }
@@ -69,6 +68,15 @@ Rectangle {
         height:64
         width: parent.width
         anchors.bottom: parent.bottom
+        onIndentButtonClicked:{
+            editor.indent()
+        }
+        onUnIndentButtonClicked:{
+            editor.unindent()
+        }
+        onCommentButtonClicked:{
+            editor.comment()
+        }
         onButton4Clicked:
         {
             message.text='This feature is not yet implemented';

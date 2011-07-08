@@ -25,6 +25,18 @@ class QmlTextEditor(QDeclarativeItem):
         self._modification = False
         self.widget.modificationChanged.connect(self.setModificationChanged)
 
+    @Slot()
+    def indent(self):
+        self.widget.indent()
+
+    @Slot()
+    def unindent(self):
+        self.widget.unindent()
+        
+    @Slot()
+    def comment(self):
+        self.widget.comment()
+        
     @Slot(QSize)
     def sizeChanged(self,size):
         self.setWidth(size.width())
