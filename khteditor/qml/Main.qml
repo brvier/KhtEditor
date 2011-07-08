@@ -69,20 +69,12 @@ Rectangle {
         height:64
         width: parent.width
         anchors.bottom: parent.bottom
-        button1Icon: "Images/comment.png"
-        button2Icon: "Images/indent.png"
-        button3Icon: "Images/unindent.png"
-        button4Icon: "Images/search.png"
-        button5Icon: "Images/open.png"
-        button6Icon: "Images/save.png"
-        button7Icon: "Images/execute.png"
-        button8Icon: "Images/execute.png"
-        onButton1Clicked:
+        onButton4Clicked:
         {
             message.text='This feature is not yet implemented';
             message.opacity=1
         }
-        onButton2Clicked:
+        onButton5Clicked:
         {
             message.text='This feature is not yet implemented';
             message.opacity=1

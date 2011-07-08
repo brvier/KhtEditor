@@ -25,6 +25,11 @@ class QmlTextEditor(QDeclarativeItem):
         self._modification = False
         self.widget.modificationChanged.connect(self.setModificationChanged)
 
+    @Slot(QSize)
+    def sizeChanged(self,size):
+        self.setWidth(size.width())
+        self.setHeight(size.height())
+        
     def getModificationChanged(self): return self._modification
     def setModificationChanged(self, changed):
         if changed != self._modification:
@@ -51,13 +56,9 @@ class QmlTextEditor(QDeclarativeItem):
         if height != self._height:
             self._height = height
             self.heightChanged.emit()
+
             
     width = Property(int,getWidth, setWidth, notify=widthChanged)
     height = Property(int, getHeight, setHeight, notify=heightChanged)
     filepath = Property(unicode, getFilepath, setFilepath, notify=filepathChanged)
     modification = Property(bool, getModificationChanged, setModificationChanged, notify=modificationChanged)
-    
-    @Slot(QSize)
-    def sizeChanged(self,size):
-        self.setWidth(size.width())
-        self.setHeight(size.height())
