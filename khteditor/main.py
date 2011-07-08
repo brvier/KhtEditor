@@ -26,7 +26,8 @@ class KhtEditor(QApplication):
         self.views = []
 
         for arg in sys.argv[1:]:
-            self.open_view(filepath=arg)
+            if os.path.exists(arg):
+                self.open_view(filepath=arg)
 
         if len(self.views)==0:
             self.open_view()
@@ -38,7 +39,7 @@ class KhtEditor(QApplication):
         if filepath:
             view.setWindowTitle(os.path.basename(filepath))
             root = view.rootObject()
-            root.setProperty('filepath',filepath)
+            root.setProperty('filepath',os.path.abspath(filepath))
             root.setProperty('filename',os.path.basename(filepath))
 #            button = root.findChild(QtCore.QObject,"buttonMouseArea")
 

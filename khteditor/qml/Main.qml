@@ -10,37 +10,43 @@ Rectangle {
     property string filepath
     property string filename
 
-    Rectangle {
-        id:titlebar
-        width:parent.width
-        height:48
-        anchors.top: parent.top
-        color:'black'
-        Text {
-            id:titlelabel
-            anchors.fill: parent
-            font { bold: true; family: "Helvetica"; pixelSize: 18 }
-            color:'white'
-            text:view.filename + '\n' + view.filepath
-            horizontalAlignment: "AlignHCenter"
-            verticalAlignment: "AlignVCenter"
-        }        
-    }
-
     Flickable {
         id:flicker
         width: parent.width; height: parent.height - 64
-        contentWidth: editor.width; contentHeight: editor.height     
+        contentWidth: editor.width; contentHeight: editor.height + 48     
         clip: true
+        //overshoot:false
+
+        Rectangle {
+            id:titlebar
+            width:parent.width
+            height:48
+            anchors.top: parent.top
+            color:'black'
+            Text {
+                id:titlelabel
+                anchors.fill: parent
+                anchors.leftMargin: 5
+                font { bold: true; family: "Helvetica"; pixelSize: 18 }
+                color:'white'
+                text:((editor.modification==true) ? '* ':'')+view.filepath
+//                horizontalAlignment: "AlignHLeft"
+                verticalAlignment: "AlignVCenter"
+            }        
+        }
+        
         QmlTextEditor {
             id:editor
             filepath: view.filepath
-            anchors.fill: parent
+            anchors.top: titlebar.bottom
+            anchors.bottom: parent.bottom
+            anchors.left: parent.left
+            anchors.right: parent.right
             onWidthChanged:{
                 flicker.contentWidth=editor.width
             }
             onHeightChanged:{
-                flicker.contentHeight=editor.height
+                flicker.contentHeight=editor.height+48
             }
         }
     }

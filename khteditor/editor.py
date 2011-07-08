@@ -111,7 +111,8 @@ class KhtTextEditor(QPlainTextEdit):
         #Current Line highlight and Bracket matcher
         self.cursorPositionChanged.connect(self.curPositionChanged)
         self.textChanged.connect(self.textEditChanged)
-
+        self.textEditChanged()
+        
         #Enabled Plugin
         if not hasattr(self,'enabled_plugins'):
             #Got the enabled plugin
