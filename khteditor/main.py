@@ -1,3 +1,5 @@
+#/use/bin/python
+
 from PySide.QtGui import QApplication
 #from PySide.QtCore import QSettings
 from PySide import QtDeclarative

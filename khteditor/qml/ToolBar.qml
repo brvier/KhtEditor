@@ -7,7 +7,7 @@ Item {
     signal commentButtonClicked
     signal indentButtonClicked
     signal unIndentButtonClicked
-    signal button4Clicked
+    signal saveButtonClicked
     signal button5Clicked
     signal button6Clicked
     signal button7Clicked
@@ -57,17 +57,18 @@ Item {
         onClicked: toolbar.unIndentButtonClicked()
     }
     Button {
-        id: button5
+        id: saveButton
+        icon: 'Images/save.png'
         anchors.left: unIndentButton.right;
         anchors.leftMargin: 8;
         anchors.top: parent.top;
         anchors.topMargin: 2;
         width: 90; height: 60
-        onClicked: toolbar.button5Clicked()
+        onClicked: toolbar.saveButtonClicked()
     }
     Button {
         id: button6
-        anchors.left: button5.right;
+        anchors.left: saveButton.right;
         anchors.leftMargin: 8;
         anchors.top: parent.top;
         anchors.topMargin: 2;

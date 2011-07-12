@@ -36,6 +36,10 @@ class QmlTextEditor(QDeclarativeItem):
     @Slot()
     def comment(self):
         self.widget.comment()
+
+    @Slot()
+    def save(self):
+        self.widget.save()
         
     @Slot(QSize)
     def sizeChanged(self,size):

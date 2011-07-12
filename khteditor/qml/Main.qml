@@ -77,15 +77,24 @@ Rectangle {
         onCommentButtonClicked:{
             editor.comment()
         }
-        onButton4Clicked:
+        onButton6Clicked:
         {
             message.text='This feature is not yet implemented';
             message.opacity=1
         }
-        onButton5Clicked:
+        onButton7Clicked:
         {
             message.text='This feature is not yet implemented';
             message.opacity=1
+        }
+        onButton8Clicked:
+        {
+            message.text='This feature is not yet implemented';
+            message.opacity=1
+        }
+        onSaveButtonClicked:
+        {
+            editor.save()
         }
     }
 
