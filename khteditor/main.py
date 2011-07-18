@@ -1,7 +1,7 @@
 #/use/bin/python
 
 from PySide.QtGui import QApplication
-#from PySide.QtCore import QSettings
+from PySide.QtCore import QObject
 from PySide import QtDeclarative
 
 import sys
@@ -11,7 +11,7 @@ import os.path
 
 from qmleditor import QmlTextEditor
 from plugins.plugins_api import init_plugin_system
-
+ 
 class KhtEditor(QApplication):
     def __init__(self):
 
@@ -37,13 +37,15 @@ class KhtEditor(QApplication):
     def open_view(self,filepath=None):
         view = QtDeclarative.QDeclarativeView()
         view.setResizeMode(QtDeclarative.QDeclarativeView.SizeRootObjectToView)
-        view.setSource('qml/Main.qml')
+        view.setSource('qml/main.qml')
         if filepath:
             view.setWindowTitle(os.path.basename(filepath))
             root = view.rootObject()
             root.setProperty('filepath',os.path.abspath(filepath))
             root.setProperty('filename',os.path.basename(filepath))
-#            button = root.findChild(QtCore.QObject,"buttonMouseArea")
+            #print root, dir(root)
+            #mainPages = root.findChildren(QObject,"mainPage")
+            #mainPages[0].setProperty('filepath',os.path.abspath(filepath))
 
         else:
             view.setWindowTitle('Untitled')

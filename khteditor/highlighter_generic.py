@@ -8,12 +8,12 @@ from PySide.QtCore import QRegExp
 from PySide.QtGui import QSyntaxHighlighter, QColor, QTextCharFormat, \
     QTextBlockUserData, QFont
 
+from styles import STYLES
+
 SYNTAX_PATH = [ os.path.join('.', 'syntax'),
                 os.path.abspath('.'),
-                os.path.abspath(os.path.dirname(__file__)),
                 os.path.join(os.path.expanduser('~'),'.khteditor','syntax'),
-                '/usr/lib/python2.5/site-packages/khteditor/syntax']
-
+                os.path.join(os.path.abspath(os.path.dirname(__file__)), 'syntax'), ]
 
 def format(color, style=''):
     """Return a QTextCharFormat with the given attributes.
@@ -259,7 +259,7 @@ class TextBlockData(QTextBlockUserData):
 
 class Highlighter(QSyntaxHighlighter):
 
-    def __init__(self, document,language):
+    def __init__(self, document,language, styleName=None):
         super(Highlighter, self).__init__(document)
 
         self.rules = []
@@ -304,10 +304,9 @@ class Highlighter(QSyntaxHighlighter):
                 index = expression.indexIn(text, index + length)
 
         # Do errors coloration
-
-        print 'errors : %s' % self.errors
-        if self.currentBlock().firstLineNumber() in self.errors:
-            self.setFormat(0, self.currentBlock().length(), self.styles['error'])
+        if hasattr(self.doc,'errors'):
+            if self.currentBlock().firstLineNumber() in self.doc.errors:
+                self.setFormat(0, self.currentBlock().length(), self.styles['error'])
 
         self.setCurrentBlockState(0)
 

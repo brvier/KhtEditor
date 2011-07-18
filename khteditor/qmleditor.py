@@ -40,7 +40,11 @@ class QmlTextEditor(QDeclarativeItem):
     @Slot()
     def save(self):
         self.widget.save()
-        
+
+    @Slot()
+    def execute(self):
+        self.widget.execute()
+                
     @Slot(QSize)
     def sizeChanged(self,size):
         self.setWidth(size.width())
