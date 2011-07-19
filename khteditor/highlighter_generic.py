@@ -2,6 +2,7 @@
 import os
 import xml.sax
 from xml.sax.handler import ContentHandler
+
 from xml.sax.saxutils import unescape
 
 from PySide.QtCore import QRegExp
@@ -18,6 +19,7 @@ SYNTAX_PATH = [ os.path.join('.', 'syntax'),
 def format(color, style=''):
     """Return a QTextCharFormat with the given attributes.
     """
+
     _color = QColor()
     _color.setNamedColor(color)
 
@@ -31,12 +33,14 @@ def format(color, style=''):
     return _format
 
 class XMLSyntaxParser(ContentHandler):
-    def __init__(self,lang_name):
+    def __init__(self,lang_name, styleName='default'):
         ContentHandler.__init__(self)
 
         self._grammar = []
         self._comments = []
 
+        self.styleName = styleName
+        
         # search for syntax-files:
         fname = None
         for syntax_dir in SYNTAX_PATH:
@@ -50,10 +54,10 @@ class XMLSyntaxParser(ContentHandler):
 
     def get_style(self,style):
         try:
-            return STYLES[style]
+            return STYLES[self.styleName][style]
         except KeyError, err:
             print 'Unknow style :',err
-            return STYLES['default']
+            return STYLES['default'][style]
 
     # Dispatch start/end - document/element and chars
     def startDocument(self):
@@ -251,6 +255,7 @@ class TextBlockData(QTextBlockUserData):
         self.valid = False
 
     def insert_brackets_info(self, info):
+        self.multilines_comment = None
         self.valid = True
         self.braces.append(info)
 
@@ -263,15 +268,20 @@ class Highlighter(QSyntaxHighlighter):
         super(Highlighter, self).__init__(document)
 
         self.rules = []
-        self.multilines_comment = None
 
+	if styleName in STYLES:
+            self.styleName = styleName
+        else:
+            self.styleName = 'default' 
+        
         #Init error format
-        self.errors = self.document().parent().errors
+        #self.errors = self.document().parent().errors
+        self.doc = self.document()
 
         #Brace rule
         self.braces = QRegExp('(\{|\}|\(|\)|\[|\])')
 
-        syntax = XMLSyntaxParser(language)
+        syntax = XMLSyntaxParser(language, styleName=self.styleName)
         self.rules = syntax._grammar
         self.multilines_comment = syntax._comments
 
@@ -293,14 +303,15 @@ class Highlighter(QSyntaxHighlighter):
         self.setCurrentBlockUserData(block_data)
 
         # Do other syntax formatting
-        for expression, nth, format in self.rules:
+        for expression, nth, aformat in self.rules:
             index = expression.indexIn(text, 0)
 
             while index >= 0:
                 # We actually want the index of the nth match
                 index = expression.pos(nth)
                 length = len(expression.cap(nth))
-                self.setFormat(index, length, format)
+                print aformat, expression, nth
+                self.setFormat(index, length, aformat)
                 index = expression.indexIn(text, index + length)
 
         # Do errors coloration

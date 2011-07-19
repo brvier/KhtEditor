@@ -13,7 +13,8 @@ class QmlTextEditor(QDeclarativeItem):
         QDeclarativeItem.__init__(self, parent)
 
         self.widget = KhtTextEditor(inQML=True)
-        self.proxy = QGraphicsProxyWidget(self)
+        self.widget.resize(850,480)
+	self.proxy = QGraphicsProxyWidget(self)
         self.proxy.setWidget(self.widget)
         self.proxy.setPos(0,0)
         self.setFlag(QGraphicsItem.ItemHasNoContents, False)

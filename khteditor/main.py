@@ -19,7 +19,7 @@ class KhtEditor(QApplication):
         self.setOrganizationName("Khertan Software")
         self.setOrganizationDomain("khertan.net")
         self.setApplicationName("KhtEditor")
-		
+
         QtDeclarative.qmlRegisterType(QmlTextEditor,'net.khertan.qmlcomponents',1,0,'QmlTextEditor')
 
         #Initialization of the plugin system

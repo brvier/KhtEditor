@@ -90,7 +90,7 @@ class KhtTextEditor(QPlainTextEdit):
         self._commentSyntax = None
         
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
-        
+        self.setTextInteractionFlags(Qt.TextEditable | Qt.TextSelectableByKeyboard)
         if self.inQML:
             self.setVerticalScrollBarPolicy (Qt.ScrollBarAlwaysOff)
             self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
