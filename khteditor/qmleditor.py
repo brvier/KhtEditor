@@ -46,6 +46,10 @@ class QmlTextEditor(QDeclarativeItem):
     @Slot()
     def execute(self):
         self.widget.execute()
+
+    @Slot()
+    def duplicate(self):
+        self.widget.duplicate()
                 
     @Slot(QSize)
     def sizeChanged(self,size):
