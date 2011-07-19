@@ -77,6 +77,7 @@ class KhtTextEditor(QPlainTextEdit):
     filepathChanged = Signal(unicode)
     documentErrorsChanged = Signal()
     sizeChanged = Signal(QSize)
+    positionTextChanged = Signal(unicode)
     
     def __init__(self, parent=None, scroller=None, inQML=False):
         """Initialization, can accept a filepath as argument"""
@@ -255,11 +256,13 @@ class KhtTextEditor(QPlainTextEdit):
         #Make sure cursor is visible
         #self.ensureCursorVisible()
         cursor = self.cursorRect()
+        cur = self.textCursor()
         pos = cursor.center()
         #self.ensureVisible(pos.x(),pos.y(), 2*cursor.width()+20, 2*cursor.height())
         if self.scroller:
             #self.scroller.ensureVisible(pos.x(),pos.y(),2*cursor.width()+20, 2*cursor.height())
             self.scroller.ensureVisible(pos, 2*cursor.width()+20, 2*cursor.height())
+        self.positionTextChanged.emit('%d-%d' % (cur.blockNumber(), cur.positionInBlock()))
 
     def match_left(self, block, character, start, found):
         map = {'{': '}', '(': ')', '[': ']'}

@@ -8,24 +8,25 @@ class QmlTextEditor(QDeclarativeItem):
     widthChanged = Signal()
     filepathChanged = Signal()
     modificationChanged = Signal()
+    positionTextChanged = Signal()
     
     def __init__(self, parent=None):
         QDeclarativeItem.__init__(self, parent)
 
         self.widget = KhtTextEditor(inQML=True)
         self.widget.resize(850,480)
-	self.proxy = QGraphicsProxyWidget(self)
+        self.proxy = QGraphicsProxyWidget(self)
         self.proxy.setWidget(self.widget)
         self.proxy.setPos(0,0)
         self.setFlag(QGraphicsItem.ItemHasNoContents, False)
         self.widget.sizeChanged.connect(self.sizeChanged)
         self._width = self.widget.width()       
         self._height = self.widget.height()
-        print 'Debug: Initial size:',self._width,':',self._height
         self.widget.filepathChanged.connect(self.filepathChanged)
         self._modification = False
         self.widget.modificationChanged.connect(self.setModificationChanged)
-
+        self.widget.positionTextChanged.connect(self.setPositionText)
+        self._positionText = '001-001'
     @Slot()
     def indent(self):
         self.widget.indent()
@@ -78,8 +79,14 @@ class QmlTextEditor(QDeclarativeItem):
             self._height = height
             self.heightChanged.emit()
 
+    def getPositionText(self): return self._positionText      
+    def setPositionText(self,text):
+        if self._positionText != text:
+            self._positionText = text
+            self.positionTextChanged.emit()
             
     width = Property(int,getWidth, setWidth, notify=widthChanged)
     height = Property(int, getHeight, setHeight, notify=heightChanged)
     filepath = Property(unicode, getFilepath, setFilepath, notify=filepathChanged)
     modification = Property(bool, getModificationChanged, setModificationChanged, notify=modificationChanged)
+    positionText = Property(unicode, getPositionText, setPositionText, notify=positionTextChanged)
