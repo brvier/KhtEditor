@@ -22,11 +22,12 @@ class QmlTextEditor(QDeclarativeItem):
         self.widget.sizeChanged.connect(self.sizeChanged)
         self._width = self.widget.width()       
         self._height = self.widget.height()
-        self.widget.filepathChanged.connect(self.filepathChanged)
+        #self.widget.filepathChanged.connect(self.filepathChanged)
         self._modification = False
         self.widget.modificationChanged.connect(self.setModificationChanged)
         self.widget.positionTextChanged.connect(self.setPositionText)
         self._positionText = '001-001'
+
     @Slot()
     def indent(self):
         self.widget.indent()
@@ -34,6 +35,11 @@ class QmlTextEditor(QDeclarativeItem):
     @Slot()
     def unindent(self):
         self.widget.unindent()
+ 
+    @Slot(unicode)
+    def loadFile(self, filepath):
+        self.widget.setFilePath(filepath)
+        self.widget.load()
         
     @Slot()
     def comment(self):
@@ -63,13 +69,13 @@ class QmlTextEditor(QDeclarativeItem):
             self._modification = changed
             self.modificationChanged.emit()
 
-    def getFilepath(self): return self.widget.getFilePath()        
-    def setFilepath(self,filepath):
-        if filepath:
-            if self.widget.getFilePath() != filepath:
-                self.widget.setFilePath(filepath)
-                self.widget.load()
-                self.filepathChanged.emit()
+#    def getFilepath(self): return self.widget.getFilePath()        
+#    def setFilepath(self,filepath):
+#        if filepath:
+#            if self.widget.getFilePath() != filepath:
+#                self.widget.setFilePath(filepath)
+#                self.widget.load()
+                #self.filepathChanged.emit()
         
     def getWidth(self): return self._width        
     def setWidth(self,width):
@@ -91,6 +97,6 @@ class QmlTextEditor(QDeclarativeItem):
             
     width = Property(int,getWidth, setWidth, notify=widthChanged)
     height = Property(int, getHeight, setHeight, notify=heightChanged)
-    filepath = Property(unicode, getFilepath, setFilepath, notify=filepathChanged)
+#    filepath = Property(unicode, getFilepath, setFilepath)
     modification = Property(bool, getModificationChanged, setModificationChanged, notify=modificationChanged)
     positionText = Property(unicode, getPositionText, setPositionText, notify=positionTextChanged)

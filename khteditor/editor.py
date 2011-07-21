@@ -74,7 +74,7 @@ class KhtTextEditor(QPlainTextEdit):
     """ Widget which handle all specifities of implemented in the editor"""
 
     showProgress = Signal(bool)
-    filepathChanged = Signal(unicode)
+    #filepathChanged = Signal(unicode)
     documentErrorsChanged = Signal()
     sizeChanged = Signal(QSize)
     positionTextChanged = Signal(unicode)
@@ -133,9 +133,10 @@ class KhtTextEditor(QPlainTextEdit):
         if filepath != self._filepath:
             if self.detectLanguage(filepath) != self.detectLanguage(self._filepath):
                 self._filepath = filepath
-                self.loadHighlighter()
+                self.load()
+                #self.loadHighlighter()
             self._filepath = filepath
-            self.filepathChanged.emit(filepath)
+            #self.filepathChanged.emit(filepath)
 
     def loadSettings(self):
         from styles import STYLES
