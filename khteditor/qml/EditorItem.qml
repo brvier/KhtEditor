@@ -49,7 +49,7 @@ Page {
     }
 
     function loadFile(filePath){
-	filepath = filePath
+       filepath = filePath
        editor.loadFile(filePath)
     }
 

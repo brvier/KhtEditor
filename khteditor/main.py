@@ -26,7 +26,7 @@ class KhtEditor(QApplication):
         self.dirModel = QDirModel()
         self.view = QtDeclarative.QDeclarativeView()
         self.view.rootContext().setContextProperty("dirModel", self.dirModel)
-        self.view.setSource(QUrl.fromLocalFile("qml3/main.qml"))
+        self.view.setSource(QUrl.fromLocalFile("qml/main.qml"))
         self.view.showFullScreen()
 
 

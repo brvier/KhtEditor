@@ -39,7 +39,7 @@ class QmlTextEditor(QDeclarativeItem):
     @Slot(unicode)
     def loadFile(self, filepath):
         self.widget.setFilePath(filepath)
-        self.widget.load()
+        #self.widget.load()
         
     @Slot()
     def comment(self):

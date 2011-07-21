@@ -80,6 +80,7 @@ function finishCreation() {
             }
             else {
                 editor.loadFile(filePath);
+                //editor.filepath = filePath
             }
             editors.currentTab = editor;
             editorsArray.push(editor)

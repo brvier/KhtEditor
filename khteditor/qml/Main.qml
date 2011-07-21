@@ -1,6 +1,6 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
-/*import com.nokia.extras 1.0*/
+import com.nokia.extras 1.0
 
 PageStackWindow {
     id: rootWin
@@ -33,7 +33,7 @@ PageStackWindow {
        id:editorsModel
     }
 
-   /* InfoBanner{
+    InfoBanner{
                       id:notYetAvailableBanner
                       text: 'This feature is not yet available'
                       timerShowTime: 5000
@@ -41,7 +41,7 @@ PageStackWindow {
                       anchors.top: parent.top
                       anchors.topMargin: 60
                       anchors.horizontalCenter: parent.horizontalCenter
-                 }*/
+                 }
 
     function openFile(filepath){
         pageStack.pop(mainPage)

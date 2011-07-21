@@ -160,7 +160,7 @@ class KhtWindow(QMainWindow):
 
         self.editor.showProgress.connect(self.showProgress)
         #self.editor.enabled_plugins = enabled_plugins
-        self.editor.filepathChanged.connect(self.changeWindowTitle)
+        #self.editor.filepathChanged.connect(self.changeWindowTitle)
         self.editor.modificationChanged.connect(self.modificationWindowTitle)
         self.editor.cursorPositionChanged.connect(self.curPositionChanged)
         self.editor.documentErrorsChanged.connect(self.showErrorsTB)
