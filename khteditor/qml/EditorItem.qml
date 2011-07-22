@@ -5,7 +5,9 @@ import net.khertan.qmlcomponents 1.0
 Page {
     property string filepath;
     property string filename;
+//    proberty bool isNewFile;
 
+//    id:editorPage
     anchors.fill:parent
     Rectangle {
             id:titlebar
@@ -19,7 +21,7 @@ Page {
                 anchors.leftMargin: 5
                 font { bold: true; family: "Nokia Pure Text"; pixelSize: 18 }
                 color:"#cc6633"
-                text:((editor.modification) ? '* ':'')+filepath
+                text:((editor.modification) ? '* ':'')+ filepath;
                 verticalAlignment: "AlignVCenter"
             }        
         }    
@@ -48,9 +50,22 @@ Page {
         }
     }
 
+    function saveFile(){
+        editor.saveFile()
+    }
     function loadFile(filePath){
-       filepath = filePath
-       editor.loadFile(filePath)
+       filepath = filePath;
+       filename = filePath.split('\\').pop().split('/').pop()
+       editor.loadFile(filePath);
+    }
+    function comment(){
+        editor.comment()
+    }
+    function indent(){
+        editor.indent()
+    }
+    function unindent(){
+        editor.unindent()
     }
 
 }

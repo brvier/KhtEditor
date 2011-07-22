@@ -15,7 +15,7 @@ PageStackWindow {
         MenuLayout {
             MenuItem { text: "New"; onClicked: pageStack.currentPage.newFile()}
             MenuItem { text: "Open"; onClicked: pageStack.push(Qt.resolvedUrl('SelectorPage.qml'))}
-            MenuItem { text: "Save"; onClicked: currentPage.save()}
+            MenuItem { text: "Save"; onClicked: pageStack.currentPage.saveFile()}
             MenuItem { text: "Save As"; onClicked: notYetAvailableBanner.show()}
             MenuItem { text: "Preferences"; onClicked: notYetAvailableBanner.show()}
             MenuItem { text: "About";  onClicked: notYetAvailableBanner.show()}

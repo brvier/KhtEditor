@@ -41,6 +41,22 @@ function switchEditor(filepath) {
     }
 }
 
+
+function modificationChanged(filepath, filename) {
+    console.log('modificationChanged called')
+    var len=editorsArray.length;
+    for(var i=0; i<len; i++) {
+            if (editorsArray[i].hasOwnProperty("filepath"))
+            {
+                if (editorsArray[i].filepath === filepath)
+                {
+                    editorsModel.set(i,{'filename':filename})
+                    return
+                }
+            }
+    }
+}
+
 function closeEditor(filepath) {
     console.log('closeEditor called')
     var len=editorsArray.length;
@@ -73,14 +89,17 @@ function finishCreation() {
             // Error Handling
             console.log("Error creating object");}
         else{
+//            editor.modificationChanged.connect(finishCreation);
             if (filePath == '') {
                 newPageCounter = newPageCounter + 1;
-                editor.filepath = 'Untitled ' + newPageCounter;
                 editor.filename = 'Untitled ' + newPageCounter;
+                editor.filepath = editor.filename;
+                //editor.isNewFile = true;
             }
             else {
+                //editor.isNewFile = false;
                 editor.loadFile(filePath);
-                //editor.filepath = filePath
+               // editor.filepath = filePath
             }
             editors.currentTab = editor;
             editorsArray.push(editor)

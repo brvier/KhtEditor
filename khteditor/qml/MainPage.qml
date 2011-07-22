@@ -3,8 +3,6 @@ import com.nokia.meego 1.0
 //import net.khertan.qmlcomponents 1.0
 import 'editorCreation.js' as EditorCreation
 
-//var editorsArray;
-
 Page {
     id: mainPage
     tools: editTools
@@ -12,8 +10,8 @@ Page {
     
     Keys.onPressed: 
         {  
-            if ( event.key == Qt.Key_S) editor.save() 
-            if ( event.key == Qt.Key_D) editor.duplicate() 
+            if ( event.key == Qt.Key_S) editors.currentTab.saveFile() 
+            if ( event.key == Qt.Key_D) editors.currentTab.duplicate() 
         }
 
     TabGroup {
@@ -45,7 +43,7 @@ Page {
 
         //Comment
         ToolIcon { platformIconId: "toolbar-tag";
-            onClicked: editors.currentTab.comment()
+            onClicked: editors.currentTab.editorPage.editor.comment()
         }
         //Indent
         ToolIcon { platformIconId: "toolbar-next";
@@ -105,7 +103,8 @@ Page {
 
     function saveFile() {
         if (editors.currentTab != undefined)
-            editors.currentTab.save();
+            console.log(editors.currentTab)
+            editors.currentTab.saveFile();
     }
 
     function saveAsFile() {
@@ -119,10 +118,13 @@ Page {
         EditorCreation.closeEditor(editors.currentTab.filepath)
     }
 
-    function switchFile( filepath){
+    function switchFile(filepath){
         EditorCreation.switchEditor(filepath)
     }
 
+    //function modificationsChanged(filepath,filename){
+    //    EditorCreation.modificationsChanged(filepath, filename)
+    //}
 
     QueryDialog {
 	    id:unsavedDialog

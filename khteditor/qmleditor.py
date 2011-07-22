@@ -46,7 +46,7 @@ class QmlTextEditor(QDeclarativeItem):
         self.widget.comment()
 
     @Slot()
-    def save(self):
+    def saveFile(self):
         self.widget.save()
 
     @Slot()

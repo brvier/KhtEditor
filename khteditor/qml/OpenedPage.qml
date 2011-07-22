@@ -15,7 +15,7 @@ Page {
 
             Column {
                 spacing: 10
-                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
                 Label {text:'<b>'+filename+'</b>'
                     font.family: "Nokia Pure Text"
                     font.pixelSize: 24
@@ -27,7 +27,7 @@ Page {
                 }
             }
             Image {
-                //source: "image://theme/icon-m-common-drilldown-arrow" + (theme.inverted ? "-inverse" : "")
+                source: "image://theme/icon-m-common-drilldown-arrow" + (theme.inverted ? "-inverse" : "")
                 anchors.right: parent.right;
                 anchors.verticalCenter: parent.verticalCenter
             }
