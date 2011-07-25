@@ -203,7 +203,10 @@ class KhtTextEditor(QPlainTextEdit):
         ext = os.path.splitext(filepath)[1]
         for lang in LANGUAGES:
             if ext in lang['Ext']:
-                return lang['Comment']
+                if 'Comment' in lang:
+                    return lang['Comment']
+                else:
+                    return '//'
         return None
 
     def loadHighlighter(self,filename=None):
@@ -264,7 +267,7 @@ class KhtTextEditor(QPlainTextEdit):
         if self.scroller:
             #self.scroller.ensureVisible(pos.x(),pos.y(),2*cursor.width()+20, 2*cursor.height())
             self.scroller.ensureVisible(pos, 2*cursor.width()+20, 2*cursor.height())
-        self.positionTextChanged.emit('%d-%d' % (cur.blockNumber(), cur.positionInBlock()))
+        self.positionTextChanged.emit('%03d-%03d' % (cur.blockNumber()+1, cur.positionInBlock()+1))
         x = pos.x()
         y = pos.y()
         self.cursorRectangleChanged.emit(QRect(x,y,2*cursor.width()+20, 2*cursor.height()))
@@ -674,7 +677,8 @@ class KhtTextEditor(QPlainTextEdit):
             line = str(self.document().\
                  findBlockByNumber(maincursor.blockNumber()).text())
             if line.startswith(_commentSyntax):
-                maincursor.deleteChar()
+                for index in range(len(_commentSyntax)):
+                    maincursor.deleteChar()
             else:
                 maincursor.insertText(_commentSyntax)
         else:
@@ -684,7 +688,8 @@ class KhtTextEditor(QPlainTextEdit):
                 cursor.setPosition(block.position())
 
                 if str(block.text()).startswith(_commentSyntax):
-                    cursor.deleteChar()
+                    for index in range(len(_commentSyntax)):
+                        cursor.deleteChar()
                 else:
                     cursor.insertText(_commentSyntax)
 

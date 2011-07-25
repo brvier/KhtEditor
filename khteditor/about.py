@@ -18,7 +18,7 @@ class QAboutWin(QMainWindow):
 
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
-        self.parent = parent
+        self.parent = parenty
 
         self.settings = QSettings()
 

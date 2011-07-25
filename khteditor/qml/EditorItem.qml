@@ -62,6 +62,9 @@ Page {
             onCursorRectangleChanged: {
                 flicker.ensureVisible(cursorRectangle)
                 }
+            onPositionTextChanged: {
+                toolTextPosition.text = positionText
+                }
         }
     }
 

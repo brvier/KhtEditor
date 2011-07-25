@@ -7,11 +7,11 @@ Page {
     id: mainPage
     tools: editTools
     anchors.fill:parent
-    
-    Keys.onPressed: 
-        {  
-            if ( event.key == Qt.Key_S) editors.currentTab.saveFile() 
-            if ( event.key == Qt.Key_D) editors.currentTab.duplicate() 
+
+    Keys.onPressed:
+        {
+            if ( event.key == Qt.Key_S) editors.currentTab.saveFile()
+            if ( event.key == Qt.Key_D) editors.currentTab.duplicate()
         }
 
     TabGroup {
@@ -32,6 +32,7 @@ Page {
         //Line Number
         ToolButton {
             //text: editor.positionText
+            id:toolTextPosition
             text: '000-000'
             flat: true
             width:120;
@@ -43,7 +44,7 @@ Page {
 
         //Comment
         ToolIcon { platformIconId: "toolbar-tag";
-            onClicked: editors.currentTab.editorPage.editor.comment()
+            onClicked: editors.currentTab.comment()
         }
         //Indent
         ToolIcon { platformIconId: "toolbar-next";
@@ -57,7 +58,7 @@ Page {
         ToolIcon { platformIconId: "toolbar-search";
             onClicked: notYetAvailableBanner.show()
         }
-        
+
         //Execute
         ToolIcon { platformIconId: "toolbar-settings";
             onClicked: notYetAvailableBanner.show()
@@ -88,8 +89,8 @@ Page {
              onClicked: (myMenu.status == DialogStatus.Closed) ? myMenu.open() : myMenu.close();
         }
     }
-    
-    
+
+
     function newFile() {
         console.log('newFile called');
         EditorCreation.createEditorObject();
@@ -136,3 +137,4 @@ Page {
 		onRejected: { }
     }
 }
+

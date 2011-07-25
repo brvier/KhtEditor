@@ -12,7 +12,7 @@ function createEditorObject(newPageCounter) {
         finishCreation();
     else
         component.statusChanged.connect(finishCreation);
-    return component; 
+    return component;
 }
 
 function openEditorObject(filepath) {
@@ -23,7 +23,7 @@ function openEditorObject(filepath) {
         finishCreation();
     else
         component.statusChanged.connect(finishCreation);
-    return component; 
+    return component;
 }
 
 function switchEditor(filepath) {
@@ -65,8 +65,9 @@ function closeEditor(filepath) {
             {
                 if (editorsArray[i].filepath === filepath)
                 {
-                    editorsArray[i].destroy()
-                    editorsArray.splice(1,i)
+                    editorsArray[i].destroy();
+                    editorsModel.remove(i);
+                    editorsArray.splice(1,i);
                     if (i<len){
                         editors.currentTab = editorsArray[i];
                     }

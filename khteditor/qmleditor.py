@@ -105,7 +105,7 @@ class QmlTextEditor(QDeclarativeItem):
     def getCursorRectangle(self): return self._cursorRectangle
 
     def getPositionText(self): return self._positionText
-    def setPositionText(self,pos, text):
+    def setPositionText(self, text):
         if self._positionText != text:
             self._positionText = text
             self.positionTextChanged.emit()
