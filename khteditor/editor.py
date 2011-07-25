@@ -12,8 +12,8 @@ from PySide.QtCore import Qt, QEvent, \
                         QFileInfo, QSettings, \
                         QFile, QIODevice, \
                         QTextStream, QRegExp, Signal, \
-                        QSize
-                        
+                        QSize, QRect
+
 from PySide.QtGui import QPlainTextEdit, QColor, \
                         QFont,  QFontMetrics, \
                         QTextCursor, QSizePolicy, \
@@ -78,18 +78,19 @@ class KhtTextEditor(QPlainTextEdit):
     documentErrorsChanged = Signal()
     sizeChanged = Signal(QSize)
     positionTextChanged = Signal(unicode)
-    
+    cursorRectangleChanged = Signal(QRect)
+
     def __init__(self, parent=None, scroller=None, inQML=False):
         """Initialization, can accept a filepath as argument"""
         QPlainTextEdit.__init__(self, parent)
-        
+
         # Errors
         self.errors = {}
         self.qt18720 = False
         self.scroller = scroller
         self.inQML = inQML
         self._commentSyntax = None
-        
+
         self.setSizePolicy(QSizePolicy.Maximum, QSizePolicy.Maximum)
         self.setTextInteractionFlags(Qt.TextEditable | Qt.TextSelectableByKeyboard)
         if self.inQML:
@@ -114,7 +115,7 @@ class KhtTextEditor(QPlainTextEdit):
         self.cursorPositionChanged.connect(self.curPositionChanged)
         self.textChanged.connect(self.textEditChanged)
         self.textEditChanged()
-        
+
         #Enabled Plugin
         if not hasattr(self,'enabled_plugins'):
             #Got the enabled plugin
@@ -125,7 +126,7 @@ class KhtTextEditor(QPlainTextEdit):
                     if settings.value(plugin.__name__) == '2':
                         print 'Enable plugin ', plugin
                         self.enabled_plugins.append(plugin())
-        
+
     def getFilePath(self):
         return self._filepath
 
@@ -196,7 +197,7 @@ class KhtTextEditor(QPlainTextEdit):
             if ext in lang['Ext']:
                 return lang['Name']
         return None
-        
+
     def detectComment(self, filepath=None):
         if not filepath: filepath = self._filepath
         ext = os.path.splitext(filepath)[1]
@@ -208,7 +209,7 @@ class KhtTextEditor(QPlainTextEdit):
     def loadHighlighter(self,filename=None):
         filename = self._filepath
         language = self.detectLanguage(filename)
-        
+
         print 'Detected Language: ',language
         #Return None if language not yet implemented natively in KhtEditor
         if language == 'python':
@@ -264,6 +265,10 @@ class KhtTextEditor(QPlainTextEdit):
             #self.scroller.ensureVisible(pos.x(),pos.y(),2*cursor.width()+20, 2*cursor.height())
             self.scroller.ensureVisible(pos, 2*cursor.width()+20, 2*cursor.height())
         self.positionTextChanged.emit('%d-%d' % (cur.blockNumber(), cur.positionInBlock()))
+        x = pos.x()
+        y = pos.y()
+        self.cursorRectangleChanged.emit(QRect(x,y,2*cursor.width()+20, 2*cursor.height()))
+
 
     def match_left(self, block, character, start, found):
         map = {'{': '}', '(': ')', '[': ']'}
@@ -662,7 +667,7 @@ class KhtTextEditor(QPlainTextEdit):
         if not self._commentSyntax:
             self._commentSyntax = self.detectComment()
         _commentSyntax = self._commentSyntax
-        
+
         maincursor = self.textCursor()
         if not maincursor.hasSelection():
             maincursor.movePosition( QTextCursor.StartOfBlock)
@@ -731,7 +736,8 @@ class KhtTextEditor(QPlainTextEdit):
         for lang in LANGUAGES:
             if ext in lang['Ext']:
                 command = lang['Exec']
-        
+
         print command
         if command:
             KhtExecute(None,command=command)
+

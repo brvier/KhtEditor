@@ -1,5 +1,6 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
+//import Qt.labs.folderlistmodel 1.0
 
 Page {
     id:openedEditors
@@ -22,6 +23,12 @@ Page {
         }
     }
 
+//    FolderListModel {
+//         id: folderModel
+//         showDotAndDotDot: true
+//         showDirs: true
+//     }
+
     ListView {
         id: view
         anchors.top: pathbox.bottom
@@ -34,8 +41,18 @@ Page {
                 height: 80
                 anchors.leftMargin: 10
 
+//                Image {
+//                    id: iconFile
+//                    anchors.verticalCenter: parent.verticalCenter
+//                    width: 64; height: 64
+//                    source: fileIcon
+//                }
+
                 Column {
                     spacing: 10
+                    //anchors.left: iconFile.left
+                    anchors.leftMargin:10
+                    
                     anchors.verticalCenter: parent.verticalCenter
                     Label {text:'<b>'+fileName+'</b>'
                         font.family: "Nokia Pure Text"
@@ -56,8 +73,10 @@ Page {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        if (model.hasModelChildren){
+                        console.log(view.model.model)
+                        if (view.model.model.isDir(view.model.modelIndex(index))){
                             titlelabel.text = 'Open File : ' + filePath
+                            //previousFolderTool.currentFilePath = filePath
                             view.model.rootIndex = view.model.modelIndex(index)
                         }
                         else {
@@ -77,6 +96,17 @@ Page {
         ToolIcon {
             platformIconId: 'toolbar-back'
             onClicked: pageStack.pop()
+        }
+        ToolIcon {
+            id: previousFolderTool
+            //property string currentIndex;
+            platformIconId: 'toolbar-directory-move-to'
+            anchors.right: parent.right
+            onClicked: {
+                view.model.rootIndex = view.model.parentModelIndex()
+                titlelabel.text = 'Open File : ' + view.model.model.filePath(view.model.rootIndex)
+            }
+
         }
     }
 }

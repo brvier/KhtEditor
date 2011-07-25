@@ -1,7 +1,11 @@
-#/use/bin/python
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2011 Benoît HERVIER
+# Licenced under GPLv3
 
-from PySide.QtGui import QApplication, QDirModel
-from PySide.QtCore import QObject, QUrl
+from PySide.QtGui import QApplication
+from PySide.QtCore import QObject, QUrl, QDir
 from PySide import QtDeclarative
 
 import sys
@@ -9,7 +13,9 @@ import os.path
 
 from qmleditor import QmlTextEditor
 from plugins.plugins_api import init_plugin_system
- 
+
+from qmlfilesystemmodel import QmlFileSystemModel
+
 class KhtEditor(QApplication):
     def __init__(self):
 
@@ -23,7 +29,8 @@ class KhtEditor(QApplication):
         #Initialization of the plugin system
         init_plugin_system()        
                     
-        self.dirModel = QDirModel()
+        self.dirModel = QmlFileSystemModel()
+        self.dirModel.setRootPath(QDir.currentPath());
         self.view = QtDeclarative.QDeclarativeView()
         self.view.rootContext().setContextProperty("dirModel", self.dirModel)
         self.view.setSource(QUrl.fromLocalFile("qml/main.qml"))

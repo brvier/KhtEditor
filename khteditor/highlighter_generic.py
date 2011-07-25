@@ -40,7 +40,7 @@ class XMLSyntaxParser(ContentHandler):
         self._comments = []
 
         self.styleName = styleName
-        
+
         # search for syntax-files:
         fname = None
         for syntax_dir in SYNTAX_PATH:
@@ -156,7 +156,6 @@ class XMLSyntaxParser(ContentHandler):
         if self.__escape == '\\':
             self.__escape = '\\\\'
         regexp = QRegExp("%s[^%s%s]*(?:%s.[^%s%s]*)*%s"%(self.__start_pattern,self.__start_pattern,self.__escape,self.__escape,self.__end_pattern,self.__escape,self.__end_pattern))
-        print regexp
         # regexp = QRegExp(r'%s[^%s]*%s'%(self.__start_pattern,self.__end_pattern,
                            #self.__escape,
                            # self.__end_pattern))
@@ -272,8 +271,8 @@ class Highlighter(QSyntaxHighlighter):
 	if styleName in STYLES:
             self.styleName = styleName
         else:
-            self.styleName = 'default' 
-        
+            self.styleName = 'default'
+
         #Init error format
         #self.errors = self.document().parent().errors
         self.doc = self.document()
@@ -310,7 +309,6 @@ class Highlighter(QSyntaxHighlighter):
                 # We actually want the index of the nth match
                 index = expression.pos(nth)
                 length = len(expression.cap(nth))
-                print aformat, expression, nth
                 self.setFormat(index, length, aformat)
                 index = expression.indexIn(text, index + length)
 

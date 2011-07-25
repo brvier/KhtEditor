@@ -23,8 +23,9 @@ Page {
                 color:"#cc6633"
                 text:((editor.modification) ? '* ':'')+ filepath;
                 verticalAlignment: "AlignVCenter"
-            }        
-        }    
+            }
+        }
+
 
     Flickable {
         id:flicker
@@ -33,6 +34,17 @@ Page {
         clip: true
         anchors.top: titlebar.bottom
         boundsBehavior:Flickable.DragOverBounds
+
+        function ensureVisible(r){
+             if (contentX >= r.x)
+                 contentX = r.x;
+             else if (contentX+width <= r.x+r.width)
+                 contentX = r.x+r.width-width;
+             if (contentY >= r.y)
+                 contentY = r.y;
+             else if (contentY+height <= r.y+r.height)
+                 contentY = r.y+r.height-height;
+         }
 
         QmlTextEditor {
         //TextEdit{
@@ -47,6 +59,9 @@ Page {
             onHeightChanged:{
                 flicker.contentHeight=editor.height
             }
+            onCursorRectangleChanged: {
+                flicker.ensureVisible(cursorRectangle)
+                }
         }
     }
 
@@ -69,3 +84,4 @@ Page {
     }
 
 }
+
