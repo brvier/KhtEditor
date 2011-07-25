@@ -10,7 +10,7 @@ Page {
     Rectangle {
         id:pathbox
         width:parent.width
-        height:40
+        height:48
         color:'black'
         Text{
             id:titlelabel
@@ -52,7 +52,7 @@ Page {
                     spacing: 10
                     //anchors.left: iconFile.left
                     anchors.leftMargin:10
-                    
+
                     anchors.verticalCenter: parent.verticalCenter
                     Label {text:'<b>'+fileName+'</b>'
                         font.family: "Nokia Pure Text"
@@ -100,7 +100,7 @@ Page {
         ToolIcon {
             id: previousFolderTool
             //property string currentIndex;
-            platformIconId: 'toolbar-directory-move-to'
+            platformIconId: 'toolbar-up'
             anchors.right: parent.right
             onClicked: {
                 view.model.rootIndex = view.model.parentModelIndex()
@@ -110,3 +110,4 @@ Page {
         }
     }
 }
+

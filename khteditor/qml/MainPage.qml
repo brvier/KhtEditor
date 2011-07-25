@@ -70,7 +70,7 @@ Page {
         }
 
         //List Opened File
-        ToolIcon { platformIconId: "toolbar-list";
+        ToolIcon { platformIconId: "toolbar-pages-all";
             onClicked: {
                 pageStack.push(Qt.resolvedUrl('OpenedPage.qml'))
             }
@@ -104,12 +104,21 @@ Page {
 
     function saveFile() {
         if (editors.currentTab != undefined)
+        {
             console.log(editors.currentTab)
             editors.currentTab.saveFile();
+        }
+
+    }
+
+    function setFilepath(filepath) {
+        editors.currentTab.setFilepath(filepath)
     }
 
     function saveAsFile() {
-        editors.currentTab.saveAs();
+        if (editors.currentTab != undefined) {
+            editors.currentTab.saveFileAs();
+        }
     }
 
     function closeFile() {

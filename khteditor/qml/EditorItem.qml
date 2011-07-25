@@ -69,8 +69,24 @@ Page {
     }
 
     function saveFile(){
-        editor.saveFile()
+        if (filepath.substr(0,1) == '/')
+            editor.saveFile();
+        else
+            saveFileAs();
+
     }
+
+    function setFilepath(filePath) {
+
+        filepath = filePath
+        filename = filePath.split('\\').pop().split('/').pop()
+        editor.setFilepath(filePath)
+        }
+
+    function saveFileAs(){
+        rootWin.pageStack.push(Qt.resolvedUrl('SaveAsPage.qml'))
+    }
+
     function loadFile(filePath){
        filepath = filePath;
        filename = filePath.split('\\').pop().split('/').pop()

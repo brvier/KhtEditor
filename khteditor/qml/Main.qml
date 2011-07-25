@@ -16,12 +16,12 @@ PageStackWindow {
             MenuItem { text: "New"; onClicked: pageStack.currentPage.newFile()}
             MenuItem { text: "Open"; onClicked: pageStack.push(Qt.resolvedUrl('SelectorPage.qml'))}
             MenuItem { text: "Save"; onClicked: pageStack.currentPage.saveFile()}
-            MenuItem { text: "Save As"; onClicked: notYetAvailableBanner.show()}
+            MenuItem { text: "Save As"; onClicked: pageStack.currentPage.saveAsFile()}
             MenuItem { text: "Preferences"; onClicked: notYetAvailableBanner.show()}
             MenuItem { text: "About";  onClicked: notYetAvailableBanner.show()}
         }
     }
-    
+
     Dialog {
     id:aDialog
       title:Label   { color:"blue" ;text:"myDialog"}
@@ -48,6 +48,17 @@ PageStackWindow {
         pageStack.currentPage.openFile(filepath)
     }
 
+    function saveFileAs(filepath){
+        pageStack.pop(mainPage)
+        pageStack.currentPage.setFilepath(filepath)
+        pageStack.currentPage.saveFile()
+    }
+
+
+//    function openFile(filepath){
+//       pageStack.pop(mainPage)
+//        pageStack.currentPage.saveFileAs(filepath)
+//    }
 
     function switchFile(filepath) {
         pageStack.pop(mainPage)
@@ -58,3 +69,4 @@ PageStackWindow {
 
     }
 }
+

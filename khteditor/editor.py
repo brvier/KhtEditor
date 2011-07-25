@@ -134,7 +134,7 @@ class KhtTextEditor(QPlainTextEdit):
         if filepath != self._filepath:
             if self.detectLanguage(filepath) != self.detectLanguage(self._filepath):
                 self._filepath = filepath
-                self.load()
+#                self.load()
                 #self.loadHighlighter()
             self._filepath = filepath
             #self.filepathChanged.emit(filepath)

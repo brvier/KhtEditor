@@ -48,7 +48,7 @@ class QmlTextEditor(QDeclarativeItem):
     @Slot(unicode)
     def loadFile(self, filepath):
         self.widget.setFilePath(filepath)
-        #self.widget.load()
+        self.widget.load()
 
     @Slot()
     def comment(self):
@@ -79,10 +79,12 @@ class QmlTextEditor(QDeclarativeItem):
             self.modificationChanged.emit()
 
 #    def getFilepath(self): return self.widget.getFilePath()
-#    def setFilepath(self,filepath):
-#        if filepath:
-#            if self.widget.getFilePath() != filepath:
-#                self.widget.setFilePath(filepath)
+    @Slot(unicode)
+    def setFilepath(self,filepath):
+        if filepath:
+            if self.widget.getFilePath() != filepath:
+                self.widget.setFilePath(filepath)
+
 #                self.widget.load()
                 #self.filepathChanged.emit()
 
