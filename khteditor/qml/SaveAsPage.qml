@@ -81,13 +81,13 @@ Page {
                     width:parent.width
                     height: 80
                     anchors.leftMargin: 10
-                    anchors.left: parent.left
-                    anchors.right: moreIcon.left
 
                     Column {
                         spacing: 10
                         //anchors.left: iconFile.left
                         anchors.leftMargin:10
+                        anchors.left: parent.left
+                        anchors.right: moreIcon.left
 
                         anchors.verticalCenter: parent.verticalCenter
                         Label {text:'<b>'+fileName+'</b>'
