@@ -3,6 +3,6 @@ Encoding=UTF-8
 Version=1.0
 Type=Application
 Name=KhtEditor
-Exec=/usr/local/bin/khteditor.py
+Exec=/usr/local/bin/khteditor_launch.py
 Icon=khteditor
 

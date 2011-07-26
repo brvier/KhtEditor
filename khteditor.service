@@ -1,4 +1,4 @@
 [D-BUS Service]
 Name=net.khertan.khteditor
-Exec=/usr/local/bin/khteditor.py
+Exec=/usr/local/bin/khteditor_launch.py
 

@@ -38,16 +38,16 @@ setup(name='khteditor',
       requires=['pyside','pyflakes'],
       suggests=['pylint', 'python-pygments'],
       packages= ['khteditor', 'khteditor/plugins', 'khteditor/syntax'],
-      package_data = {'khteditor': ['icons/*.png', 'syntax/*.xml'],},
+      package_data = {'khteditor': ['icons/*.png', 'syntax/*.xml', 'qml/*.js', 'qml/*.qml'],},
       data_files=[('/usr/share/dbus-1/services', ['khteditor.service']),
                   ('/usr/share/applications/installer-extra/', ['khteditor.desktop']),
                   ('/usr/share/pixmaps', ['khteditor.png']),
                   ('/usr/share/icons/hicolor/128x128/apps', ['khteditor.png']),
                   ],
-      scripts=['khteditor.py'],
+      scripts=['khteditor_launch.py'],
       cmdclass={'sdist_maemo': _sdist_maemo},
       options = { 'sdist_maemo':{
-      'buildversion':'2',
+      'buildversion':'3',
       'depends':'python-pyside.qtdeclarative',
       'suggests':'pylint, python-pygments (>=1.4.0-4), pyflakes',
       'Maemo_Bugtracker':'http://khertan.net/khteditor:bugs',
@@ -60,7 +60,7 @@ setup(name='khteditor',
       'Maemo_Upgrade_Description':'Rewrite to use QML and fit Harmattan specficities',
       'architecture':'any',
       'postinst':"""#!/bin/sh
-chmod +x /usr/local/bin/khteditor.py
+chmod +x /usr/local/bin/khteditor_launch.py
 """,
       'copyright':'gpl'},
       'bdist_rpm':{
