@@ -81,6 +81,8 @@ Page {
                     width:parent.width
                     height: 80
                     anchors.leftMargin: 10
+                    anchors.left: parent.left
+                    anchors.right: moreIcon.left
 
                     Column {
                         spacing: 10
@@ -91,14 +93,19 @@ Page {
                         Label {text:'<b>'+fileName+'</b>'
                             font.family: "Nokia Pure Text"
                             font.pixelSize: 24
+                            anchors.left: parent.left
+                            anchors.right: parent.right
                         }
                         Label {text:filePath
                             font.family: "Nokia Pure Text"
                             font.pixelSize: 16
                             color: "#cc6633"
+                            anchors.left: parent.left
+                            anchors.right: parent.right
                         }
                     }
                     Image {
+                        id:moreIcon
                         //source: view.model.model.isDir(view.model.modelIndex(index)) ? "image://theme/icon-m-common-drilldown-arrow" : ''
                         source: 'image://theme/icon-m-common-drilldown-arrow'
                         anchors.right: parent.right;

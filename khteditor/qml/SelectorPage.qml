@@ -52,19 +52,27 @@ Page {
                     spacing: 10
                     //anchors.left: iconFile.left
                     anchors.leftMargin:10
+                    anchors.left: parent.left
+                    anchors.right: moreIcon.left
 
                     anchors.verticalCenter: parent.verticalCenter
                     Label {text:'<b>'+fileName+'</b>'
                         font.family: "Nokia Pure Text"
                         font.pixelSize: 24
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+
                     }
                     Label {text:filePath
                         font.family: "Nokia Pure Text"
                         font.pixelSize: 16
                         color: "#cc6633"
+                        anchors.left: parent.left
+                        anchors.right: parent.right
                     }
                 }
                 Image {
+                    id:moreIcon
                     source: "image://theme/icon-m-common-drilldown-arrow" + (theme.inverted ? "-inverse" : "")
                     anchors.right: parent.right;
                     anchors.verticalCenter: parent.verticalCenter

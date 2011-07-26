@@ -35,36 +35,37 @@ setup(name='khteditor',
       maintainer=u'Benoît HERVIER',
       maintainer_email='khertan@khertan.net',
       url='http://www.khertan.net/khteditor',
-      requires=['pygments','pyside','simplejson','pyflakes'],
+      requires=['pyside','pyflakes'],
+      suggests=['pylint', 'python-pygments'],
       packages= ['khteditor', 'khteditor/plugins', 'khteditor/syntax'],
       package_data = {'khteditor': ['icons/*.png', 'syntax/*.xml'],},
       data_files=[('/usr/share/dbus-1/services', ['khteditor.service']),
-                  ('/usr/share/applications/hildon/', ['khteditor.desktop']),
+                  ('/usr/share/applications/installer-extra/', ['khteditor.desktop']),
                   ('/usr/share/pixmaps', ['khteditor.png']),
                   ('/usr/share/icons/hicolor/128x128/apps', ['khteditor.png']),
                   ],
-      scripts=['khteditor_launch.py'],
+      scripts=['khteditor.py'],
       cmdclass={'sdist_maemo': _sdist_maemo},
       options = { 'sdist_maemo':{
-      'buildversion':'1',
-      'depends':'python2.5-qt4-gui,python2.5-qt4-core, python2.5-qt4-maemo5, python2.5-qt4-common, python-pygments (>=1.4.0-4), pyflakes',
-      'suggests':'pylint',
-      'XSBC_Bugtracker':'http://khertan.net/khteditor:bugs',
-      'XB_Maemo_Display_Name':'KhtEditor',
-      'XB_Maemo_Icon_26':'khteditor.png',
+      'buildversion':'2',
+      'depends':'python-pyside.qtdeclarative',
+      'suggests':'pylint, python-pygments (>=1.4.0-4), pyflakes',
+      'Maemo_Bugtracker':'http://khertan.net/khteditor:bugs',
+      'Maemo_Display_Name':'KhtEditor',
+      'Maemo_Icon_26':'khteditor_harmattan.png',
+      'Maemo_Flags':'visible',
+      'MeeGo_Desktop_Entry_Filename':'/usr/share/applications/installer-extra/khteditor.desktop',
       'section':'user/development',
-      'changelog':'* Fix bug #100.',
-      'XB_Maemo_Upgrade_Description':'Fix bug #100',
+      'changelog':'* Rewrite to use QML and fit Harmattan specficities',
+      'Maemo_Upgrade_Description':'Rewrite to use QML and fit Harmattan specficities',
       'architecture':'any',
       'postinst':"""#!/bin/sh
-chmod +x /usr/bin/khteditor_launch.py
-python -m compileall /usr/lib/python2.5/site-packages/khteditor
+chmod +x /usr/local/bin/khteditor.py
 """,
-      'prere':"""#!/bin/sh
-rm -rf /usr/lib/python2.5/site-packages/khteditor/*.pyc""",
       'copyright':'gpl'},
       'bdist_rpm':{
-      'requires':'python2.5-qt4-gui,python2.5-qt4-core, python2.5-qt4-maemo5, python2.5-qt4-common, python-pygments, pyflakes',
+      'requires':'python-pyside.qtdeclarative, pyflakes',
       'icon':'khteditor.png',
       'group':'Development',}}
      )
+
