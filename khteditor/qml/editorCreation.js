@@ -57,6 +57,15 @@ function modificationChanged(filepath, filename) {
     }
 }
 
+function getModelIndexForFilepath(filepath) {
+    var len=editorsModel.count;
+    for (var i=0; i<len;i++)
+        if (editorsModel.get(i)!=undefined)
+            if (editorsModel.get(i).filepath == filepath)
+                return i
+    return;
+}
+
 function closeEditor(filepath) {
     console.log('closeEditor called')
     var len=editorsArray.length;
@@ -65,17 +74,15 @@ function closeEditor(filepath) {
             {
                 if (editorsArray[i].filepath === filepath)
                 {
+                    var index = getModelIndexForFilepath(filepath);
+                    if (index != -1)
+                        editorsModel.remove(index);
+                            
                     editorsArray[i].destroy();
-                    editorsModel.remove(i);
-                    editorsArray.splice(1,i);
-                    if (i<len){
-                        editors.currentTab = editorsArray[i];
-                    }
-                    else {
-                        if (i>0) {
-                        editors.currentTab = editorsArray[i-1];
-                        }
-                    }
+                    editorsArray.splice(i,1);
+                    console.log(editorsArray.length)
+                    if (editorsArray.length > 0)
+                        editors.currentTab = editorsArray[editorsArray.length - 1];
                     return
                 }
             }
