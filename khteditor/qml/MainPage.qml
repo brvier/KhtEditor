@@ -122,10 +122,7 @@ Page {
     }
 
     function closeFile() {
-        if (unsavedDialog.open() == DialogStatus.Accepted){
-            saveFile();
-        }
-        EditorCreation.closeEditor(editors.currentTab.filepath)
+        unsavedDialog.open()        
     }
 
     function switchFile(filepath){
@@ -142,8 +139,8 @@ Page {
 	      message:"File is unsaved are you sure you want to close it ?";
 	      acceptButtonText: 'Save';
 	      rejectButtonText: 'Close';
-		onAccepted: { editor.save();}
-		onRejected: { }
+		onAccepted: { editors.currentTab.saveFile();EditorCreation.closeEditor(editors.currentTab.filepath)}
+		onRejected: { EditorCreation.closeEditor(editors.currentTab.filepath)}
     }
 }
 
