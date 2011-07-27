@@ -18,12 +18,17 @@ function createEditorObject(newPageCounter) {
 function openEditorObject(filepath) {
     console.log('createEditorObject called')
     filePath = filepath ;
-    component = Qt.createComponent("EditorItem.qml");
-    if (component.status == Component.Ready)
-        finishCreation();
-    else
-        component.statusChanged.connect(finishCreation);
-    return component;
+    var index = getModelIndexForFilepath(filepath)
+    if (index < 0) {
+        component = Qt.createComponent("EditorItem.qml");
+        if (component.status == Component.Ready)
+            finishCreation();
+        else
+            component.statusChanged.connect(finishCreation);
+        return component;
+    } else {
+        switchEditor(filepath)
+    }    
 }
 
 function switchEditor(filepath) {
@@ -45,13 +50,17 @@ function switchEditor(filepath) {
 function modificationChanged(filepath, filename) {
     console.log('modificationChanged called')
     var len=editorsArray.length;
+    var index = getModelIndexForFilepath(filepath)
     for(var i=0; i<len; i++) {
             if (editorsArray[i].hasOwnProperty("filepath"))
             {
                 if (editorsArray[i].filepath === filepath)
                 {
-                    editorsModel.set(i,{'filename':filename})
-                    return
+                    if (index >= 0)
+                    {
+                        editorsModel.set(i,{'filename':filename})
+                        return
+                    }
                 }
             }
     }
@@ -63,7 +72,7 @@ function getModelIndexForFilepath(filepath) {
         if (editorsModel.get(i)!=undefined)
             if (editorsModel.get(i).filepath == filepath)
                 return i
-    return;
+    return -1;
 }
 
 function closeEditor(filepath) {
