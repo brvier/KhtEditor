@@ -32,7 +32,3 @@ class QmlFileSystemModel(QFileSystemModel):
     @Slot(QModelIndex, result=unicode)
     def filePath(self, index):
         return QFileSystemModel.filePath(self,index)
-
-#    @Slot(unicode, result=QModelIndex)
-#    def index(self, path):
-#        return QFileSystemModel.index(self,path)
