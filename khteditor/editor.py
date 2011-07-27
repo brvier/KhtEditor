@@ -28,7 +28,7 @@ from plugins.plugins_api import filter_plugins_by_capability, \
                                 find_plugins
 from execute import KhtExecute
 
-LANGUAGES = ({'Ext':'.R','Name':'R'},
+LANGUAGES = ({'Ext':'.R','Name':'r'},
             {'Ext':'.ada','Name':'ada'},
             {'Ext':'.c','Name':'c'},
             {'Ext':'.changelog','Name':'changelog'},
@@ -56,6 +56,7 @@ LANGUAGES = ({'Ext':'.R','Name':'R'},
             {'Ext':'.pl','Name':'perl'},
             {'Ext':'.php','Name':'php'},
             {'Ext':'.po','Name':'po'},
+            {'Ext':('.coffee','.coco'),'Name':'coffeescript', 'Comment':'#'},
             {'Ext':('.py','.pyw'),'Name':'python', 'Exec':'cd $0;python -u $1', 'Comment':'#'},
             {'Ext':'.qml','Name':'qml', 'Exec':'cd $0;qmlviewer $1', 'Comment':'//'},
             {'Ext':'.rb','Name':'ruby'},

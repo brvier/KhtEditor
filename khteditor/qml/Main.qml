@@ -18,7 +18,7 @@ PageStackWindow {
             MenuItem { text: "Save"; onClicked: pageStack.currentPage.saveFile()}
             MenuItem { text: "Save As"; onClicked: pageStack.currentPage.saveAsFile()}
             MenuItem { text: "Preferences"; onClicked: notYetAvailableBanner.show()}
-            MenuItem { text: "About";  onClicked: notYetAvailableBanner.show()}
+            MenuItem { text: "About";  onClicked: pageStack.push(Qt.resolvedUrl('AboutPage.qml'))}
         }
     }
 

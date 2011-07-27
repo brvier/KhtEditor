@@ -37,6 +37,7 @@ class KhtEditor(QApplication):
         self.dirModel.setRootPath(QDir.currentPath());
         self.view = QtDeclarative.QDeclarativeView()
         self.view.rootContext().setContextProperty("dirModel", self.dirModel)
+        self.view.rootContext().setContextProperty("__version__", __version__)
         self.view.setSource(QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__),'qml','main.qml')))
         self.view.showFullScreen()
 

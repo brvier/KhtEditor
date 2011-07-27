@@ -19,12 +19,35 @@ Page {
             anchors.fill: parent
     }
 
-    //Label {
-    //    id:welcome
-    //    anchors.fill: parent
-    //    opacity: editors.currentTab === undefined ? 1.0 : 0.0
-    //    text:'KhtEditor 3.0.0'
-    //}
+    Rectangle {
+        id:welcomeRect
+        anchors.fill: parent
+        opacity: editors.currentTab == undefined ? 1.0 : 0.0
+        
+        Image {
+            id:logo
+            source: Qt.resolvedUrl('../icons/khteditor.png')
+            anchors.top: parent.top
+            anchors.topMargin: 20
+            height: 80
+            width: 80
+            anchors.horizontalCenter: parent.horizontalCenter
+            //horizontalAlignment: "AlignHCenter"        
+        }
+
+        Label {
+            text:'<b>KhtEditor</b><br>Version ' + __version__
+            font.family: "Nokia Pure Text"
+            font.pixelSize: 24
+                        
+            anchors.top: logo.bottom
+            anchors.topMargin: 20
+            anchors.left: parent.left
+            anchors.right: parent.right
+            horizontalAlignment: "AlignHCenter"
+        }
+
+    }
 
     ToolBarLayout {
         id: editTools

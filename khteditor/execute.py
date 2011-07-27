@@ -9,7 +9,7 @@ try:
     from PySide.QtGui import QAbstractKineticScroller
 except:
     print 'PySide QtMaemo5 cannot be loaded'
- 
+
 class KhtExecute(QMainWindow):
     def __init__(self,parent=None,command=None):
         self._command = command
