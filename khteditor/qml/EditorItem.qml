@@ -101,6 +101,9 @@ Page {
     function unindent(){
         editor.unindent()
     }
+    function isModified(){
+        return editor.modification
+    }
 
 }
 

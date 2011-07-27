@@ -145,7 +145,14 @@ Page {
     }
 
     function closeFile() {
-        unsavedDialog.open()        
+        if (editors.currentTab != undefined) {
+            if (editors.currentTab.isModified()) {
+                unsavedDialog.open()            
+            }
+            else {
+                EditorCreation.closeEditor(editors.currentTab.filepath)
+            }
+        }
     }
 
     function switchFile(filepath){
