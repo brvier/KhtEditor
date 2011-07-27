@@ -9,6 +9,7 @@ Page {
 
     Rectangle {
         id:pathbox
+        anchors.top: parent.top
         width:parent.width
         height:48
         color:'black'
@@ -32,7 +33,8 @@ Page {
     ListView {
         id: view
         anchors.top: pathbox.bottom
-        height: parent.height - pathbox.height
+        anchors.bottom: parent.bottom
+//        height: parent.height - pathbox.height
         width: parent.width
         model: VisualDataModel {
             model: dirModel
@@ -88,11 +90,15 @@ Page {
                             view.model.rootIndex = view.model.modelIndex(index)
                         }
                         else {
+                            view.model.model.setCurrentPath(filePath)
                             rootWin.openFile(filePath)
                         }
                     }
 
                 }
+            }
+        Component.onCompleted:{    
+            view.model.rootIndex = view.model.model.getCurrentIndex()
             }
         }
     }
