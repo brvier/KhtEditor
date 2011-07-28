@@ -26,7 +26,6 @@ from recent_files import RecentFiles
 import os.path
 from plugins.plugins_api import filter_plugins_by_capability, \
                                 find_plugins
-from execute import KhtExecute
 
 LANGUAGES = ({'Ext':'.R','Name':'r'},
             {'Ext':'.ada','Name':'ada'},
@@ -743,15 +742,3 @@ class KhtTextEditor(QPlainTextEdit):
                 command = lang['Exec'].replace('$0', os.path.dirname(self._filepath))
                 return command.replace('$1', os.path.basename(self._filepath))
         return None
-
-    def execute(self):
-        command = None
-        ext = os.path.splitext(self._filepath)[1]
-        for lang in LANGUAGES:
-            if ext in lang['Ext']:
-                command = lang['Exec']
-
-        print command
-        if command:
-            KhtExecute(None,command=command)
-

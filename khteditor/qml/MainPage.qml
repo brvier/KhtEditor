@@ -168,11 +168,13 @@ Page {
     QueryDialog {
 	    id:unsavedDialog
 	      titleText:"Unsaved"
+               icon: Qt.resolvedUrl('../icons/khteditor.png')
 	      message:"File is unsaved are you sure you want to close it ?";
-	      acceptButtonText: 'Save';
-	      rejectButtonText: 'Close';
-		onAccepted: { editors.currentTab.saveFile();EditorCreation.closeEditor(editors.currentTab.filepath)}
-		onRejected: { EditorCreation.closeEditor(editors.currentTab.filepath)}
+	      acceptButtonText: 'Close';
+	      rejectButtonText: 'Cancel';
+		onRejected: { } //editors.currentTab.saveFile();EditorCreation.closeEditor(editors.currentTab.filepath)}
+		onAccepted: { EditorCreation.closeEditor(editors.currentTab.filepath)}
+                  //onClickedOutside: { }
     }
 }
 
