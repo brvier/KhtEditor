@@ -5,8 +5,8 @@
 # Licenced under GPLv3
 
 from PySide.QtDeclarative import QDeclarativeItem
-from PySide.QtGui import QGraphicsProxyWidget, QGraphicsItem
-from PySide.QtCore import QSize, Slot, Property, Signal, QRect
+from PySide.QtGui import QGraphicsProxyWidget, QGraphicsItem, QPlainTextEdit
+from PySide.QtCore import QSize, Slot, Property, Signal, QRect, QProcess
 
 class QmlExecutor(QDeclarativeItem):
     textChanged = Signal()
@@ -14,21 +14,21 @@ class QmlExecutor(QDeclarativeItem):
     def __init__(self, parent=None):
         QDeclarativeItem.__init__(self, parent)
 
-        self.widget = QPlainTextEdit
+        self.widget = QPlainTextEdit()
         self.widget.resize(850,480)
         self.widget.setReadOnly(True)
         self.proxy = QGraphicsProxyWidget(self)
         self.proxy.setWidget(self.widget)
         self.proxy.setPos(0,0)
         self.setFlag(QGraphicsItem.ItemHasNoContents, False)
-        self.widget.sizeChanged.connect(self.sizeChanged)
-        self._width = self.widget.width()
-        self._height = self.widget.height()
+#        self.widget.sizeChanged.connect(self.sizeChanged)
+#        self._width = self.widget.width()
+#        self._height = self.widget.height()
         #self.widget.filepathChanged.connect(self.filepathChanged)
-        self._modification = False
-        self.widget.modificationChanged.connect(self.setModificationChanged)
-        self.widget.positionTextChanged.connect(self.setPositionText)
-        self.widget.cursorRectangleChanged.connect(self.setCursorRectangle)
+#        self._modification = False
+#        self.widget.modificationChanged.connect(self.setModificationChanged)
+#        self.widget.positionTextChanged.connect(self.setPositionText)
+#        self.widget.cursorRectangleChanged.connect(self.setCursorRectangle)
 
 
     @Slot(unicode)

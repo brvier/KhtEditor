@@ -57,7 +57,7 @@ LANGUAGES = ({'Ext':'.R','Name':'r'},
             {'Ext':'.php','Name':'php'},
             {'Ext':'.po','Name':'po'},
             {'Ext':('.coffee','.coco'),'Name':'coffeescript', 'Comment':'#'},
-            {'Ext':('.py','.pyw'),'Name':'python', 'Exec':'cd $0;python -u $1', 'Comment':'#'},
+            {'Ext':('.py','.pyw'),'Name':'python', 'Exec':'/usr/bin/python -u $1', 'Comment':'#'},
             {'Ext':'.qml','Name':'qml', 'Exec':'cd $0;qmlviewer $1', 'Comment':'//'},
             {'Ext':'.rb','Name':'ruby'},
             {'Ext':'.scheme','Name':'scheme'},
@@ -735,6 +735,14 @@ class KhtTextEditor(QPlainTextEdit):
         text = cursor.selectedText()
 
         return unicode(text)
+
+    def getExecuteCommand(self):
+        ext = os.path.splitext(self._filepath)[1]
+        for lang in LANGUAGES:
+            if ext in lang['Ext']:
+                command = lang['Exec'].replace('$0', os.path.dirname(self._filepath))
+                return command.replace('$1', os.path.basename(self._filepath))
+        return None
 
     def execute(self):
         command = None

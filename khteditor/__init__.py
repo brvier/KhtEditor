@@ -12,13 +12,15 @@ import sys
 import os.path
 
 from qmleditor import QmlTextEditor
+from qmlexecute import QmlExecutor
+
 from plugins.plugins_api import init_plugin_system
 
 from qmlfilesystemmodel import QmlFileSystemModel
 
 __author__ = 'Benoît HERVIER (Khertan)'
 __email__ = 'khertan@khertan.net'
-__version__ = '3.0.0'
+__version__ = '3.0.2'
 
 class KhtEditor(QApplication):
     def __init__(self):
@@ -29,6 +31,7 @@ class KhtEditor(QApplication):
         self.setApplicationName("KhtEditor")
 
         QtDeclarative.qmlRegisterType(QmlTextEditor,'net.khertan.qmlcomponents',1,0,'QmlTextEditor')
+        QtDeclarative.qmlRegisterType(QmlExecutor,'net.khertan.qmlcomponents',1,0,'QmlExecutor')
 
         #Initialization of the plugin system
         init_plugin_system()

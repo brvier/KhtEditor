@@ -84,7 +84,9 @@ Page {
 
         //Execute
         ToolIcon { platformIconId: "toolbar-settings";
-            onClicked: notYetAvailableBanner.show()
+            onClicked: editors.currentTab.execute()
+//            onClicked: notYetAvailableBanner.show()
+            //onClicked: pageStack.push(Qt.resolvedUrl('ExecutePage.qml'),{runCommand:'ls'});
         }
 
         //Plugins

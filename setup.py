@@ -47,7 +47,7 @@ setup(name='khteditor',
       scripts=['khteditor_launch.py'],
       cmdclass={'sdist_maemo': _sdist_maemo},
       options = { 'sdist_maemo':{
-      'buildversion':'5',
+      'buildversion':'1',
       'depends':'python-pyside.qtdeclarative',
       'suggests':'pylint, python-pygments (>=1.4.0-4), pyflakes',
       'Maemo_Bugtracker':'http://khertan.net/khteditor:bugs',

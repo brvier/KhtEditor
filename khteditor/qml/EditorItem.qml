@@ -5,6 +5,7 @@ import net.khertan.qmlcomponents 1.0
 Page {
     property string filepath;
     property string filename;
+//    property bool showLogs = false;
 //    proberty bool isNewFile;
 
 //    id:editorPage
@@ -68,12 +69,33 @@ Page {
         }
     }
 
+    Rectangle {
+        id:textLog
+        opacity: 0
+        anchors.fill: parent
+        color: 'black'
+    Text {
+        text: editor.executeText
+        anchors.fill: parent
+        color: 'white'
+    }
+}
+
+    function execute() {
+        if (textLog.opacity == 0) {
+            editor.execute()
+            textLog.opacity = 0.7
+        }        
+        else {
+            textLog.opacity = 0
+        }
+    }
+
     function saveFile(){
         if (filepath.substr(0,1) == '/')
             editor.saveFile();
         else
             saveFileAs();
-
     }
 
     function setFilepath(filePath) {

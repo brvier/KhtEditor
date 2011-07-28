@@ -6,7 +6,7 @@
 
 from PySide.QtDeclarative import QDeclarativeItem
 from PySide.QtGui import QGraphicsProxyWidget, QGraphicsItem
-from PySide.QtCore import QSize, Slot, Property, Signal, QRect
+from PySide.QtCore import QSize, Slot, Property, Signal, QRect, QProcess
 from editor import KhtTextEditor
 
 class QmlTextEditor(QDeclarativeItem):
@@ -16,6 +16,7 @@ class QmlTextEditor(QDeclarativeItem):
     modificationChanged = Signal()
     positionTextChanged = Signal()
     cursorRectangleChanged = Signal()
+    executeTextChanged = Signal()
 
     def __init__(self, parent=None):
         QDeclarativeItem.__init__(self, parent)
@@ -36,6 +37,8 @@ class QmlTextEditor(QDeclarativeItem):
         self.widget.cursorRectangleChanged.connect(self.setCursorRectangle)
         self._positionText = '001-001'
         self._cursorRectangle = QRect (1,1,1,1)
+        self._processLog = None
+        self._executeLog = ''
 
     @Slot()
     def indent(self):
@@ -57,10 +60,6 @@ class QmlTextEditor(QDeclarativeItem):
     @Slot()
     def saveFile(self):
         self.widget.save()
-
-    @Slot()
-    def execute(self):
-        self.widget.execute()
 
     @Slot()
     def duplicate(self):
@@ -112,6 +111,39 @@ class QmlTextEditor(QDeclarativeItem):
             self._positionText = text
             self.positionTextChanged.emit()
 
+    def getExecuteLog(self): 
+        print self._executeLog
+        return self._executeLog
+    def setExecuteLog(self, text):
+        if self._executeLog != text:
+            self._executeLog = text
+            self.executeTextChanged.emit()
+
+    @Slot()
+    def execute(self):
+        import os.path
+        self._command = self.widget.getExecuteCommand()
+        if not self._command:
+            self._command = self.widget.getFilePath()
+#        self._command = 'cd %s;/usr/bin/python -u %s' % (os.path.dirname(__file__),os.path.abspath(__file__))
+        self._executeLog = 'Running %s\n' % self._command
+
+        if self._processLog:
+            self._processLog.kill()
+        self._processLog = QProcess()
+        self._processLog.setWorkingDirectory(os.path.dirname(self.widget.getFilePath()))
+        self._processLog.readyReadStandardOutput.connect(self._readLog)        
+        self._processLog.start(self._command)
+        print 'should be running :' + self._command
+
+    @Slot()
+    def _readLog(self):
+        while self._processLog.canReadLine():
+            self._executeLog = self._executeLog + (unicode(self._processLog.readLine()))
+            self.executeTextChanged.emit()
+            print 'debug2', self._executeLog
+
+    executeText = Property(unicode, getExecuteLog, setExecuteLog, notify=executeTextChanged)
     width = Property(int,getWidth, setWidth, notify=widthChanged)
     height = Property(int, getHeight, setHeight, notify=heightChanged)
 #    filepath = Property(unicode, getFilepath, setFilepath)
