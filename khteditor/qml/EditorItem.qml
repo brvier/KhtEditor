@@ -25,7 +25,21 @@ Page {
                 text:((editor.modification) ? '* ':'')+ filepath;
                 verticalAlignment: "AlignVCenter"
             }
-        }
+            
+            Image{
+                id:closeButton
+                anchors.right: parent.right
+                anchors.top: parent.top
+                anchors.topMargin: 2
+                opacity: closeButtonArea.pressed ? 0.5 : 1.0
+                source:"image://theme/icon-m-common-dialog-close"
+                MouseArea{
+                    id:closeButtonArea
+                    anchors.fill: parent
+                    onClicked: mainPage.closeFile()
+                }
+            }
+    }
 
 
     Flickable {

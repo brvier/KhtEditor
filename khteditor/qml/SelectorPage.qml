@@ -12,16 +12,32 @@ Page {
         anchors.top: parent.top
         width:parent.width
         height:48
-        color:'black'
+        color:'white'
         Text{
             id:titlelabel
             anchors.fill: parent
             anchors.leftMargin: 5
+            anchors.rightMargin: 50
             font { bold: true; family: "Helvetica"; pixelSize: 18 }
             color:"#cc6633"
             text:'Open File'
             verticalAlignment: "AlignVCenter"
         }
+        Image{
+            id:closeButton
+            anchors.right: parent.right
+            anchors.top: parent.top
+            anchors.topMargin: 4
+            opacity: closeButtonArea.pressed ? 0.5 : 1.0
+            //source:"image://theme/icon-m-dialog-common-close"
+            source:"image://theme/icon-m-toolbar-close"
+            MouseArea{
+                id:closeButtonArea
+                anchors.fill: parent
+                onClicked: pageStack.pop()
+            }
+        }
+
     }
 
 //    FolderListModel {
@@ -34,7 +50,7 @@ Page {
         id: view
         anchors.top: pathbox.bottom
         anchors.bottom: parent.bottom
-//        height: parent.height - pathbox.height
+        height: parent.height - pathbox.height
         width: parent.width
         model: VisualDataModel {
             model: dirModel
@@ -42,7 +58,7 @@ Page {
                 width:parent.width
                 height: 80
                 anchors.leftMargin: 10
-
+                color:"black"
 //                Image {
 //                    id: iconFile
 //                    anchors.verticalCenter: parent.verticalCenter
@@ -61,6 +77,7 @@ Page {
                     Label {text:'<b>'+fileName+'</b>'
                         font.family: "Nokia Pure Text"
                         font.pixelSize: 24
+                        color:"white"
                         anchors.left: parent.left
                         anchors.right: parent.right
 
@@ -75,7 +92,7 @@ Page {
                 }
                 Image {
                     id:moreIcon
-                    source: "image://theme/icon-m-common-drilldown-arrow" + (theme.inverted ? "-inverse" : "")
+                    source: "image://theme/icon-m-common-drilldown-arrow-inverse"
                     anchors.right: parent.right;
                     anchors.verticalCenter: parent.verticalCenter
                 }
@@ -109,18 +126,10 @@ Page {
         visible: true
         ToolIcon {
             platformIconId: 'toolbar-back'
-            onClicked: pageStack.pop()
-        }
-        ToolIcon {
-            id: previousFolderTool
-            //property string currentIndex;
-            platformIconId: 'toolbar-up'
-            anchors.right: parent.right
             onClicked: {
                 view.model.rootIndex = view.model.parentModelIndex()
                 titlelabel.text = 'Open File : ' + view.model.model.filePath(view.model.rootIndex)
             }
-
         }
     }
 }

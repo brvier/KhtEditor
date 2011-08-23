@@ -104,9 +104,9 @@ Page {
         }
 
         //Close
-        ToolIcon { platformIconId: "toolbar-close";
-            onClicked: closeFile();
-        }
+        //ToolIcon { platformIconId: "toolbar-close";
+        //    onClicked: closeFile();
+       // }
 
         //Menu
         ToolIcon { platformIconId: "toolbar-view-menu";

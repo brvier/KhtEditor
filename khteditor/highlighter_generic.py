@@ -268,7 +268,7 @@ class Highlighter(QSyntaxHighlighter):
 
         self.rules = []
 
-	if styleName in STYLES:
+        if styleName in STYLES:
             self.styleName = styleName
         else:
             self.styleName = 'default'
@@ -315,7 +315,7 @@ class Highlighter(QSyntaxHighlighter):
         # Do errors coloration
         if hasattr(self.doc,'errors'):
             if self.currentBlock().firstLineNumber() in self.doc.errors:
-                self.setFormat(0, self.currentBlock().length(), self.get_style['error'])
+                self.setFormat(0, self.currentBlock().length(), STYLES[self.styleName]['error'])
 
         self.setCurrentBlockState(0)
 

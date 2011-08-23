@@ -5,7 +5,7 @@
 # Licenced under GPLv3
 
 from PySide.QtGui import QApplication
-from PySide.QtCore import QObject, QUrl, QDir
+from PySide.QtCore import QUrl, QDir
 from PySide import QtDeclarative
 
 import sys

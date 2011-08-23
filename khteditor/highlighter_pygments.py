@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-import sys
-import re
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from PySide.QtCore import *
+from PySide.QtGui import *
 from pygments import highlight
 from pygments.lexers import *
 from pygments.formatter import Formatter
