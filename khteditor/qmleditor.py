@@ -9,6 +9,8 @@ from PySide.QtGui import QGraphicsProxyWidget, QGraphicsItem
 from PySide.QtCore import QSize, Slot, Property, Signal, QRect, QProcess
 from editor import KhtTextEditor
 
+import os.path
+
 class QmlTextEditor(QDeclarativeItem):
     heightChanged = Signal()
     widthChanged = Signal()
@@ -50,7 +52,8 @@ class QmlTextEditor(QDeclarativeItem):
 
     @Slot(unicode)
     def loadFile(self, filepath):
-        self.widget.setFilePath(filepath)
+        print 'Load file:', filepath
+        self.widget.setFilePath(os.path.abspath(filepath))
         self.widget.load()
 
     @Slot()
@@ -80,8 +83,10 @@ class QmlTextEditor(QDeclarativeItem):
 #    def getFilepath(self): return self.widget.getFilePath()
     @Slot(unicode)
     def setFilepath(self,filepath):
+        filepath = os.path.abspath(filepath)
         if filepath:
             if self.widget.getFilePath() != filepath:
+                print 'Set filepath:', filepath
                 self.widget.setFilePath(filepath)
 
 #                self.widget.load()

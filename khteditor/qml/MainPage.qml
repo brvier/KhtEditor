@@ -176,5 +176,6 @@ Page {
 		onAccepted: { EditorCreation.closeEditor(editors.currentTab.filepath)}
                   //onClickedOutside: { }
     }
+
 }
 

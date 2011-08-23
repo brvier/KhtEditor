@@ -39,10 +39,14 @@ class KhtEditor(QApplication):
         self.dirModel = QmlFileSystemModel()
         self.dirModel.setRootPath(QDir.currentPath());
         self.view = QtDeclarative.QDeclarativeView()
+        self.view.rootContext().setContextProperty("argv", sys.argv)
         self.view.rootContext().setContextProperty("dirModel", self.dirModel)
         self.view.rootContext().setContextProperty("__version__", __version__)
         self.view.setSource(QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__),'qml','main.qml')))
         self.view.showFullScreen()
+
+        for filepath in sys.argv[1:]:
+            self.view.rootObject().openFile(os.path.abspath(filepath))
 
 
 if __name__ == '__main__':
