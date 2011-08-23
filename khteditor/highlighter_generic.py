@@ -5,7 +5,7 @@ from xml.sax.handler import ContentHandler
 
 from xml.sax.saxutils import unescape
 
-from PySide.QtCore import QRegExp
+from PySide.QtCore import QRegExp, Qt
 from PySide.QtGui import QSyntaxHighlighter, QColor, QTextCharFormat, \
     QTextBlockUserData, QFont
 
@@ -315,7 +315,7 @@ class Highlighter(QSyntaxHighlighter):
         # Do errors coloration
         if hasattr(self.doc,'errors'):
             if self.currentBlock().firstLineNumber() in self.doc.errors:
-                self.setFormat(0, self.currentBlock().length(), self.styles['error'])
+                self.setFormat(0, self.currentBlock().length(), self.get_style['error'])
 
         self.setCurrentBlockState(0)
 

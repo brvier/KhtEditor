@@ -76,6 +76,7 @@ class KhtTextEditor(QPlainTextEdit):
     showProgress = Signal(bool)
     #filepathChanged = Signal(unicode)
     documentErrorsChanged = Signal()
+    showError = Signal(unicode)
     sizeChanged = Signal(QSize)
     positionTextChanged = Signal(unicode)
     cursorRectangleChanged = Signal(QRect)

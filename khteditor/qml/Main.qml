@@ -17,7 +17,7 @@ PageStackWindow {
             MenuItem { text: "Open"; onClicked: pageStack.push(Qt.resolvedUrl('SelectorPage.qml'))}
             MenuItem { text: "Save"; onClicked: pageStack.currentPage.saveFile()}
             MenuItem { text: "Save As"; onClicked: pageStack.currentPage.saveAsFile()}
-            MenuItem { text: "Preferences"; onClicked: notYetAvailableBanner.show()}
+            MenuItem { text: "Preferences"; onClicked: pageStack.push(Qt.resolvedUrl('SettingsPage.qml'))}
             MenuItem { text: "About";  onClicked: pageStack.push(Qt.resolvedUrl('AboutPage.qml'))}
         }
     }
@@ -34,6 +34,16 @@ PageStackWindow {
     }
 
     InfoBanner{
+                      id:showErrorBanner
+                      text: 'Undefined'
+                      timerShowTime: 5000
+                      timerEnabled:true
+                      anchors.top: parent.top
+                      anchors.topMargin: 60
+                      anchors.horizontalCenter: parent.horizontalCenter
+                 }
+
+    InfoBanner{
                       id:notYetAvailableBanner
                       text: 'This feature is not yet available'
                       timerShowTime: 5000
@@ -42,7 +52,7 @@ PageStackWindow {
                       anchors.topMargin: 60
                       anchors.horizontalCenter: parent.horizontalCenter
                  }
-
+                                  
     function openFile(filepath){
         pageStack.pop(mainPage)
         pageStack.currentPage.openFile(filepath)

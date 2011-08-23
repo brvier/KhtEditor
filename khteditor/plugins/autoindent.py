@@ -3,8 +3,6 @@ from PySide.QtCore import Qt
 from plugins_api import Plugin
 import re
 
-
-
 class AutoIndent(Plugin):
     capabilities = ['afterKeyPressEvent']
     __version__ = '0.2'

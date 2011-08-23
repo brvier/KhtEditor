@@ -7,13 +7,10 @@
 """PyFlakes Plugin : A KhtEditor plugin to check simple syntax error
    Using PyFlakes """
 
-from PySide.QtCore import Qt, \
-                         QObject
+from PySide.QtCore import Qt, QObject
 
-from PySide.QtGui import QTextEdit, \
-                        QTextCursor
+from PySide.QtGui import QTextEdit, QTextCursor
 
-import dbus
 import sys
 try:
     from plugins_api import Plugin
@@ -28,17 +25,10 @@ class PyFlakes_plugin(Plugin, QObject):
     """ PyFlakes Plugin """
 
     capabilities = ['afterFileSave','afterFileOpen','beforeCursorPositionChanged']
-    __version__ = '0.4'
+    __version__ = '0.5'
     thread = None
     def __init__(self):
         QObject.__init__(self)
-        self.m_bus = dbus.SystemBus()
-        try:
-            self.m_notify = self.m_bus.get_object('org.freedesktop.Notifications',
-                                  '/org/freedesktop/Notifications')
-            self.iface = dbus.Interface(self.m_notify, 'org.freedesktop.Notifications')
-        except Exception:
-            print 'No freedesktop Dbus Notification support'
 
     def do_afterFileOpen(self, parent):
         self.do_check(parent)
@@ -54,7 +44,7 @@ class PyFlakes_plugin(Plugin, QObject):
                     cur = parent.textCursor()
                     linepos = cur.blockNumber()
                     if linepos in doc.errors:
-                        self.iface.SystemNoteInfoprint(doc.errors[linepos])
+                        parent.showError.emit(doc.errors[linepos])
         except:
             pass #No Dbus
 

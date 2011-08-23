@@ -19,6 +19,7 @@ class QmlTextEditor(QDeclarativeItem):
     positionTextChanged = Signal()
     cursorRectangleChanged = Signal()
     executeTextChanged = Signal()
+    showError = Signal()
 
     def __init__(self, parent=None):
         QDeclarativeItem.__init__(self, parent)
@@ -37,10 +38,21 @@ class QmlTextEditor(QDeclarativeItem):
         self.widget.modificationChanged.connect(self.setModificationChanged)
         self.widget.positionTextChanged.connect(self.setPositionText)
         self.widget.cursorRectangleChanged.connect(self.setCursorRectangle)
+        self.widget.showError.connect(self.showErrorHandle)
         self._positionText = '001-001'
         self._cursorRectangle = QRect (1,1,1,1)
         self._processLog = None
         self._executeLog = ''
+        self._error = ''
+
+    @Slot(result=unicode)
+    def getErrorMsg(self):
+        return self._error
+
+    @Slot(unicode)
+    def showErrorHandle(self, text):
+        self._error = text
+        self.showError.emit()
 
     @Slot()
     def indent(self):

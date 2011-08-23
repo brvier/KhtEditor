@@ -66,8 +66,13 @@ Page {
             onPositionTextChanged: {
                 toolTextPosition.text = positionText
                 }
+            onShowError: {
+                showErrorBanner.text = editor.getErrorMsg();
+                showErrorBanner.show();
+            }
         }
     }
+
 
     Rectangle {
         id:textLog
