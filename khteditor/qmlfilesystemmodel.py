@@ -32,6 +32,6 @@ class QmlFileSystemModel(QFileSystemModel):
     def filePath(self, index):
         return QFileSystemModel.filePath(self,index)
         
-    @Slot(QModelIndex, result=unicode)
-    def fileIconName(self, index):
-        return QFileSystemModel.fileIcon(self,index).name()
+#    @Slot(QModelIndex, result=unicode)
+#    def fileIconName(self, index):
+#        return QFileSystemModel.fileIcon(self,index).name()
