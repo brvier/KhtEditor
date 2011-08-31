@@ -63,7 +63,7 @@ Page {
                     id: iconFile
                     anchors.verticalCenter: parent.verticalCenter
                     width: 64; height: 64
-                    source: "image://theme/"+fileIconName
+                    source: "image://theme/"+view.model.model.fileIconName(view.model.modelIndex(index))
                 }
 
                 Column {
@@ -95,7 +95,7 @@ Page {
                     source: "image://theme/icon-m-common-drilldown-arrow-inverse"
                     anchors.right: parent.right;
                     anchors.verticalCenter: parent.verticalCenter
-                    opacity: view.model.model.isDir(view.model.modelIndex(index)) ? 1 : 0
+                    opacity:  ? 1 : 0
                 }
 
                 MouseArea {
@@ -105,7 +105,7 @@ Page {
                         if (view.model.model.isDir(view.model.modelIndex(index))){
                             titlelabel.text = 'Open File : ' + filePath
                             //previousFolderTool.currentFilePath = filePath
-                            view.model.rootIndex = view.model.modelIndex(index)
+                            view.model.rootIndex = view.model.modelIndex(indeview.model.model.isDir(view.model.modelIndex(index))x)
                         }
                         else {
                             view.model.model.setCurrentPath(filePath)
