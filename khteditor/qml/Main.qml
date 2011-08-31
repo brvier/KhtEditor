@@ -18,7 +18,8 @@ PageStackWindow {
             MenuItem { text: "Save"; onClicked: pageStack.currentPage.saveFile()}
             MenuItem { text: "Save As"; onClicked: pageStack.currentPage.saveAsFile()}
             MenuItem { text: "Preferences"; onClicked: pageStack.push(Qt.resolvedUrl('SettingsPage.qml'))}
-            MenuItem { text: "About";  onClicked: pageStack.push(Qt.resolvedUrl('AboutPage.qml'))}
+//            MenuItem { text: "About";  onClicked: pageStack.push(Qt.resolvedUrl('AboutPage.qml'))}
+            MenuItem { text: "About";  onClicked: about.open()}
         }
     }
 
@@ -36,6 +37,7 @@ PageStackWindow {
     InfoBanner{
                       id:showErrorBanner
                       text: 'Undefined'
+                      iconSource: Qt.resolvedUrl('../icons/khteditor.png')
                       timerShowTime: 5000
                       timerEnabled:true
                       anchors.top: parent.top
@@ -52,7 +54,18 @@ PageStackWindow {
                       anchors.topMargin: 60
                       anchors.horizontalCenter: parent.horizontalCenter
                  }
-                                  
+
+    QueryDialog {
+                id: about
+                icon: Qt.resolvedUrl('../icons/khteditor.png')
+                titleText: "About KhtEditor"
+                message: 'Version ' + __version__ +
+                         '\nBy Benoît HERVIER (Khertan)\n' +
+                         '\n\nA source code editor for MeeGo and Harmattan\n' +
+                         'Licenced under GPLv3\n' +
+                         'Web Site : http://khertan.net/khteditor'
+                }       
+                
     function openFile(filepath){
         pageStack.pop(mainPage)
         pageStack.currentPage.openFile(filepath)

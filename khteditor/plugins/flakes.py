@@ -52,14 +52,15 @@ class PyFlakes_plugin(Plugin, QObject):
         """ Do the pylint check and appends in the highlighter errors"""
 
         #Limit to python source file
-        if (not parent.getFilePath().endswith('.py')) and (parent.getFilePath().endswith('.pyw')):
-            return
 
         doc = parent.document()
+        doc.errors = {}
+
+        if (not parent.getFilePath().endswith('.py')) and (not parent.getFilePath().endswith('.pyw')):
+            return
 
         errors = []
         rows = parent.errors.keys()
-        doc.errors = {}
         for row in rows:
             parent.highlighter.rehighlightBlock(doc.findBlockByLineNumber(row))
 

@@ -4,9 +4,8 @@
 # Copyright (c) 2010 Benoît HERVIER
 # Licenced under GPLv3
 
-from PySide.QtGui import QApplication, QFileSystemModel
-from PySide.QtCore import QObject, QUrl, QDir, Slot, QModelIndex
-from PySide import QtDeclarative
+from PySide.QtGui import QFileSystemModel
+from PySide.QtCore import Slot, QModelIndex
 
 import os.path
 
