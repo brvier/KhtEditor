@@ -3,7 +3,7 @@ import com.nokia.meego 1.0
 //import Qt.labs.folderlistmodel 1.0
 
 Page {
-    id:openedEditors
+    id:selectorPage
     anchors.fill:parent
     tools: backTool
 
@@ -50,7 +50,7 @@ Page {
         id: view
         anchors.top: pathbox.bottom
         anchors.bottom: parent.bottom
-        height: parent.height - pathbox.height
+        height: selectorPage.height - pathbox.height
         width: parent.width
         model: VisualDataModel {
             model: dirModel
@@ -59,12 +59,12 @@ Page {
                 height: 80
                 anchors.leftMargin: 10
                 color:"black"
-//                Image {
-//                    id: iconFile
-//                    anchors.verticalCenter: parent.verticalCenter
-//                    width: 64; height: 64
-//                    source: fileIcon
-//                }
+                Image {
+                    id: iconFile
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 64; height: 64
+                    source: "image://theme/"+fileIconName
+                }
 
                 Column {
                     spacing: 10
@@ -95,6 +95,7 @@ Page {
                     source: "image://theme/icon-m-common-drilldown-arrow-inverse"
                     anchors.right: parent.right;
                     anchors.verticalCenter: parent.verticalCenter
+                    opacity: view.model.model.isDir(view.model.modelIndex(index)) ? 1 : 0
                 }
 
                 MouseArea {
