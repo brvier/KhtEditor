@@ -56,8 +56,8 @@ setup(name='khteditor',
       'Maemo_Flags':'visible',
       'MeeGo_Desktop_Entry_Filename':'/usr/share/applications/installer-extra/khteditor.desktop',
       'section':'user/development',
-      'changelog':'* Rewrite to use QML and fit Harmattan specficities',
-      'Maemo_Upgrade_Description':'Rewrite to use QML and fit Harmattan specficities',
+      'changelog':'* Improve pyflakes plugin, bugs fixes, improve selector, fix generic highlighter',
+      'Maemo_Upgrade_Description':'Improve plugin pyflake, bugs fixes, improve selector, fix generic highlighter',
       'architecture':'any',
       'postinst':"""#!/bin/sh
 chmod +x /usr/local/bin/khteditor_launch.py
