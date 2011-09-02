@@ -5,7 +5,7 @@ import com.nokia.meego 1.0
 Page {
     id:selectorPage
     anchors.fill:parent
-    tools: backTool
+//    tools: backTool
 
     Rectangle {
         id:pathbox
@@ -22,6 +22,15 @@ Page {
             color:"#cc6633"
             text:'Open File'
             verticalAlignment: "AlignVCenter"
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    view.model.rootIndex = view.model.parentModelIndex()
+                    titlelabel.text = 'Open File : ' + view.model.model.filePath(view.model.rootIndex)
+
+                }
+            }            
+
         }
         Image{
             id:closeButton
@@ -122,16 +131,16 @@ Page {
     }
 
 
-    ToolBarLayout {
-        id:backTool
-        visible: true
-        ToolIcon {
-            platformIconId: 'toolbar-back'
-            onClicked: {
-                view.model.rootIndex = view.model.parentModelIndex()
-                titlelabel.text = 'Open File : ' + view.model.model.filePath(view.model.rootIndex)
-            }
-        }
-    }
+//    ToolBarLayout {
+//        id:backTool
+//        visible: true
+//        ToolIcon {
+//            platformIconId: 'toolbar-back'
+//            onClicked: {
+//                view.model.rootIndex = view.model.parentModelIndex()
+//                titlelabel.text = 'Open File : ' + view.model.model.filePath(view.model.rootIndex)
+//            }
+//        }
+//    }
 }
 

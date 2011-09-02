@@ -1,6 +1,5 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
-//import Qt.labs.folderlistmodel 1.0
 
 Page {
     id:settingsPage
@@ -21,21 +20,7 @@ Page {
                 color:"#cc6633"
                 text:"Preferences";
                 verticalAlignment: "AlignVCenter"
-            }
-            
-            Image{
-                id:closeButton
-                anchors.right: parent.right
-                anchors.top: parent.top
-                anchors.topMargin: 2
-                opacity: closeButtonArea.pressed ? 0.5 : 1.0
-                source:"image://theme/icon-m-common-dialog-close"
-                MouseArea{
-                    id:closeButtonArea
-                    anchors.fill: parent
-                    onClicked: pageStack.pop()
-                }
-            }
+            }            
             
             //The real prefs gui start here
             Label {
@@ -45,6 +30,8 @@ Page {
                 anchors.leftMargin: 5
                 anchors.topMargin: 10
                 text:"Font Name";
+                font.family: "Nokia Pure Text"
+                font.pixelSize: 16
             }
 
             //The real prefs gui start here
@@ -55,6 +42,8 @@ Page {
                 anchors.leftMargin: 5
                 anchors.topMargin: 10
                 text:"Font Size";
+                font.family: "Nokia Pure Text"
+                font.pixelSize: 16
             }
     }
 
