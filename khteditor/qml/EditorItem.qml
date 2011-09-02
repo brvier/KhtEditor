@@ -87,12 +87,6 @@ Page {
             }
         }
 
-        PinchArea {
-//            id: zoomer
-            enabled: true
-            width: parent.width
-//            pinch.target: flicker    
-        }
     }
 
     Rectangle {
