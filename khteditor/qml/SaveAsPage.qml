@@ -3,163 +3,171 @@ import com.nokia.meego 1.0
 //import Qt.labs.folderlistmodel 1.0
 
 Page {
-    id:openedEditors
+    id:saveAsPage
     anchors.fill:parent
-    tools: backTool
-
-
+    
     Rectangle {
-        id:pathbox
+        id:titlebar
+        anchors.top: parent.top
         width:parent.width
         height:48
-        color:'black'
+        color:'white'
         Text{
             id:titlelabel
             anchors.fill: parent
             anchors.leftMargin: 5
+            anchors.rightMargin: 50
             font { bold: true; family: "Helvetica"; pixelSize: 18 }
             color:"#cc6633"
-            text:'Save File As: /' + filename.text
+            text:"Save as : /home/user/"
             verticalAlignment: "AlignVCenter"
-        }
-    }
-
-   Rectangle {
-            id: filesavebox
-            anchors.top: pathbox.bottom
-            anchors.left: parent.left
-            anchors.right: parent.right
-            height:80
-            color: 'white'
-            Label {
-                id:filenamelabel;
-                text:'File name : ';
-                width: 150
-                font { bold: true; family: "Helvetica"; pixelSize: 24 }
-                anchors.left: parent.left
-                anchors.verticalCenter: parent.verticalCenter
-            }
-
-            TextField {
-                id:filename
-                anchors.left: filenamelabel.right
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-
-                onTextChanged: {
-                    titlelabel.text = 'Save File As : ' + view.model.model.filePath(view.model.rootIndex)  + '/' + filename.text
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    view.model.rootIndex = view.model.parentModelIndex()
+                    titlelabel.text = 'Save As : ' + view.model.model.filePath(view.model.rootIndex) + '/' + filenameField.text
                 }
-            }
+            }            
+
         }
-
-   Rectangle {
-        color:'white'
-        anchors.bottom: parent.bottom
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: filesavebox.bottom
-
-        Label {
-                id:folderlabel;
-                text:'Folder :';
-                height: 80
-                width: 150
-                font { bold: true; family: "Helvetica"; pixelSize: 24 }
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-            }
-
-        ListView {
-            id: view
+        Image{
+            id:closeButton
+            anchors.right: parent.right
             anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.right:  parent.right
-            anchors.left: folderlabel.right
-            model: VisualDataModel {
-                model: dirModel
-                delegate: Rectangle {
-                    width:parent.width
-                    height: 80
-                    anchors.leftMargin: 10
+            anchors.topMargin: 4
+            opacity: closeButtonArea.pressed ? 0.5 : 1.0
+            //source:"image://theme/icon-m-dialog-common-close"
+            source:"image://theme/icon-m-toolbar-close"
+            MouseArea{
+                id:closeButtonArea
+                anchors.fill: parent
+                onClicked: pageStack.pop()
+            }
+        }
 
-                    Column {
-                        spacing: 10
-                        //anchors.left: iconFile.left
-                        anchors.leftMargin:10
+    }
+
+//    FolderListModel {
+//         id: folderModel
+//         showDotAndDotDot: true
+//         showDirs: true
+//     }
+
+    TextField {
+                id: filenameField
+                anchors.top: titlebar.bottom
+                anchors.left: parent.left
+                anchors.leftMargin: 5
+                anchors.topMargin: 10
+                anchors.right: saveButton.left
+                anchors.rightMargin: 5
+                onTextChanged: {
+                    titlelabel.text = 'Save As : ' + view.model.model.filePath(view.model.rootIndex) + '/' + filenameField.text
+                }
+    }
+
+    Button { 
+        id: saveButton
+        width:80
+        anchors.top: titlebar.bottom
+        anchors.left: fieldnameField.right
+        anchors.right: parent.right
+        anchors.leftMargin: 5
+        anchors.rightMargin: 5
+        anchors.topMargin: 10
+        text:"Save"
+        onClicked: { 
+            rootWin.saveFileAs(view.model.model.filePath(view.model.rootIndex) + '/' + filenameField.text)
+        }
+    }
+            
+    ListView {
+        id: view
+        anchors.top: filenameField.bottom
+        anchors.topMargin: 10
+        anchors.bottom: parent.bottom
+//        height: selectorPage.height - pathbox.height
+        width: parent.width
+        model: VisualDataModel {
+            model: dirModel
+            delegate: Rectangle {
+                width:parent.width
+                height: 80
+                anchors.leftMargin: 10
+                color:"black"
+//                Image {
+//                    id: iconFile
+//                    anchors.verticalCenter: parent.verticalCenter
+//                    width: 64; height: 64
+//                    source: "image://theme/"+view.model.model.fileIconName(view.model.modelIndex(index));
+//                }
+
+                Column {
+                    spacing: 10
+                    //anchors.left: iconFile.left
+                    anchors.leftMargin:10
+                    anchors.left: parent.left
+                    anchors.right: moreIcon.left
+
+                    anchors.verticalCenter: parent.verticalCenter
+                    Label {text:'<b>'+fileName+'</b>'
+                        font.family: "Nokia Pure Text"
+                        font.pixelSize: 24
+                        color:"white"
                         anchors.left: parent.left
-                        anchors.right: moreIcon.left
+                        anchors.right: parent.right
 
-                        anchors.verticalCenter: parent.verticalCenter
-                        Label {text:'<b>'+fileName+'</b>'
-                            font.family: "Nokia Pure Text"
-                            font.pixelSize: 24
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                        }
-                        Label {text:filePath
-                            font.family: "Nokia Pure Text"
-                            font.pixelSize: 16
-                            color: "#cc6633"
-                            anchors.left: parent.left
-                            anchors.right: parent.right
-                        }
                     }
-                    Image {
-                        id:moreIcon
-                        //source: view.model.model.isDir(view.model.modelIndex(index)) ? "image://theme/icon-m-common-drilldown-arrow" : ''
-                        source: 'image://theme/icon-m-common-drilldown-arrow'
-                        anchors.right: parent.right;
-                        anchors.verticalCenter: parent.verticalCenter
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            console.log(view.model.model)
-                            if (view.model.model.isDir(view.model.modelIndex(index))){
-                                titlelabel.text = 'Save File As : ' + filePath + '/' +  filename.text
-                                //previousFolderTool.currentFilePath = filePath
-                                view.model.rootIndex = view.model.modelIndex(index)
-                            }
-                            else {
-
-                            }
-                        }
-
+                    Label {text:filePath
+                        font.family: "Nokia Pure Text"
+                        font.pixelSize: 16
+                        color: "#cc6633"
+                        anchors.left: parent.left;
+                        anchors.right: parent.right
                     }
                 }
+                Image {
+                    id:moreIcon
+                    source: "image://theme/icon-m-common-drilldown-arrow-inverse"
+                    anchors.right: parent.right;
+                    anchors.verticalCenter: parent.verticalCenter
+                    opacity: view.model.model.isDir(view.model.modelIndex(index)) ? 1 : 0
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        console.log(view.model.model)
+                        if (view.model.model.isDir(view.model.modelIndex(index))){
+                            titlelabel.text = 'Save As : ' + filePath  + '/' + filenameField.text
+                            //previousFolderTool.currentFilePath = filePath
+                            view.model.rootIndex = view.model.modelIndex(index)
+                        }
+                        else {
+//                            view.model.model.setCurrentPath(filePath)
+//                            rootWin.openFile(filePath)
+                        }
+                    }
+
+                }
+            }
+        Component.onCompleted:{    
+            view.model.rootIndex = view.model.model.getCurrentIndex()
             }
         }
     }
 
 
-    ToolBarLayout {
-        id:backTool
-        visible: true
-        ToolIcon {
-            platformIconId: 'toolbar-back'
-            onClicked: pageStack.pop()
-        }
-        ToolIcon {
-            id: previousFolderTool
-            //property string currentIndex;
-            platformIconId: 'toolbar-up'
-            anchors.right: parent.right
-            onClicked: {
-                view.model.rootIndex = view.model.parentModelIndex()
-                titlelabel.text = 'Save File As : ' + view.model.model.filePath(view.model.rootIndex)  + '/' + filename.text
-            }
-        }
-        ToolButton {
-            id: saveTool
-            flat: true
-            text:'Save'
-            anchors.horizontalCenter: parent.horizontalCenter
-            onClicked: {
-                rootWin.saveFileAs(view.model.model.filePath(view.model.rootIndex) + '/' + filename.text)
-                console.log(view.model.model.filePath(view.model.rootIndex) + '/' + filename.text)
-            }
-        }
-    }
+//    ToolBarLayout {
+//        id:backTool
+//        visible: true
+//        ToolIcon {
+//            platformIconId: 'toolbar-back'
+//            onClicked: {
+//                view.model.rootIndex = view.model.parentModelIndex()
+//                titlelabel.text = 'Open File : ' + view.model.model.filePath(view.model.rootIndex)
+//            }
+//        }
+//    }
 }
 

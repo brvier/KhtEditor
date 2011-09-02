@@ -20,7 +20,7 @@ from qmlfilesystemmodel import QmlFileSystemModel
 
 __author__ = 'Benoît HERVIER (Khertan)'
 __email__ = 'khertan@khertan.net'
-__version__ = '3.0.2'
+__version__ = '3.0.3'
 
 class KhtEditor(QApplication):
     def __init__(self):

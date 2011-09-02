@@ -65,7 +65,7 @@ class QFormatter(Formatter):
 class Highlighter( QSyntaxHighlighter):
 
     def __init__(self, parent, filename):
-        QSyntaxHighlighter.__init__(self, parent)
+        QSyntaxHighlighter.__init__(self, parent, styleName=None)
         self.tstamp=time.time()
 
         # Keep the formatter and lexer, initializing them

@@ -235,7 +235,7 @@ class KhtTextEditor(QPlainTextEdit):
             QApplication.processEvents()
             from highlighter_pygments import Highlighter
             self.highlighter = Highlighter(self.document(),
-                                                 unicode(filename), styleName=self.settings.value('theme'))
+                                         unicode(filename), styleName=self.settings.value('theme'))
             QApplication.processEvents()
             self.showProgress.emit(False)
 

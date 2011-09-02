@@ -1,5 +1,6 @@
 import QtQuick 1.1
 import com.nokia.meego 1.0
+//import com.nokia.meego.extras 1.0
 import net.khertan.qmlcomponents 1.0
 
 Page {
@@ -85,8 +86,14 @@ Page {
                 showErrorBanner.show();
             }
         }
-    }
 
+        PinchArea {
+//            id: zoomer
+            enabled: true
+            width: parent.width
+//            pinch.target: flicker    
+        }
+    }
 
     Rectangle {
         id:textLog
